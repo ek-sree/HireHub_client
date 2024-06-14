@@ -5,6 +5,11 @@ import { userAxios } from "../../../constraints/axios/userAxios";
 import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner'
+import { useDispatch } from "react-redux";
+import { login } from "../../../redux/slice/UserSlice";
+import Cookies from 'js-cookie';
+import { recruiterAxios } from "../../../constraints/axios/recruiterAxios";
+import { recruiterEndpoints } from "../../../constraints/endpoints/recruiterEndpoints";
 
 interface FormValues {
   otp: string[];
@@ -22,9 +27,17 @@ const Otp = () => {
   const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [countdown, setCountdown] = useState(30);
   const [showResendButton, setShowResendButton] = useState(false);
+
+  const [recruiter, setRecruiter] = useState<string | undefined>(undefined);
+
+
+
+const axiosInstance = recruiter == "false" ? userAxios : recruiterAxios;
+const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -34,10 +47,18 @@ const Otp = () => {
     onSubmit: async (values) => {
         try {
             const otp = values.otp.join("")
-            const response = await userAxios.post(userEndpoints.otp,{otp})
+            const response = await axiosInstance.post(endpoint.otp,{otp})
             console.log("Send successfully", response);
-            if(response.data.success){
-              navigate('/');
+            if(response.data.success && response.data.isRecruiter==false){
+              dispatch(login(
+                 response.data.user_data,
+              ))
+              navigate('/home');
+            }else if(response.data.recruiter_data){
+              dispatch(login(
+                response.data.recruiter_data,
+              ))
+              navigate('/recruiter/home')
             }else{
               toast.error('Entered otp is incorrect.')
             }
@@ -82,6 +103,14 @@ const Otp = () => {
       setShowResendButton(true);
     }
   }, [countdown]);
+
+  useEffect(()=>{
+    const recruiterStatus = Cookies.get('isRecruiter');
+console.log("Checking recruiterstatus", recruiterStatus);
+console.log(typeof recruiterStatus);
+
+setRecruiter(recruiterStatus)
+  },[])
 
   useEffect(() => {
     inputRef.current[0]?.focus();

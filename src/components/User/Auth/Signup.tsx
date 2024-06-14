@@ -9,6 +9,8 @@ import * as Yup from 'yup';
 import { SignupFormValues } from '../../../interface/AuthInterfaces/IAuthInterface';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'sonner'
+import { recruiterAxios } from '../../../constraints/axios/recruiterAxios';
+import { recruiterEndpoints } from '../../../constraints/endpoints/recruiterEndpoints';
 
 
 const initialValues = {
@@ -51,8 +53,11 @@ function Signup() {
   const onSubmit = async (values: SignupFormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
       console.log("hekllo",values);
+
+      const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
+      const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
       
-      const response = await userAxios.post(userEndpoints.register, values);
+      const response = await axiosInstance.post(endpoint.register, values);
       console.log("datat send?");
       if(response.data.success){
         naviagte('/otp')
