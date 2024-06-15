@@ -54,7 +54,7 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
                  response.data.user_data,
               ))
               navigate('/home');
-            }else if(response.data.recruiter_data){
+            }else if(response.data.isRecruiter==true){
               dispatch(login(
                 response.data.recruiter_data,
               ))
@@ -145,12 +145,18 @@ setRecruiter(recruiterStatus)
     }
   };
 
-  const handleResendOtp = () => {
-    formik.resetForm();
+  const handleResendOtp = async() => {
+    try {
+      await axiosInstance.post(endpoint.resendOtp)
+      formik.resetForm();
     setCountdown(30);
     setShowResendButton(false);
     if (inputRef.current[0]) {
       inputRef.current[0].focus();
+    }
+    } catch (error) {
+      console.log("error in resend otp", error);
+      
     }
   };
 

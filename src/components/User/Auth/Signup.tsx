@@ -7,11 +7,10 @@ import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup'; 
 import { SignupFormValues } from '../../../interface/AuthInterfaces/IAuthInterface';
-import { useNavigate } from 'react-router-dom';
-import { Toaster, toast } from 'sonner'
+import { Link, useNavigate } from 'react-router-dom';
+import { Toaster, toast } from 'sonner';
 import { recruiterAxios } from '../../../constraints/axios/recruiterAxios';
 import { recruiterEndpoints } from '../../../constraints/endpoints/recruiterEndpoints';
-
 
 const initialValues = {
   name: '',
@@ -41,31 +40,30 @@ const validationSchema = Yup.object({
     .required('Confirm password is required')
 });
 
-
-
-
-
-
 function Signup() {
+  const navigate = useNavigate();
+  const [alignment, setAlignment] = useState<string | null>('user');
 
-  const naviagte = useNavigate()
+  const handleChange = (newAlignment: string | null) => {
+    setAlignment(newAlignment);
+  };
 
   const onSubmit = async (values: SignupFormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
-      console.log("hekllo",values);
+      console.log("hello", values);
 
       const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
       const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
       
       const response = await axiosInstance.post(endpoint.register, values);
-      console.log("datat send?");
-      if(response.data.success){
-        naviagte('/otp')
-      }else{
-        if(response.data.message ==="Email already exists"){
-          toast.error('Email already exist.')
-        }else{
-          toast.error('Registration faild. Please try again later')
+      console.log("data sent?");
+      if (response.data.success) {
+        navigate('/otp');
+      } else {
+        if (response.data.message === "Email already exists") {
+          toast.error('Email already exists.');
+        } else {
+          toast.error('Registration failed. Please try again later.');
         }
       }
       console.log('Data sent successfully:', response.data);
@@ -74,12 +72,6 @@ function Signup() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const [alignment, setAlignment] = useState<string | null>('user');
-
-  const handleChange = (event: React.MouseEvent<HTMLElement>, newAlignment: string | null) => {
-    setAlignment(newAlignment);
   };
 
   return (
@@ -92,8 +84,8 @@ function Signup() {
         />
       </div>
       <div className="flex justify-center items-center">
-        <div className="mb-16 shadow-xl rounded-lg w-full max-w-sm p-4 ">
-          <div className="flex items-center justify-center mt-2 text-center text-xl ">
+        <div className="mb-16 shadow-xl rounded-lg w-full max-w-sm p-4">
+          <div className="flex items-center justify-center mt-2 text-center text-xl">
             Welcome.. Sign up as a&nbsp;<b>{alignment === 'recruiter' ? 'Recruiter' : 'User'}</b>
           </div>
           <div className="pt-2 flex justify-center">
@@ -101,7 +93,7 @@ function Signup() {
               color="primary"
               value={alignment}
               exclusive
-              onChange={handleChange}
+              onChange={(_,newAlignment) => handleChange(newAlignment)}
               aria-label="Platform"
               className="flex"
             >
@@ -119,69 +111,69 @@ function Signup() {
                 <div className="pt-5">
                   <Field
                     type="text"
-                    name='name'
+                    name="name"
                     className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                     placeholder="Name"
                   />
-                  <ErrorMessage name='name' component='div' className="text-red-500 text-xs" />
+                  <ErrorMessage name="name" component="div" className="text-red-500 text-xs" />
                 </div>
                 <div className="pt-5">
                   <Field
                     type="email"
-                    name='email'
+                    name="email"
                     className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                     placeholder="Email"
                   />
-                  <ErrorMessage name='email' component='div' className="text-red-500 text-xs" />
+                  <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
                 </div>
                 <div className="pt-5">
                   <Field
                     type="tel"
-                    name='phone'
+                    name="phone"
                     className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                     placeholder="Phone"
                   />
-                  <ErrorMessage name='phone' component='div' className="text-red-500 text-xs" />
+                  <ErrorMessage name="phone" component="div" className="text-red-500 text-xs" />
                 </div>
                 {alignment === 'recruiter' && (
                   <>
                     <div className="pt-5">
                       <Field
                         type="text"
-                        name='companyName'
+                        name="companyName"
                         className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                         placeholder="Company name"
                       />
-                      <ErrorMessage name='companyName' component='div' className="text-red-500 text-xs" />
+                      <ErrorMessage name="companyName" component="div" className="text-red-500 text-xs" />
                     </div>
                     <div className="pt-5">
                       <Field
                         type="email"
-                        name='companyEmail'
+                        name="companyEmail"
                         className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                         placeholder="Company Email"
                       />
-                      <ErrorMessage name='companyEmail' component='div' className="text-red-500 text-xs" />
+                      <ErrorMessage name="companyEmail" component="div" className="text-red-500 text-xs" />
                     </div>
                   </>
                 )}
                 <div className="pt-5">
                   <Field
                     type="password"
-                    name='password'
+                    name="password"
                     className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                     placeholder="Password"
                   />
-                  <ErrorMessage name='password' component='div' className="text-red-500 text-xs" />
+                  <ErrorMessage name="password" component="div" className="text-red-500 text-xs" />
                 </div>
                 <div className="pt-5">
                   <Field
                     type="password"
-                    name='confirmPassword'
+                    name="confirmPassword"
                     className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                     placeholder="Confirm Password"
                   />
-                  <ErrorMessage name='confirmPassword' component='div' className="text-red-500 text-xs" />
+                  <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-xs" />
                 </div>
                 <div className="flex justify-center pt-8 pb-5">
                   <button
@@ -199,7 +191,7 @@ function Signup() {
                 )}
                 {alignment === 'user' && (
                   <>
-                    <div className="pt-4 flex justify-center">
+                    <div className="flex justify-center">
                       <label>
                         or continue with <hr />
                       </label>
@@ -215,9 +207,12 @@ function Signup() {
               </Form>
             )}
           </Formik>
+          <div className="mb-3">
+                      <label className="pl-16 text-sm">Already have an account? <Link to="/" className="text-blue-300">Click here</Link></label>
+                    </div>
         </div>
       </div>
-      <Toaster position="top-center" expand={false} richColors/>
+      <Toaster position="top-center" expand={false} richColors />
     </div>
   );
 }

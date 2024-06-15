@@ -22,7 +22,7 @@ export const userAuthSlice =createSlice({
     initialState,
     reducers:{
         login:(state, action)=>{
-            console.log("jhsbdas",action.payload);
+            console.log("Redux User Slice: ",action.payload);
             
             state.isAuthenticated = true;
             state.userData = action.payload;
