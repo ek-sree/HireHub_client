@@ -36,8 +36,11 @@ const onSubmit = async(values:typeof initialValues, {setSubmitting}:{setSubmitti
   try {
     const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
     const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
+  console.log("trying to logging");
   
     const response = await axiosInstance.post(endpoint.login , values)
+    console.log("Success logging", response);
+
     if(response.data.success && response.data.isRecruiter== false){
       dispatch(login(response.data.user_data))
       navigate('/home')
