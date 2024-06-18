@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import googleLogo from '../../../assets/images/google.png';
+// import googleLogo from '../../../assets/images/google.png';
 import HireHub from '../../../assets/images/HireHub.png';
 import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup'; 
@@ -10,8 +10,10 @@ import { userAxios } from '../../../constraints/axios/userAxios';
 import { recruiterEndpoints } from '../../../constraints/endpoints/recruiterEndpoints';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import { Toaster, toast } from 'sonner';
-import { login } from '../../../redux/slice/UserSlice';
+import { login as userlogin } from '../../../redux/slice/UserSlice';
+import {login as recruiterlogin} from '../../../redux/slice/RecruiterSlice'
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required("Email is required"),
@@ -32,31 +34,56 @@ function Login() {
     setAlignment(newAlignment);
   };
 
-const onSubmit = async(values:typeof initialValues, {setSubmitting}:{setSubmitting:(isSubmitting: boolean)=>void})=>{
-  try {
-    const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
-    const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
-  console.log("trying to logging");
-  
-    const response = await axiosInstance.post(endpoint.login , values)
-    console.log("Success logging", response);
+const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleusercontent.com'
 
-    if(response.data.success && response.data.isRecruiter== false){
-      dispatch(login(response.data.user_data))
-      navigate('/home')
-    }else if(response.data.isRecruiter== true){
-      dispatch(login(response.data.user_data))
-      navigate('/recruiter/home')
-    }else{
-      toast.error("Email or password incorrect")
+  const onSubmit = async (values: typeof initialValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
+    try {
+      const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
+      const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
+      console.log("trying to logging");
+  
+      const response = await axiosInstance.post(endpoint.login, values);
+      console.log("Success logging", response);
+  
+      if (response.data.success && response.data.isRecruiter === false) {
+        console.log("Dispatching user login");
+        dispatch(userlogin(response.data.user_data));
+        navigate('/home');
+      } else if (response.data.success && response.data.isRecruiter === true) {
+        console.log("Dispatching recruiter login");
+        dispatch(recruiterlogin(response.data.recruiter_data));
+        navigate('/recruiter/home');
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log('Error logging in', error);
+      toast.error("An error occurred. Please try again");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (error) {
-    console.log('Error logging in', error);
-    toast.error("An error occured. Please try again");
-  }finally{
-    setSubmitting(false)
   }
-}
+
+  const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
+    const { credential } = credentialResponse;
+    console.log('Google Credential', credential);
+    try {
+      const response = await userAxios.post("/google-login", { credential });
+      console.log('Google Login Response', response);
+
+      if (response.data.success) {
+        dispatch(userlogin(response.data.user_data));
+        navigate("/home");
+      } else {
+        toast.error("Failed to log in with Google");
+      }
+    } catch (error) {
+      console.error("Error while processing Google login:", error);
+      toast.error("An error occurred. Please try again");
+    }
+  };
+
+  
   
 return (
   <div className="grid min-h-screen grid-cols-1 md:grid-cols-2 pt-4">
@@ -132,10 +159,14 @@ return (
                     </label>
                   </div>
                   <div className="flex justify-center pt-4 pb-5">
-                    <label className="border border-b-slate-300 w-64 py-1 flex justify-center items-center rounded-md hover:cursor-pointer hover:bg-slate-200">
-                      <img src={googleLogo} alt="Google" className="h-5 w-5 mr-3" />
-                      Google
-                    </label>
+                  <GoogleOAuthProvider clientId={clientId}>
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log('Login Failed');
+              }}
+            />
+          </GoogleOAuthProvider>
                   </div>
                 </>
               )}

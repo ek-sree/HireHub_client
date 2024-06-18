@@ -6,7 +6,8 @@ import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner'
 import { useDispatch } from "react-redux";
-import { login } from "../../../redux/slice/UserSlice";
+import { login as userLogin } from "../../../redux/slice/UserSlice";
+import { login as recruiterLogin} from "../../../redux/slice/RecruiterSlice";
 import Cookies from 'js-cookie';
 import { recruiterAxios } from "../../../constraints/axios/recruiterAxios";
 import { recruiterEndpoints } from "../../../constraints/endpoints/recruiterEndpoints";
@@ -50,12 +51,12 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
             const response = await axiosInstance.post(endpoint.otp,{otp})
             console.log("Send successfully", response);
             if(response.data.success && response.data.isRecruiter==false){
-              dispatch(login(
+              dispatch(userLogin(
                  response.data.user_data,
               ))
               navigate('/home');
-            }else if(response.data.isRecruiter==true){
-              dispatch(login(
+            }else if(response.data.success && response.data.isRecruiter==true){
+              dispatch(recruiterLogin(
                 response.data.recruiter_data,
               ))
               navigate('/recruiter/home')

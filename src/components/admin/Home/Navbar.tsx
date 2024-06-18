@@ -4,7 +4,7 @@ import notificationLogo from '../../../assets/images/notificationLogo.jpg';
 import searchLogo from '../../../assets/images/searchLogo.webp'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logout } from '../../../redux/slice/RecruiterSlice';
+import { logout } from '../../../redux/slice/UserSlice';
 
 function Navbar() {
 

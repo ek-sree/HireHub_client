@@ -1,33 +1,34 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { userAuthSlice } from "../slice/UserSlice";
-import { persistStore,persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import storage from "redux-persist/lib/storage";
-import { combineReducers } from "@reduxjs/toolkit";
-
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import userAuthSlice from '../slice/UserSlice';
+import recruiterAuthSlice from '../slice/RecruiterSlice';
 
 const persistConfiguration = {
     key: 'root',
-    version:1,
+    version: 1,
     storage,
 }
 
 const rootReducer = combineReducers({
-    UserAuth: userAuthSlice.reducer
+    UserAuth: userAuthSlice.reducer,
+    RecruiterAuth: recruiterAuthSlice.reducer 
 })
 
 const persistedReducer = persistReducer(persistConfiguration, rootReducer);
 
 const store = configureStore({
     reducer: persistedReducer,
-    middleware:(getDefaultMiddleware)=>
+    middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-            serializableCheck:{
-                ignoredActions:[FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             }
         })
 });
 
-export const persistor = persistStore(store)
+export const persistor = persistStore(store);
 
 export default store;
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

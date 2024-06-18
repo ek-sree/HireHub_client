@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserData {
     email: string | null;
@@ -17,21 +17,21 @@ const initialState: UserState = {
     userData: null
 }
 
-export const userAuthSlice =createSlice({
+const userAuthSlice = createSlice({
     name: "UserAuth",
     initialState,
-    reducers:{
-        login:(state, action)=>{
-            console.log("Redux User Slice: ",action.payload);
-            
+    reducers: {
+        login: (state, action: PayloadAction<UserData>) => {
+            console.log("Redux User Slice: ", action.payload);
             state.isAuthenticated = true;
             state.userData = action.payload;
-    },
-     logout:(state)=>{
-        state.isAuthenticated = false;
-        state.userData = null;
+        },
+        logout: (state) => {
+            state.isAuthenticated = false;
+            state.userData = null;
+        }
     }
-}
 })
 
-export const { login, logout } = userAuthSlice.actions
+export const { login, logout } = userAuthSlice.actions;
+export default userAuthSlice;

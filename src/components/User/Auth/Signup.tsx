@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import googleLogo from '../../../assets/images/google.png';
 import HireHub from '../../../assets/images/HireHub.png';
 import { userAxios } from '../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
@@ -11,6 +10,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'sonner';
 import { recruiterAxios } from '../../../constraints/axios/recruiterAxios';
 import { recruiterEndpoints } from '../../../constraints/endpoints/recruiterEndpoints';
+import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
+import { useDispatch } from 'react-redux';
+import { login as userlogin } from '../../../redux/slice/UserSlice';
 
 const initialValues = {
   name: '',
@@ -21,6 +23,7 @@ const initialValues = {
   password: '',
   confirmPassword: ''
 };
+
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -44,6 +47,9 @@ function Signup() {
   const navigate = useNavigate();
   const [alignment, setAlignment] = useState<string | null>('user');
 
+  const dispatch = useDispatch()
+const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleusercontent.com'
+
   const handleChange = (newAlignment: string | null) => {
     setAlignment(newAlignment);
   };
@@ -54,6 +60,7 @@ function Signup() {
 
       const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
       const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
+      console.log("checking axios and endpoint", axiosInstance, endpoint);
       
       const response = await axiosInstance.post(endpoint.register, values);
       console.log("data sent?");
@@ -71,6 +78,25 @@ function Signup() {
       console.error('Error sending data:', error);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
+    const { credential } = credentialResponse;
+    console.log('Google Credential', credential);
+    try {
+      const response = await userAxios.post("/google-login", { credential });
+      console.log('Google Login Response', response);
+
+      if (response.data.success) {
+        dispatch(userlogin(response.data.user_data));
+        navigate("/home");
+      } else {
+        toast.error("Failed to log in with Google");
+      }
+    } catch (error) {
+      console.error("Error while processing Google login:", error);
+      toast.error("An error occurred. Please try again");
     }
   };
 
@@ -197,10 +223,14 @@ function Signup() {
                       </label>
                     </div>
                     <div className="flex justify-center pt-4 pb-5">
-                      <label className="border border-b-slate-300 w-64 py-1 flex justify-center items-center rounded-md hover:cursor-pointer hover:bg-slate-200">
-                        <img src={googleLogo} alt="Google" className="h-5 w-5 mr-3" />
-                        Google
-                      </label>
+                    <GoogleOAuthProvider clientId={clientId}>
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.log('Login Failed');
+              }}
+            />
+          </GoogleOAuthProvider>
                     </div>
                   </>
                 )}
