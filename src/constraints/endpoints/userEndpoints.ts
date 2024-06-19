@@ -7,5 +7,5 @@ export const userEndpoints = {
     resendOtp: `${API_GATEWAY_BASE_URL}/resend-otp`,
     login: `${API_GATEWAY_BASE_URL}/login`,
 
-
+    getUser: `${API_GATEWAY_BASE_URL}/getalluser`
 }

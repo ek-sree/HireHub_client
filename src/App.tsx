@@ -3,6 +3,7 @@ import UserRoute from "./routes/userRoute";
 import RecruiterRouter from "./routes/recruiterRouter";
 import AdminRouter from "./routes/adminRouter";
 
+
 function App() {
   return (
     <Routes>
