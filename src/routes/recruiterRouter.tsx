@@ -9,12 +9,12 @@ import SignupPage from '../pages/User/SignupPage'
 const RecruiterRouter = () => {
   return (
     <Routes>
-        <Route element={<PrivateRouter/>}>
-            <Route path='/home' element={<HomePage/>}/>
-        </Route>
         <Route element={<PublicRouter/>}>
             <Route path='/' element={<LoginPage/>}/>
             <Route path='/signup' element={<SignupPage/>}/>
+        </Route>
+        <Route element={<PrivateRouter/>}>
+            <Route path='/home' element={<HomePage/>}/>
         </Route>
     </Routes>
   )

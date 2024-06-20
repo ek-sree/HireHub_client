@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from './Navbar';
-import { userAxios } from '../../../constraints/axios/userAxios';
-import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
-import { toast } from 'sonner';
-import Sidebar from './SideBar';
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import Navbar from "./Navbar";
+import Sidebar from "./SideBar";
+import { recruiterAxios } from "../../../constraints/axios/recruiterAxios";
+import { recruiterEndpoints } from "../../../constraints/endpoints/recruiterEndpoints";
 
-interface IUser {
+interface IRecruiter {
     _id: string;
     name: string;
     email: string;
@@ -13,18 +13,18 @@ interface IUser {
     isBlocked: boolean;
 }
 
-const UserManagement: React.FC = () => {
-    const [users, setUsers] = useState<IUser[]>([]);
+const RecruiterManagement = () => {
+    const [recruiters, setRecruiters] = useState<IRecruiter[]>([]);
 
     const getAllUsers = async () => {
         try {
-            const response = await userAxios.get(userEndpoints.getUser);
+            const response = await recruiterAxios.get(recruiterEndpoints.getrecruiters);
             console.log("Response from API:", response);
 
             if (response.data.success === false) {
                 toast.error(response.data.message);
             } else {
-                setUsers(response.data.user_data || []);
+                setRecruiters(response.data.recruiter_data || []);
             }
         } catch (error) {
             console.log("Error occurred fetching all users", error);
@@ -41,11 +41,11 @@ const UserManagement: React.FC = () => {
             <Navbar />
             <Sidebar />
             <div className="container mx-auto mt-20 px-4">
-                <h2 className="text-2xl font-bold text-center mb-8">User Management</h2>
+                <h2 className="text-2xl font-bold text-center mb-8">Recruiter Management</h2>
                 <div className="flex justify-center">
                     <div className="w-full max-w-4xl">
-                        {users.length === 0 ? (
-                            <p className="text-center text-gray-600">No users found.</p>
+                        {recruiters.length === 0 ? (
+                            <p className="text-center text-gray-600">No recruiter found.</p>
                         ) : (
                             <div className="overflow-x-auto bg-white shadow-md rounded-lg">
                                 <table className="min-w-full bg-white">
@@ -59,18 +59,18 @@ const UserManagement: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="text-gray-600 text-sm font-light">
-                                        {users.map((user) => (
-                                            <tr key={user._id} className="border-b border-gray-200 hover:bg-gray-100">
-                                                <td className="py-3 px-6 text-left whitespace-nowrap">{user.name}</td>
-                                                <td className="py-3 px-6 text-left">{user.email}</td>
-                                                <td className="py-3 px-6 text-left">{user.phone ? user.phone : "not found"}</td>
-                                                <td className="py-3 px-6 text-left">{user.isBlocked ? 'Blocked' : 'Active'}</td>
+                                        {recruiters.map((recruiter) => (
+                                            <tr key={recruiter._id} className="border-b border-gray-200 hover:bg-gray-100">
+                                                <td className="py-3 px-6 text-left whitespace-nowrap">{recruiter.name}</td>
+                                                <td className="py-3 px-6 text-left">{recruiter.email}</td>
+                                                <td className="py-3 px-6 text-left">{recruiter.phone ? recruiter.phone : "not found"}</td>
+                                                <td className="py-3 px-6 text-left">{recruiter.isBlocked ? 'Blocked' : 'Active'}</td>
                                                 <td className="py-3 px-6 text-left">
                                                     <button
-                                                        className={`py-2 px-4 rounded ${user.isBlocked ? 'bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold' : 'bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold'}`}
-                                                        // onClick={() => toggleBlockStatus(user._id)}
+                                                        className={`py-2 px-4 rounded ${recruiter.isBlocked ? 'bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold' : 'bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold'}`}
+                                                        // onClick={() => toggleBlockStatus(recruiter._id)}
                                                     >
-                                                        {user.isBlocked ? 'Unblock' : 'Block'}
+                                                        {recruiter.isBlocked ? 'Unblock' : 'Block'}
                                                     </button>
                                                 </td>
                                             </tr>
@@ -86,4 +86,4 @@ const UserManagement: React.FC = () => {
     );
 };
 
-export default UserManagement;
+export default RecruiterManagement;

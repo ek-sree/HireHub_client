@@ -3,6 +3,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import userAuthSlice from '../slice/UserSlice';
 import recruiterAuthSlice from '../slice/RecruiterSlice';
+import adminAuthSlice from '../slice/AdminSlice';
 
 const persistConfiguration = {
     key: 'root',
@@ -12,7 +13,8 @@ const persistConfiguration = {
 
 const rootReducer = combineReducers({
     UserAuth: userAuthSlice.reducer,
-    RecruiterAuth: recruiterAuthSlice.reducer 
+    RecruiterAuth: recruiterAuthSlice.reducer, 
+    AdminAuth: adminAuthSlice.reducer
 })
 
 const persistedReducer = persistReducer(persistConfiguration, rootReducer);

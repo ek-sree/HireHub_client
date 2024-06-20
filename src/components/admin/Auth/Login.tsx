@@ -1,10 +1,12 @@
 import HireHub from '../../../assets/images/HireHub.png';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Toaster, toast } from 'sonner';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { adminAxios } from '../../../constraints/axios/adminAxios';
 import { adminEndpoints } from '../../../constraints/endpoints/adminEndpoints';
+import { useDispatch } from 'react-redux';
+import { login } from '../../../redux/slice/AdminSlice';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required("Email is required"),
@@ -18,7 +20,7 @@ const initialValues = {
 
 function Login() {
   const navigate = useNavigate();
-  
+  const dispatch = useDispatch()
 
   const onSubmit = async (values: typeof initialValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
@@ -28,10 +30,11 @@ function Login() {
       console.log("Success logging", response);
 
       if (response.data.success && response.data.isRecruiter === null) {
-        console.log("Dispatching user login");
+        console.log("Dispatching admin login",response);
+        dispatch(login(response.data.adminData));
         navigate('/admin/dashboard');
       } else {
-        toast.error("Email or password incorrect");
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log('Error logging in', error);
@@ -98,9 +101,6 @@ function Login() {
               </Form>
             )}
           </Formik>
-          <div className='mb-3'>
-            <label className='pl-20 text-sm'>Don't have an account? <Link to='/signup' className='text-blue-300'>Click here</Link></label>
-          </div>
         </div>
       </div>
       <Toaster position="top-center" expand={false} richColors />
