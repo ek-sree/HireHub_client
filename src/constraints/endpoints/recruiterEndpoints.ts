@@ -5,6 +5,7 @@ export const recruiterEndpoints = {
     otp: `${API_GATEWAY_BASE_URL}/otp`,
     resendOtp: `${API_GATEWAY_BASE_URL}/resend-otp`,
     login: `${API_GATEWAY_BASE_URL}/login`,
+    logout: `${API_GATEWAY_BASE_URL}/logout`,
 
     getrecruiters: `${API_GATEWAY_BASE_URL}/getrecruiters`
 }

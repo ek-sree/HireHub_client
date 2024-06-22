@@ -46,6 +46,8 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
     },
     validate,
     onSubmit: async (values) => {
+      console.log("Otp is sending");
+      
         try {
             const otp = values.otp.join("")
             const response = await axiosInstance.post(endpoint.otp,{otp})

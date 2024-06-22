@@ -5,15 +5,23 @@ import searchLogo from '../../../assets/images/searchLogo.webp'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/slice/RecruiterSlice';
+import { recruiterAxios } from '../../../constraints/axios/recruiterAxios';
+import { recruiterEndpoints } from '../../../constraints/endpoints/recruiterEndpoints';
+import { toast } from 'sonner';
 
 function Navbar() {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const handleLogout=()=>{
-    dispatch(logout())
-    navigate('/')
+  const handleLogout= async()=>{
+    const respose = await recruiterAxios.post(recruiterEndpoints.logout);
+    if(respose.data.success){
+      dispatch(logout())
+      navigate('/')
+    }else{
+      toast("Something happened, please try again later");
+    }
   }
 
   return (

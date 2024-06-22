@@ -1,11 +1,17 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store/store";
+
 import { Navigate, Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const PublicRouter = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.UserAuth.isAuthenticated);
+console.log('uhnyhn');
+const role = Cookies.get('role');
+if(role==="user"){
+  return  <Navigate to="/home" replace /> ;
+}else if(role == 'recruiter'){
+  return  <Navigate to="/recruiter/home" replace /> ;
 
-  return isAuthenticated ? <Navigate to="/home" replace /> : <Outlet />;
+}
+return <Outlet/>
 };
 
 export default PublicRouter;

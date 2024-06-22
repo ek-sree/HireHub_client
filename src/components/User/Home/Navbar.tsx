@@ -5,15 +5,25 @@ import searchLogo from '../../../assets/images/searchLogo.webp'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/slice/UserSlice';
+import { userAxios } from '../../../constraints/axios/userAxios';
+import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
+import { toast } from 'sonner';
 
 function Navbar() {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const handleLogout=()=>{
-    dispatch(logout())
-    navigate('/')
+  const handleLogout= async ()=>{
+
+    const response = await userAxios.post(userEndpoints.logout);
+    console.log("response for logout", response);
+    if(response.data.success){
+      dispatch(logout())
+      navigate('/')
+    }else{
+      toast.error("Error occured ,Please try again!!");
+    }
   }
 
   return (
