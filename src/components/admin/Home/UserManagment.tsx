@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { userAxios } from '../../../constraints/axios/userAxios';
-import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import { toast } from 'sonner';
 import Sidebar from './SideBar';
+import { adminAxios } from '../../../constraints/axios/adminAxios';
+import { adminEndpoints } from '../../../constraints/endpoints/adminEndpoints';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
 
 interface IUser {
     _id: string;
@@ -15,10 +17,15 @@ interface IUser {
 
 const UserManagement: React.FC = () => {
     const [users, setUsers] = useState<IUser[]>([]);
+    const token  = useSelector((state: RootState) => state.AdminAuth.token);
 
     const getAllUsers = async () => {
         try {
-            const response = await userAxios.get(userEndpoints.getUser);
+            const response = await adminAxios.get(adminEndpoints.getUser, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             console.log("Response from API:", response);
 
             if (response.data.success === false) {
@@ -31,6 +38,21 @@ const UserManagement: React.FC = () => {
             toast.error("An error occurred, please try again later!!");
         }
     };
+
+    const blockUser = async (userId: string) => {
+        try {
+            const response = await adminAxios.put(`${adminEndpoints.blockUser}/${userId}`,{}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            console.log("response of block user",response);
+            
+        } catch (error) {
+            console.log("Error occurred blocking users", error);
+            toast.error("An error occurred, please try again later!!");
+        }
+    }
 
     useEffect(() => {
         getAllUsers();
@@ -68,7 +90,7 @@ const UserManagement: React.FC = () => {
                                                 <td className="py-3 px-6 text-left">
                                                     <button
                                                         className={`py-2 px-4 rounded ${user.isBlocked ? 'bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold' : 'bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold'}`}
-                                                        // onClick={() => toggleBlockStatus(user._id)}
+                                                        onClick={() => blockUser(user._id)}
                                                     >
                                                         {user.isBlocked ? 'Unblock' : 'Block'}
                                                     </button>

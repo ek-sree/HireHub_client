@@ -7,5 +7,5 @@ export const recruiterEndpoints = {
     login: `${API_GATEWAY_BASE_URL}/login`,
     logout: `${API_GATEWAY_BASE_URL}/logout`,
 
-    getrecruiters: `${API_GATEWAY_BASE_URL}/getrecruiters`
+    
 }

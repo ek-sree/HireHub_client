@@ -31,7 +31,7 @@ function Login() {
 
       if (response.data.success && response.data.isRecruiter === null) {
         console.log("Dispatching admin login",response);
-        dispatch(login(response.data.adminData));
+        dispatch(login({token:response.data.token, adminData:response.data.admin_data}));
         navigate('/admin/dashboard');
       } else {
         toast.error(response.data.message);

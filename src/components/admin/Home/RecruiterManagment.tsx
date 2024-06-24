@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Navbar from "./Navbar";
 import Sidebar from "./SideBar";
-import { recruiterAxios } from "../../../constraints/axios/recruiterAxios";
-import { recruiterEndpoints } from "../../../constraints/endpoints/recruiterEndpoints";
+import { adminAxios } from "../../../constraints/axios/adminAxios";
+import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store/store";
 
 interface IRecruiter {
     _id: string;
@@ -15,10 +17,14 @@ interface IRecruiter {
 
 const RecruiterManagement = () => {
     const [recruiters, setRecruiters] = useState<IRecruiter[]>([]);
-
+    const token = useSelector((state: RootState)=>state.AdminAuth.token);
     const getAllUsers = async () => {
         try {
-            const response = await recruiterAxios.get(recruiterEndpoints.getrecruiters);
+            const response = await adminAxios.get(adminEndpoints.getrecruiters, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             console.log("Response from API:", response);
 
             if (response.data.success === false) {
