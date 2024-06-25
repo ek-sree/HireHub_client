@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { toast } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import Sidebar from './SideBar';
 import { adminAxios } from '../../../constraints/axios/adminAxios';
 import { adminEndpoints } from '../../../constraints/endpoints/adminEndpoints';
@@ -47,6 +47,14 @@ const UserManagement: React.FC = () => {
                 }
             })
             console.log("response of block user",response);
+            if(response.data.success === true){
+                setUsers(prevUsers =>
+                    prevUsers.map(user=>
+                        user._id === userId ? {...user, isBlocked: !user.isBlocked} : user
+                    )
+                );
+                toast.success(response.data.message)
+            }
             
         } catch (error) {
             console.log("Error occurred blocking users", error);
@@ -57,11 +65,11 @@ const UserManagement: React.FC = () => {
     useEffect(() => {
         getAllUsers();
     }, []);
-
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />
             <Sidebar />
+            <Toaster position="top-center" expand={false} richColors />
             <div className="container mx-auto mt-20 px-4">
                 <h2 className="text-2xl font-bold text-center mb-8">User Management</h2>
                 <div className="flex justify-center">

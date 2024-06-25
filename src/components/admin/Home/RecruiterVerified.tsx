@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
-import Navbar from "./Navbar";
-import Sidebar from "./SideBar";
 import { adminAxios } from "../../../constraints/axios/adminAxios";
 import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
 import { useSelector } from "react-redux";
@@ -15,7 +13,7 @@ interface IRecruiter {
     isBlocked: boolean;
 }
 
-const RecruiterManagement = () => {
+const RecruiterVerified = () => {
     const [recruiters, setRecruiters] = useState<IRecruiter[]>([]);
     const token = useSelector((state: RootState)=>state.AdminAuth.token);
     const getAllRecruiter = async () => {
@@ -38,27 +36,7 @@ const RecruiterManagement = () => {
         }
     };
 
-    const blockRecruiter = async (recruitersId: string) =>{
-        try {
-            const response = await adminAxios.put(`${adminEndpoints.blockRecruiter}/${recruitersId}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log("response of recruiter blocked data",response);
-            if(response.data.success=== true){
-                setRecruiters(prevRecruiter =>
-                    prevRecruiter.map(recruiter =>
-                        recruiter._id === recruitersId ? {...recruiter, isBlocked: !recruiter.isBlocked} : recruiter
-                    )
-                )
-                toast.success(response.data.message)
-            }
-        } catch (error) {
-            console.log("Error occurred blocking users", error);
-            toast.error("An error occurred, please try again later!!");
-        }
-    }
+   
 
     useEffect(() => {
         getAllRecruiter();
@@ -66,8 +44,6 @@ const RecruiterManagement = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <Navbar />
-            <Sidebar />
             <Toaster position="top-center" expand={false} richColors />
             <div className="container mx-auto mt-20 px-4">
                 <h2 className="text-2xl font-bold text-center mb-8">Recruiter Management</h2>
@@ -83,8 +59,7 @@ const RecruiterManagement = () => {
                                             <th className="py-3 px-6 text-left">Name</th>
                                             <th className="py-3 px-6 text-left">Email</th>
                                             <th className="py-3 px-6 text-left">Phone</th>
-                                            <th className="py-3 px-6 text-left">Status</th>
-                                            <th className="py-3 px-6 text-left">Action</th>
+                                            <th className="py-3 px-6 text-left pl-32">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody className="text-gray-600 text-sm font-light">
@@ -93,14 +68,17 @@ const RecruiterManagement = () => {
                                                 <td className="py-3 px-6 text-left whitespace-nowrap">{recruiter.name}</td>
                                                 <td className="py-3 px-6 text-left">{recruiter.email}</td>
                                                 <td className="py-3 px-6 text-left">{recruiter.phone ? recruiter.phone : "not found"}</td>
-                                                <td className="py-3 px-6 text-left">{recruiter.isBlocked ? 'Blocked' : 'Active'}</td>
                                                 <td className="py-3 px-6 text-left">
                                                     <button
-                                                        className={`py-2 px-4 rounded ${recruiter.isBlocked ? 'bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold' : 'bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold'}`}
-                                                        onClick={() => blockRecruiter(recruiter._id)}
+                                                        className="py-2 px-4 rounded bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold"
+                                                        // onClick={() => isVerified(recruiter._id)}
                                                     >
-                                                        {recruiter.isBlocked ? 'Unblock' : 'Block'}
-                                                    </button>
+                                                   isVerified </button>
+                                                   <button
+                                                        className="ml-16 py-2 px-4 rounded bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold"
+                                                        // onClick={() => isRejected(recruiter._id)}
+>
+                                                   Reject </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -115,4 +93,4 @@ const RecruiterManagement = () => {
     );
 };
 
-export default RecruiterManagement;
+export default RecruiterVerified;

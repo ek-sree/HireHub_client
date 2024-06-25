@@ -2,7 +2,7 @@ import React, { useState } from 'react'; // Import React
 import { Avatar, Box, FormControlLabel, FormGroup, Switch } from '@mui/material';
 import HireHubLogo from '../../../assets/images/HireHub.png';
 import notificationLogo from '../../../assets/images/notificationLogo.jpg';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/slice/AdminSlice';
 
@@ -53,11 +53,13 @@ function Navbar() {
         </FormGroup>
       </Box>
       <div className='flex items-center'>
+        <Link to='/admin/recruiterVerified'>
         <img
           src={notificationLogo}
           alt="notification-logo"
           className="max-w-full h-auto rounded-3xl w-8 mr-8"
-        />
+          />
+          </Link>
         <Avatar src="/broken-image.jpg" className='mr-5' />
       </div>
     </div>

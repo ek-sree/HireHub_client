@@ -5,5 +5,7 @@
      adminlogin: `${API_GATEWAY_BASE_URL}/login`,
      getUser: `${API_GATEWAY_BASE_URL}/getalluser`,
      getrecruiters: `${API_GATEWAY_BASE_URL}/getrecruiters`,
-     blockUser: `${API_GATEWAY_BASE_URL}/blockuser`
+     blockUser: `${API_GATEWAY_BASE_URL}/blockuser`,
+     blockRecruiter: `${API_GATEWAY_BASE_URL}/blockRecruiter`
+
     }

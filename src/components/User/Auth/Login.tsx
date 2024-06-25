@@ -47,7 +47,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
   
       if (response.data.success && response.data.isRecruiter === false) {
         console.log("Dispatching user login");
-        dispatch(userlogin(response.data.user_data));
+        dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
         navigate('/home');
       } else if (response.data.success && response.data.isRecruiter === true) {
         console.log("Dispatching recruiter login");
