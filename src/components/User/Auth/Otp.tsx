@@ -53,9 +53,7 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
             const response = await axiosInstance.post(endpoint.otp,{otp})
             console.log("Send successfully", response);
             if(response.data.success && response.data.isRecruiter==false){
-              dispatch(userLogin(
-                 response.data.user_data,
-              ))
+              dispatch(userLogin({token:response.data.token, UserData:response.data.user_data}));
               navigate('/home');
             }else if(response.data.success && response.data.isRecruiter==true){
               dispatch(recruiterLogin(

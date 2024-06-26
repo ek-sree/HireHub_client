@@ -5,6 +5,7 @@ interface RecruiterData {
     name: string | null;
     password: string | null;
     phone: string | null;
+    isVerified: string | null
 }
 
 interface RecruiterState {

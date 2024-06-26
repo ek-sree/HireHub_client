@@ -72,7 +72,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
       console.log('Google Login Response', response);
 
       if (response.data.success) {
-        dispatch(userlogin(response.data.user_data));
+        dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
         navigate("/home");
       } else {
         toast.error("Failed to log in with Google");

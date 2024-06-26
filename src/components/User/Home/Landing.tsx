@@ -2,6 +2,7 @@ import Navbar from './Navbar'
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { Navigate } from 'react-router-dom';
+import SidebarNav from './SidebarNav';
 
 function Landing() {
 
@@ -15,9 +16,10 @@ if(!isAuthenticated && userData?.status){
 }
 
   return (
-    <div>
+    <div className='bg-slate-100'>
         <Navbar/>
-        <p>{userData?.name}</p>
+        {/* <p>{userData?.name}</p> */}
+        <SidebarNav/>
     </div>
   )
 }

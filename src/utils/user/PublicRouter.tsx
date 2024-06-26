@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 
 const PublicRouter = () => {
   const role = Cookies.get('role');
+console.log("call");
 
   if (role === "user") {
     return <Navigate to="/home" replace />;

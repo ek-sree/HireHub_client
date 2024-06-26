@@ -5,12 +5,14 @@ import HomePage from "../pages/User/HomePage";
 import OtpPage from "../pages/User/OtpPage";
 import PrivateRouter from "../utils/user/PrivateRouter";
 import PublicRouter from "../utils/user/PublicRouter";
+import SidebarNav from "../components/User/Home/SidebarNav";
 
 const UserRoute = () => {
   return (
     <Routes>
       <Route element={<PrivateRouter />}>
         <Route path="/home" element={<HomePage />} />
+        <Route path="/sidenav" element={<SidebarNav/>}/>
       </Route>
       <Route element={<PublicRouter />}>
         <Route path="/" element={<LoginPage />} />

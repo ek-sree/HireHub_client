@@ -96,7 +96,7 @@ const RecruiterManagement = () => {
                                                 <td className="py-3 px-6 text-left">{recruiter.isBlocked ? 'Blocked' : 'Active'}</td>
                                                 <td className="py-3 px-6 text-left">
                                                     <button
-                                                        className={`py-2 px-4 rounded ${recruiter.isBlocked ? 'bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold' : 'bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold'}`}
+                                                        className={`py-2 px-4 rounded ${recruiter.isBlocked ? 'bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold' : 'bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold' }`}
                                                         onClick={() => blockRecruiter(recruiter._id)}
                                                     >
                                                         {recruiter.isBlocked ? 'Unblock' : 'Block'}

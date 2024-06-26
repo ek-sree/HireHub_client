@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Toaster, toast } from "sonner";
 import { adminAxios } from "../../../constraints/axios/adminAxios";
 import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
+import { Link } from "react-router-dom";
 
 interface IRecruiter {
     _id: string;
@@ -15,10 +16,14 @@ interface IRecruiter {
 
 const RecruiterVerified = () => {
     const [recruiters, setRecruiters] = useState<IRecruiter[]>([]);
-    const token = useSelector((state: RootState)=>state.AdminAuth.token);
-    const getAllRecruiter = async () => {
+    const [verificationChange, setVerificationChange] = useState(false);
+    const token = useSelector((state: RootState) => state.AdminAuth.token);
+
+    const getVerifiedRecruiter = useCallback(async () => {
+        console.log("call for verified");
+
         try {
-            const response = await adminAxios.get(adminEndpoints.getrecruiters, {
+            const response = await adminAxios.get(adminEndpoints.getUnVerifiedRecruiter, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -31,16 +36,32 @@ const RecruiterVerified = () => {
                 setRecruiters(response.data.recruiter_data || []);
             }
         } catch (error) {
-            console.log("Error occurred fetching all users", error);
+            console.log("Error occurred fetching all unverified recruiters", error);
             toast.error("An error occurred, please try again later!!");
         }
-    };
+    }, [token]);
 
-   
+    const isVerified = async (recruiterId: string) => {
+        try {
+            const response = await adminAxios.put(`${adminEndpoints.verifiRecruiter}/${recruiterId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("verified recruiter", response);
+            if (response.data.success) {
+                toast.success("Recruiter verified successfully");
+                setVerificationChange(!verificationChange);
+            }
+        } catch (error) {
+            console.log("Error occurred verifying recruiter", error);
+            toast.error("An error occurred, please try again later!!");
+        }
+    }
 
     useEffect(() => {
-        getAllRecruiter();
-    }, []);
+        getVerifiedRecruiter();
+    }, [getVerifiedRecruiter, verificationChange]);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -71,14 +92,16 @@ const RecruiterVerified = () => {
                                                 <td className="py-3 px-6 text-left">
                                                     <button
                                                         className="py-2 px-4 rounded bg-green-500 font-bold text-white hover:shadow-2xl hover:font-semibold"
-                                                        // onClick={() => isVerified(recruiter._id)}
+                                                        onClick={() => isVerified(recruiter._id)}
                                                     >
-                                                   isVerified </button>
-                                                   <button
+                                                        Verify
+                                                    </button>
+                                                    <button
                                                         className="ml-16 py-2 px-4 rounded bg-red-500 font-bold text-white hover:shadow-2xl hover:font-semibold"
                                                         // onClick={() => isRejected(recruiter._id)}
->
-                                                   Reject </button>
+                                                    >
+                                                        Reject
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -86,7 +109,11 @@ const RecruiterVerified = () => {
                                 </table>
                             </div>
                         )}
+                        <div className="mt-16">
+                        <Link to='/admin/dashboard' className="bg-slate-300 py-1 px-2 rounded-lg font-bold hover:bg-slate-200 hover:font-semibold"> to dashboard</Link>
                     </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>

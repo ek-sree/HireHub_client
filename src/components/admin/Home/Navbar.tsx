@@ -31,13 +31,13 @@ function Navbar() {
           className="max-w-full h-12 rounded-3xl w-16 md:w-auto"
         />
       </div>
-      <div className='flex items-center flex-grow justify-center'>
+      {/* <div className='flex items-center flex-grow justify-center'>
         <input
           type="text"
           className='border bg-slate-100 border-slate-400 rounded-lg py-1 px-16'
           placeholder="Search"
         />
-      </div>
+      </div> */}
       <Box sx={{ flexGrow: 1 }}>
         <FormGroup>
           <FormControlLabel
