@@ -3,7 +3,7 @@ import AddPhotoAlternateTwoToneIcon from '@mui/icons-material/AddPhotoAlternateT
 const Postbar = () => {
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white mt-6 p-4 rounded-lg shadow-lg">
+      <div className="bg-slate-100 mt-6 p-4 rounded-lg shadow-lg">
         <textarea
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           placeholder="What's on your mind?"

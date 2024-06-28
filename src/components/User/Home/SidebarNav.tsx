@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 
 const SidebarNav = () => {
   return (
-    <div className="fixed top-96 left-0 w-44 h- ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
+    <div className="fixed top-96 left-0 w-72 h- ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
       <NavLink
         to="/home"
         className={({ isActive }) =>
@@ -31,7 +31,7 @@ const SidebarNav = () => {
         <span>Profile</span>
       </NavLink>
       <NavLink
-        to="/work"
+        to="/jobposts"
         className={({ isActive }) =>
           isActive
             ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'

@@ -11,6 +11,7 @@ import Postbar from "../components/User/Home/Postbar";
 import Post from "../components/User/Home/Post";
 import FriendSuggestion from "../components/User/Home/FriendSuggestion";
 import UserProfilePage from "../pages/User/UserProfilePage";
+import JobPostUserPage from "../pages/User/JobPostUserPage";
 
 const UserRoute = () => {
   return (
@@ -23,6 +24,7 @@ const UserRoute = () => {
         <Route path="/posts" element={<Post/>} />
         <Route path="/friendSuggestion" element={<FriendSuggestion/>}/>
         <Route path="/userprofile" element={<UserProfilePage/>}/>
+        <Route path="/jobposts" element={<JobPostUserPage/>}/>
       </Route>
       <Route element={<PublicRouter />}>
         <Route path="/" element={<LoginPage />} />

@@ -1,3 +1,4 @@
+import FriendSuggestion from "../../components/User/Home/FriendSuggestion";
 import Navbar from "../../components/User/Home/Navbar"
 import Postbar from "../../components/User/Home/Postbar";
 import SidebarNav from "../../components/User/Home/SidebarNav"
@@ -9,12 +10,13 @@ const UserProfilePage = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-slate-100">
+      <div className="">
         <SidebarNav />
         <UserProfile />
         <Postbar/>
         <UserSkills/>
         <UserPost/>
+        <FriendSuggestion/>
       </div>
     </>
   );

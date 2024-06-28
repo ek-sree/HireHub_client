@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import EditDetails from './EditDetails';
+import EditDetails from './EditDetailsModal';
 
 interface UserProfileDetailsProps {
   initialName: string;
@@ -23,7 +23,7 @@ const UserProfileDetails: React.FC<UserProfileDetailsProps> = ({ initialName }) 
   return (
     <div className="mt-36 ml-56 flex flex-col">
       <div className="flex items-center justify-between mb-4 text-center">
-        <span className="font-semibold text-[50px] text-slate-500 text-center">{name}</span>
+        <span className="font-semibold text-[50px] text-slate-500 text-center">Sreehari E K</span>
         <button
           className="bg-cyan-300 py-2 px-4 rounded-lg text-white font-semibold inline-block"
           onClick={handleOpenModal}

@@ -57,7 +57,7 @@ function Navbar() {
         />
       </div>
       <div className='relative flex items-center flex-grow justify-center'>
-        <SearchTwoToneIcon className="absolute right-[360px] text-gray-500" />
+        <SearchTwoToneIcon className="absolute right-[500px] text-gray-500" />
         <input
           type="text"
           className='border bg-slate-100 border-slate-400 rounded-lg py-1 pl-10 pr-16 focus:outline-none'

@@ -20,7 +20,7 @@ function Landing() {
   }
 
   return (
-    <div className='bg-slate-200'>
+    <div className=''>
       <Navbar/>
       <div className=''>
         <Postbar/>
