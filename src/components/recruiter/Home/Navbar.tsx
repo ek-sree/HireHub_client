@@ -1,7 +1,6 @@
 import { Avatar } from '@mui/material';
 import HireHubLogo from '../../../assets/images/HireHub.png';
 import notificationLogo from '../../../assets/images/notificationLogo.jpg';
-import searchLogo from '../../../assets/images/searchLogo.webp'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/slice/RecruiterSlice';
@@ -39,8 +38,8 @@ function Navbar() {
           className='border bg-slate-100 border-slate-400 rounded-lg py-1 px-16'
           placeholder="Search"
         />
-        <div className='border border-black'>
-            <img src={searchLogo} alt="search-logo" className='h-8'/>
+        <div className='ml-28 font-medium hover:underline hover:cursor-pointer'> 
+          Home
         </div>
       </div>
       <div className='mr-9' onClick={handleLogout}>Logout</div>

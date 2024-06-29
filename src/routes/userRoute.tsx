@@ -12,6 +12,9 @@ import Post from "../components/User/Home/Post";
 import FriendSuggestion from "../components/User/Home/FriendSuggestion";
 import UserProfilePage from "../pages/User/UserProfilePage";
 import JobPostUserPage from "../pages/User/JobPostUserPage";
+import CV from "../components/User/Home/CV";
+import UserPost from "../components/User/Home/UserPost";
+import UserSkills from "../components/User/Home/UserSkills";
 
 const UserRoute = () => {
   return (
@@ -25,6 +28,9 @@ const UserRoute = () => {
         <Route path="/friendSuggestion" element={<FriendSuggestion/>}/>
         <Route path="/userprofile" element={<UserProfilePage/>}/>
         <Route path="/jobposts" element={<JobPostUserPage/>}/>
+        <Route path="/userprofile/user-resume" element={<CV/>}/>
+        <Route path="/userprofile/user-post" element={<UserPost/>}/>
+        <Route path="/userprofile/user-skills" element={<UserSkills/>}/>
       </Route>
       <Route element={<PublicRouter />}>
         <Route path="/" element={<LoginPage />} />

@@ -2,10 +2,14 @@ import User from '../../../assets/images/user.png';
 import HireHub from '../../../assets/images/HireHub.png';
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
+import ProfileSideNav from './ProfileSideNav';
+import SidebarNav from './SidebarNav';
 
 const UserPost = () => {
   return (
     <div className="max-w-2xl mx-auto mt-10 mb-10">
+        <ProfileSideNav/>
+        <SidebarNav/>
         <div className="bg-white rounded-lg shadow-lg p-4">
             <div className='flex items-center mb-4'>
                 <img src={User} alt="userprofile" className='rounded-full w-11 h-11 border-4 border-gray-100'/>

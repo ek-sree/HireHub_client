@@ -5,6 +5,7 @@ import LoginPage from '../pages/User/LoginPage'
 import SignupPage from '../pages/User/SignupPage'
 import PublicRouter from '../utils/user/PublicRouter'
 import OtpPage from '../pages/User/OtpPage'
+import ViewApplications from '../components/recruiter/Home/ViewApplications'
 
 
 const RecruiterRouter = () => {
@@ -17,6 +18,7 @@ const RecruiterRouter = () => {
         </Route>
         <Route element={<PrivateRouter/>}>
             <Route path='/home' element={<HomePage/>}/>
+            <Route path='/viewapplication' element={<ViewApplications/>}/>
         </Route>
     </Routes>
   )

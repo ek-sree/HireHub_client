@@ -1,6 +1,11 @@
+import ProfileSideNav from "./ProfileSideNav";
+import SidebarNav from "./SidebarNav";
+
 const UserSkills = () => {
     return (
       <div className="max-w-2xl mx-auto mb-8 bg-white mt-10 p-4 rounded-lg shadow-lg">
+        <ProfileSideNav/>
+        <SidebarNav/>
         <div className="text-center font-semibold font-sans">
           UserSkills
         </div>
