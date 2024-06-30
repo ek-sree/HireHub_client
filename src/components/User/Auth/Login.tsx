@@ -51,7 +51,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
         navigate('/home');
       } else if (response.data.success && response.data.isRecruiter === true) {
         console.log("Dispatching recruiter login");
-        dispatch(recruiterlogin(response.data.recruiter_data));
+        dispatch(recruiterlogin({token:response.data.token,RecruiterData:response.data.recruiter_data}));
         navigate('/recruiter/home');
       } else {
         toast.error(response.data.message);

@@ -10,11 +10,13 @@ interface RecruiterData {
 
 interface RecruiterState {
     isAuthenticated: boolean;
+    token: string| null;
     recruiterData: RecruiterData | null;
 }
 
 const initialState: RecruiterState = {
     isAuthenticated: false,
+    token: null,
     recruiterData: null
 }
 
@@ -22,10 +24,11 @@ const recruiterAuthSlice = createSlice({
     name: "RecruiterAuth",
     initialState,
     reducers: {
-        login: (state, action: PayloadAction<RecruiterData>) => {
+        login: (state, action: PayloadAction<{token:string,RecruiterData:RecruiterData}>) => {
             console.log("Redux recruiter Slice: ", action.payload);
             state.isAuthenticated = true;
-            state.recruiterData = action.payload;
+            state.token = action.payload.token;
+            state.recruiterData = action.payload.RecruiterData;
         },
         logout: (state) => {
             state.isAuthenticated = false;

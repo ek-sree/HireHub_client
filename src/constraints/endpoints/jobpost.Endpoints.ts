@@ -1,0 +1,5 @@
+export const API_GATEWAY_BASE_URL = 'http://localhost:4000/recruiter/jobpost';
+
+export const jobpostEndpoints = {
+    addjob: `${API_GATEWAY_BASE_URL}/addjob`
+}
