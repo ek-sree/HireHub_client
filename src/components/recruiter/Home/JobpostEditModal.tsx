@@ -1,20 +1,33 @@
-import { FC, FormEvent, useState } from 'react';
+import { FC, FormEvent, useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
+import { Job } from '../../../interface/JobInterfaces/IJobInterface';
+import { jobpostAxios } from '../../../constraints/axios/jobpostAxios';
+import { jobpostEndpoints } from '../../../constraints/endpoints/jobpost.Endpoints';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
 
 interface JobpostEditModalProps {
   isOpen: boolean;
   onClose: () => void;
+  job: Job | null;
+  onUpdateJobList: (updatedJob: Job) => void;
 }
 
 const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"];
 const employmentTypes = ["Remote", "On-site", "Hybrid"];
+const hardcodedSkills = ['javascript', 'react', 'docker', 'typescript', 'nodejs', 'mongodb', 'python'];
 
-const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose }) => {
+const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onUpdateJobList }) => {
   const [position, setPosition] = useState('');
   const [place, setPlace] = useState('');
   const [jobType, setJobType] = useState<string[]>([]);
   const [employmentType, setEmploymentType] = useState<string[]>([]);
-  const [skills, setSkills] = useState('');
+  const [skills, setSkills] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState('');
+  const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
+  const [jobId, setJobId] = useState('');
+
+  const token = useSelector((store: RootState) => store.RecruiterAuth.token);
 
   const [errors, setErrors] = useState({
     position: '',
@@ -23,6 +36,17 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose }) => {
     employmentType: '',
     skills: ''
   });
+
+  useEffect(() => {
+    if (job) {
+      setJobId(job._id);
+      setPosition(job.position);
+      setPlace(job.place);
+      setJobType(job.jobType);
+      setEmploymentType(job.employmentType);
+      setSkills(job.skills);
+    }
+  }, [job]);
 
   const handleCheckboxChange = (setState: React.Dispatch<React.SetStateAction<string[]>>, value: string) => {
     setState(prev => {
@@ -34,7 +58,35 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose }) => {
     });
   };
 
-  const handleSubmit = (e: FormEvent) => {
+ 
+  const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSkillInput(value);
+    if (value) {
+      const filtered = hardcodedSkills.filter(skill =>
+        skill.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSkills(filtered);
+    } else {
+      setFilteredSkills([]);
+    }
+  };
+
+  
+  const handleSkillSelect = (skill: string) => {
+    if (!skills.includes(skill)) {
+      setSkills([...skills, skill]);
+    }
+    setSkillInput('');
+    setFilteredSkills([]);
+  };
+
+  
+  const handleRemoveSkill = (skill: string) => {
+    setSkills(skills.filter(s => s !== skill));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const newErrors = {
@@ -42,7 +94,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose }) => {
       place: place ? '' : 'Please fill the place',
       jobType: jobType.length > 0 ? '' : 'Please select at least one job type',
       employmentType: employmentType.length > 0 ? '' : 'Please select at least one employment type',
-      skills: skills ? '' : 'Please fill at least one skill'
+      skills: skills.length > 0 ? '' : 'Please add at least one skill'
     };
 
     setErrors(newErrors);
@@ -54,8 +106,33 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    toast.success('Job post updated successfully.');
-    onClose();
+    const upperCase = place.toUpperCase();
+
+    const data = {
+      position,
+      place: upperCase,
+      jobType,
+      employmentType,
+      skills,
+    };
+
+    try {
+      const response = await jobpostAxios.post(`${jobpostEndpoints.editJobs}?jobId=${jobId}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.data.success) {
+        toast.success('Job post updated successfully.');
+        onUpdateJobList(response.data.job);
+        onClose();
+      } else {
+        toast.error('Failed to update the job post.');
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating the job post.');
+      console.error('Error updating job:', error);
+    }
   };
 
   if (!isOpen) return null;
@@ -124,15 +201,40 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose }) => {
             <input
               type="text"
               className="w-full p-2 border border-gray-300 rounded mt-1"
-              value={skills}
-              onChange={(e) => setSkills(e.target.value)}
+              value={skillInput} 
+              onChange={handleSkillsChange} 
             />
+            {filteredSkills.length > 0 && (
+              <ul className="border border-gray-300 mt-1 rounded max-h-40 overflow-y-auto">
+                {filteredSkills.map((skill) => (
+                  <li
+                    key={skill}
+                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                    onClick={() => handleSkillSelect(skill)} 
+                  >
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="mt-2 flex flex-wrap">
+              {skills.map((skill) => (
+                <div key={skill} className="flex items-center bg-gray-200 px-2 py-1 rounded-full mr-2 mb-2">
+                  <span>{skill}</span>
+                  <button
+                    type="button"
+                    className="ml-2 text-red-500 hover:text-red-700"
+                    onClick={() => handleRemoveSkill(skill)} 
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
             {errors.skills && <div className="text-red-500 text-xs">{errors.skills}</div>}
           </div>
           <div className="flex justify-end mt-6">
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-              Save Changes
-            </button>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Update Job Post</button>
           </div>
         </form>
       </div>

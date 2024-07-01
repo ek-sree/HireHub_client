@@ -5,16 +5,27 @@ import { jobpostEndpoints } from "../../../constraints/endpoints/jobpost.Endpoin
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 
+interface Job {
+    _id: string;
+    position: string;
+    place: string;
+    jobType: string[];
+    employmentType: string[];
+    skills: string[];
+    companyName: string;
+  }
+
 interface NewJobAddModalProps {
     isNewJobModal: boolean;
     onClose: () => void;
+    addJobList:(job:Job) => void;
 }
 
 const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Internship'];
 const employmentTypes = ["Remote", 'On-site', 'Hybrid'];
-const hardcodedSkills = ['javascript', 'react', 'docker', 'typescript'];
+const hardcodedSkills = ['javascript', 'react', 'docker', 'typescript','nodejs','mongodb','python'];
 
-const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose }) => {
+const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList }) => {
 
     const [position, setPosition] = useState('');
     const [place, setPlace] = useState('');
@@ -25,6 +36,11 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose }) => {
     const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
 
     const token = useSelector((state: RootState) => state.RecruiterAuth.token);
+    const recruiterId = useSelector((state: RootState)=>state.RecruiterAuth.recruiterData?._id)
+    const companyName = useSelector((state: RootState)=> state.RecruiterAuth.recruiterData?.companyName);
+
+    console.log("COmpamny name nd recr id", recruiterId, companyName);
+    
 
     const [errors, setErrors] = useState({
         position: '',
@@ -89,12 +105,16 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose }) => {
             return;
         }
 
+        const upperCase = place.toUpperCase()
+
         const data = {
             position,
-            place,
+            place:upperCase,
             jobType,
             employmentType,
-            skills
+            skills,
+            companyName,
+            recruiterId
         };
 
         try {
@@ -106,9 +126,11 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose }) => {
                 }
             });
             console.log("response add job", response);
-
-            toast.success("Job posted successfully.");
-            onClose();
+            if(response.data.success){
+                addJobList(response.data.job);
+                toast.success("Job posted successfully.");
+                onClose();
+            }
         } catch (error) {
             toast.error("An error occurred while posting the job.");
             console.error("Error posting job:", error);

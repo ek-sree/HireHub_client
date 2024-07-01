@@ -5,6 +5,8 @@ interface RecruiterData {
     name: string | null;
     password: string | null;
     phone: string | null;
+    _id: string | null;
+    companyName: string | null;
     isVerified: string | null
 }
 

@@ -56,9 +56,7 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
               dispatch(userLogin({token:response.data.token, UserData:response.data.user_data}));
               navigate('/home');
             }else if(response.data.success && response.data.isRecruiter==true){
-              dispatch(recruiterLogin(
-                response.data.recruiter_data,
-              ))
+              dispatch(recruiterLogin({token:response.data.token,RecruiterData:response.data.recruiter_data}));
               navigate('/recruiter/home')
             }else{
               toast.error('Entered otp is incorrect.')
