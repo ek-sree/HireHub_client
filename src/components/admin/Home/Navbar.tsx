@@ -15,11 +15,8 @@ function Navbar() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAuth(event.target.checked);
-    
-    setTimeout(()=>{
       dispatch(logout());
       navigate('/admin');
-    },1000)
   };
 
   return (

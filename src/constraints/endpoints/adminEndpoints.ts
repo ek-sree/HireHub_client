@@ -8,6 +8,8 @@
      verifiRecruiter: `${API_GATEWAY_BASE_URL}/verifyRecruiter`,
      getrecruiters: `${API_GATEWAY_BASE_URL}/getrecruiters`,
      blockUser: `${API_GATEWAY_BASE_URL}/blockuser`,
-     blockRecruiter: `${API_GATEWAY_BASE_URL}/blockRecruiter`
+     blockRecruiter: `${API_GATEWAY_BASE_URL}/blockRecruiter`,
+     searchUser: `${API_GATEWAY_BASE_URL}/searchUser`,
+     searchRecruiter :`${API_GATEWAY_BASE_URL}/searchRecruiter`
 
     }

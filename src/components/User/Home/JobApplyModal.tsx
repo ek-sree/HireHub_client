@@ -1,4 +1,4 @@
-import { FC, FormEvent, useState } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Toaster, toast } from "sonner";
 import { RootState } from "../../../redux/store/store";
@@ -17,9 +17,16 @@ interface Resume {
 const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose,onSuccess }) => {
   const [resumes, setResumes] = useState<Resume[]>([{ id: 1, file: null }]);
   const [selectedResumeId, setSelectedResumeId] = useState<number | null>(1);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const email = useSelector((store: RootState)=> store.UserAuth.userData?.email) || '';
-  const phone = useSelector((store: RootState)=> store.UserAuth.userData?.phone) || '';
+  const reduxEmail = useSelector((store: RootState)=> store.UserAuth.userData?.email) || '';
+  const reduxPhone = useSelector((store: RootState)=> store.UserAuth.userData?.phone) || '';
+
+  useEffect(()=>{
+    setEmail(reduxEmail);
+    setPhone(reduxPhone);
+  },[isOpen])
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -73,11 +80,11 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose,onSuccess }) =>
         <form onSubmit={handleSubmit}>
           <div className="mb-4 mt-8">
             <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input type="text" className="w-full p-2 border border-gray-300 rounded mt-1" value={email} required />
+            <input type="text" className="w-full p-2 border border-gray-300 rounded mt-1" value={email} onChange={(e)=> setEmail(e.target.value)} required />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input type="number" className="w-full p-2 border border-gray-300 rounded mt-1" value={phone} required />
+            <input type="number" className="w-full p-2 border border-gray-300 rounded mt-1" value={phone} onChange={(e)=> setPhone(e.target.value)} required />
           </div>
           <div className="mt-8">
             <label className="block text-sm font-medium text-gray-700">Resumes</label>

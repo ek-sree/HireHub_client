@@ -108,7 +108,11 @@ const JobPostUser = () => {
           <img src={CompanyImage} alt="company image" className='h-12 rounded-full w-14 border-2 border-slate-400 shadow-lg'/>
           <span className='ml-2 text-slate-600'>{job.companyName}</span>
           </div>
-          <div className="font-normal text-lg text-slate-400 mt-5">
+          <div className="font-normal text-base text-slate-400 mt-5">
+          <div className="mt-2 mb-2 text-base flex items-center">
+              <img src={JopType} alt="JobType" className='h-4 ml-1 mr-2'/>
+              {job.position}
+            </div>
             <LocationOnRoundedIcon fontSize='small' className='pl-1 text-black mr-2 mb-1'/>
             {job.place}
             <div className="mt-2 text-base flex items-center">
