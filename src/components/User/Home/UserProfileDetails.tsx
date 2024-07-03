@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import EditDetails from './EditDetailsModal';
+import  { useState } from 'react';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import EditDetailsModal from './EditDetailsModal';
+import TitleModal from './TitleModal';
 
-interface UserProfileDetailsProps {
-  initialName: string;
-}
-const UserProfileDetails: React.FC<UserProfileDetailsProps> = ({ initialName }) => {
+
+
+const UserProfileDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [name, setName] = useState(initialName);
-    
+    const [isTitleMOdalOpen, setTitleModalOpen] = useState(false);
+    const [title, setTitle] = useState('');
+
     const handleOpenModal = () => {
         setIsModalOpen(true);
     }
@@ -15,31 +17,41 @@ const UserProfileDetails: React.FC<UserProfileDetailsProps> = ({ initialName }) 
     const handleCloseModal = () => {
         setIsModalOpen(false);
     }
-    
-    const handleSave = (newName: string) => {
-        setName(newName);
+
+    const handleTitleModal = ()=>{
+      setTitleModalOpen(true);
+    }
+
+    const handleCloseTitleModal = () => {
+      setTitleModalOpen(false);
+    }
+
+    const onTitleData = (data:string)=>{
+      setTitle(data);
     }
 
   return (
-    <div className="mt-36 ml-56 flex flex-col">
-      <div className="flex items-center justify-between mb-4 text-center">
-        <span className="font-semibold text-[50px] text-slate-500 text-center">Sreehari E K</span>
-        <button
-          className="bg-cyan-300 py-2 px-4 rounded-lg text-white font-semibold inline-block"
-          onClick={handleOpenModal}
-        >
-          Edit
-        </button>
+    <div className="mt-36 flex flex-col items-center">
+      <div className="mb-4 text-center">
+        <span className="font-semibold text-3xl text-slate-500">Sreehari E K</span>
       </div>
-      <div className="ml-6">
-        <span className="font-medium">sreeharisree105@gmail.com</span>
+      <div className="flex items-center mb-2 gap-3">
+        {!title? <div className='bg-slate-200 py-1 px-2 rounded-md shadow-md hover:cursor-pointer hover:bg-slate-300' onClick={handleTitleModal}>Add title</div> :
+        <span className="font-medium">{title}</span>}
       </div>
+        <EditRoundedIcon onClick={handleOpenModal} className="cursor-pointer mr-2" />
 
       {isModalOpen && (
-        <EditDetails
+        <EditDetailsModal
+          isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onSave={handleSave}
-          currentName={name}
+        />
+      )}
+      {isTitleMOdalOpen && (
+        <TitleModal
+        isOpen={isTitleMOdalOpen}
+        onClose={handleCloseTitleModal}
+        titleData={onTitleData}
         />
       )}
     </div>
