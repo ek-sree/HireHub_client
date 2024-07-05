@@ -1,27 +1,62 @@
-import { FC, FormEvent } from "react";
-import { Toaster } from "sonner";
+import { FC, FormEvent, useState } from "react";
+import { toast, Toaster } from "sonner";
+import { userAxios } from "../../../constraints/axios/userAxios";
+import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store/store";
 
 interface JobApplyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (data: { name: string; profileTitle: string }) => void;
+  titleValue: string;
+  nameValue: string;
 }
 
 
 
-const EditDetailsModal: FC<JobApplyModalProps> = ({ isOpen, onClose,onSuccess }) => {
+const EditDetailsModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, titleValue, nameValue }) => {
+
+  const [title, setTitle] = useState(titleValue);
+  const [name, setName] = useState(nameValue);
+  const [error, setError] = useState('')
+
+  const token = useSelector((store:RootState)=> store.UserAuth.token);
+  const email = useSelector((store: RootState)=> store.UserAuth.userData?.email);
 
 
-  const handleSubmit = (e: FormEvent) => {
+
+const data = {
+  name,
+  title
+}
+
+  const handleSubmit = async(e: FormEvent) => {
     e.preventDefault();
- 
-    onSuccess()
-    onClose()
+    setError('')
+    try {
+      if(!name){
+        setError("name must be needed");
+        return
+      }
+      console.log("gonna sent",data, email);
+      const response = await userAxios.post(`${userEndpoints.editDetails}?email=${email}`, {data}, {
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log("api response", response);
+      if(response.data.success){
+        onSuccess(response.data.details)
+        onClose()
+      }
+      else{
+        toast.error(response.data)
+      }
+    } catch (error) {
+      toast.error("Cant edit details right now , Error occured!")
+    }
   };
-
-
-
-
 
 
   if (!isOpen) return null;
@@ -36,12 +71,13 @@ const EditDetailsModal: FC<JobApplyModalProps> = ({ isOpen, onClose,onSuccess })
         <h2 className="text-xl font-bold mb-4">Edit </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4 mt-8">
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input type="text" className="w-full p-2 border border-gray-300 rounded mt-1"  required />
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" className="w-full p-2 border border-gray-300 rounded mt-1" value={name} onChange={(e)=>setName(e.target.value)} />
+            {error && <div className="text-sm text-red-500 mb-4">{error}</div>}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input type="number" className="w-full p-2 border border-gray-300 rounded mt-1"  required />
+            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <input type="text" className="w-full p-2 border border-gray-300 rounded mt-1" onChange={(e)=>setTitle(e.target.value)} value={title} placeholder= "empty"/>
           </div>
          
           <div className="flex justify-end mt-6">

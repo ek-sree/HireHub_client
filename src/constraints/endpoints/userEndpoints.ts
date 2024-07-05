@@ -7,6 +7,9 @@ export const userEndpoints = {
     resendOtp: `${API_GATEWAY_BASE_URL}/resend-otp`,
     login: `${API_GATEWAY_BASE_URL}/login`,
     logout: `${API_GATEWAY_BASE_URL}/logout`,
-    addTitle: `${API_GATEWAY_BASE_URL}/addtitle`
-    
+    addTitle: `${API_GATEWAY_BASE_URL}/addtitle`,
+    editDetails: `${API_GATEWAY_BASE_URL}/editdetails`,
+    viewDetails: `${API_GATEWAY_BASE_URL}/viewDetails`,
+    userInfo: `${API_GATEWAY_BASE_URL}/userInfo`,
+    userInfoEdit: `${API_GATEWAY_BASE_URL}/userInfoEdit`
 }
