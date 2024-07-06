@@ -11,5 +11,7 @@ export const userEndpoints = {
     editDetails: `${API_GATEWAY_BASE_URL}/editdetails`,
     viewDetails: `${API_GATEWAY_BASE_URL}/viewDetails`,
     userInfo: `${API_GATEWAY_BASE_URL}/userInfo`,
-    userInfoEdit: `${API_GATEWAY_BASE_URL}/userInfoEdit`
+    userInfoEdit: `${API_GATEWAY_BASE_URL}/userInfoEdit`,
+    userSkills: `${API_GATEWAY_BASE_URL}/userskills`,
+    userSkillsAdd: `${API_GATEWAY_BASE_URL}/addUserSkills`
 }

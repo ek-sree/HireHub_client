@@ -96,14 +96,14 @@ const InfoModal: FC<InfoModalInterface> = ({ isOpen, onClose }) => {
           <label className="flex items-center text-sm font-medium text-gray-700">Place:</label>
           <div className="flex items-center mt-1 space-x-2">
             <FmdGoodOutlinedIcon fontSize="small" />
-            <div className="p-2  rounded">{place.length!== 0? place : "Not yet added"}</div>
+            <div className="p-2  rounded">{place.length!== 0? place.join(', ') : "Not yet added"}</div>
           </div>
         </div>
         <div className="mb-4">
           <label className="flex items-center text-sm font-medium text-gray-700">Education:</label>
           <div className="flex items-center mt-1 space-x-2">
             <SchoolOutlinedIcon fontSize="small" />
-            <div className="p-2  rounded">{Education.length!== 0 ? Education : "Not yet added"}</div>
+            <div className="p-2  rounded">{Education.length!== 0 ? Education.join(', ') : "Not yet added"}</div>
           </div>
         </div>
         <div className="flex justify-end mt-6">
