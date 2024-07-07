@@ -7,9 +7,10 @@ import { RootState } from "../../../redux/store/store";
 interface SkillAddMOdal {
     isOpen: boolean;
     onClose: ()=>void;
+    onSuccess:(skills:string[])=>void;
 }
 
-const SkillAdd: FC<SkillAddMOdal> = ({isOpen, onClose}) => {
+const SkillAdd: FC<SkillAddMOdal> = ({isOpen, onClose, onSuccess}) => {
 
     const hardcodedSkills = ['javascript', 'react', 'docker', 'typescript','nodejs','mongodb','python'];
 
@@ -55,7 +56,10 @@ const SkillAdd: FC<SkillAddMOdal> = ({isOpen, onClose}) => {
                 Authorization: `Bearer ${token}`
             }
         })
+        console.log("sadasd",response.data);
+        
         if(response.data.success){
+            onSuccess(response.data.result)
             onClose();
         }
     }

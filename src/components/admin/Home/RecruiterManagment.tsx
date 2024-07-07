@@ -25,6 +25,8 @@ const RecruiterManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [defaultValue, setDefaultValue] = useState<IRecruiter[]>([]);
+  const [sortOrder, setSortOrder] = useState("A-Z");
+
   const [loading, setLoading] = useState(false);
   const token = useSelector((state: RootState) => state.AdminAuth.token);
 
@@ -111,6 +113,20 @@ const RecruiterManagement = () => {
     }
   };
 
+
+  const sortUsers = (order: string) => {
+    const sortedUsers = [...recruiters].sort((a, b) => {
+      if (order === "A-Z") {
+        return a.name.localeCompare(b.name);
+      } else if (order === "Z-A") {
+        return b.name.localeCompare(a.name);
+      }
+      return 0;
+    });
+    setRecruiters(sortedUsers);
+  };
+  
+
   useEffect(() => {
     getAllRecruiter(currentPage);
   }, [currentPage]);
@@ -162,6 +178,19 @@ const RecruiterManagement = () => {
                 placeholder="Search by name"
               />
             </div>
+            <div className="flex justify-end mb-6">
+  <select
+    value={sortOrder}
+    onChange={(e) => {
+      setSortOrder(e.target.value);
+      sortUsers(e.target.value);
+    }}
+    className="px-4 py-2 border rounded-lg"
+  >
+    <option value="A-Z">A-Z</option>
+    <option value="Z-A">Z-A</option>
+  </select>
+</div>
             {loading ? (
               <Stack sx={{ width: "100%", color: "grey.500" }} spacing={2}>
                 <LinearProgress color="secondary" />

@@ -26,9 +26,21 @@ const UserManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [defaultUser, setDefaultUser] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sortOrder, setSortOrder] = useState("A-Z");
+  const [statusFilter, setStatusFilter] = useState("All");
+
   const token = useSelector((state: RootState) => state.AdminAuth.token);
 
   const [debouncedSearchQuery] = useDebonceSearch(searchQuery, 500);
+
+  const filterUsers = (users: IUser[], status: string) => {
+    if (status === "All") {
+      return users;
+    } else {
+      const isBlocked = status === "Blocked";
+      return users.filter(user => user.isBlocked === isBlocked);
+    }
+  };
 
   const getAllUsers = async (page = 1) => {
     try {
@@ -46,9 +58,11 @@ const UserManagement: React.FC = () => {
       if (response.data.success === false) {
         toast.error(response.data.message);
       } else {
-        setUsers(response.data.user_data || []);
+        const fetchedUsers = response.data.user_data || [];
+        const filteredUsers = filterUsers(fetchedUsers, statusFilter);
+        setUsers(filteredUsers);
         setTotalPages(Math.ceil(response.data.totalUsers / 2));
-        setDefaultUser(response.data.user_data);
+        setDefaultUser(filteredUsers);
       }
     } catch (error) {
       console.log("Error occurred fetching all users", error);
@@ -100,7 +114,9 @@ const UserManagement: React.FC = () => {
       console.log("searched response", response);
 
       if (response.data.success) {
-        setUsers(response.data.users);
+        const searchedUsers = response.data.users;
+        const filteredUsers = filterUsers(searchedUsers, statusFilter);
+        setUsers(filteredUsers);
       } else {
         toast.error(response.data.message);
       }
@@ -116,11 +132,11 @@ const UserManagement: React.FC = () => {
     } else {
       setUsers(defaultUser);
     }
-  }, [debouncedSearchQuery, token]);
+  }, [debouncedSearchQuery, token, statusFilter]);
 
   useEffect(() => {
     getAllUsers(currentPage);
-  }, [currentPage]);
+  }, [currentPage, statusFilter]);
 
   const getItemProps = (index: number) => ({
     variant: currentPage === index ? "filled" : "text",
@@ -138,6 +154,18 @@ const UserManagement: React.FC = () => {
   const prev = () => {
     if (currentPage === 1) return;
     setCurrentPage(currentPage - 1);
+  };
+
+  const sortUsers = (order: string) => {
+    const sortedUsers = [...users].sort((a, b) => {
+      if (order === "A-Z") {
+        return a.name.localeCompare(b.name);
+      } else if (order === "Z-A") {
+        return b.name.localeCompare(a.name);
+      }
+      return 0;
+    });
+    setUsers(sortedUsers);
   };
 
   return (
@@ -158,6 +186,28 @@ const UserManagement: React.FC = () => {
                 className="px-4 py-2 border rounded-lg w-full max-w-md"
                 placeholder="Search by name"
               />
+            </div>
+            <div className="flex justify-end mb-6">
+              <select
+                value={sortOrder}
+                onChange={(e) => {
+                  setSortOrder(e.target.value);
+                  sortUsers(e.target.value);
+                }}
+                className="px-4 py-2 border rounded-lg mr-4"
+              >
+                <option value="A-Z">A-Z</option>
+                <option value="Z-A">Z-A</option>
+              </select>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border rounded-lg"
+              >
+                <option value="All">All</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Unblocked">Unblocked</option>
+              </select>
             </div>
             {loading ? (
               <Stack sx={{ width: '100%', color: 'grey.500' }} spacing={2}>
@@ -254,4 +304,3 @@ const UserManagement: React.FC = () => {
 };
 
 export default UserManagement;
-``
