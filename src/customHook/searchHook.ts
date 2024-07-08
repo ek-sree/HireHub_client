@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react"
 
-export const useDebonceSearch = <T>(value: T, delay:number) => {
+export const useDebonceSearch = <T>(value: T, delay: number) => {
     const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
     useEffect(() => {
-        const timeout = setTimeout(()=>{
+        const timeout = setTimeout(() => {
             setDebouncedValue(value);
         }, delay);
 
         return () => clearTimeout(timeout);
-    },[value, delay])
+    }, [value, delay]);
 
     return debouncedValue;
-}
+};

@@ -14,13 +14,17 @@ function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSticky, setIsSticky] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
         setIsSticky(true);
       } else {
-        setIsSticky(false);
+        setTimeout(()=>{
+
+          setIsSticky(false);
+        },1000)
       }
     };
 
@@ -47,6 +51,17 @@ function Navbar() {
     }
   };
 
+  const handleMouseEnter = () => {
+    setShowDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    setTimeout(()=>{
+
+      setShowDropdown(false);
+    },1000)
+  };
+
   return (
     <div className={`shadow-lg flex items-center h-20 px-5 ${isSticky ? 'sticky top-0 bg-white z-50' : ''}`}>
       <div className='w-20'>
@@ -67,9 +82,17 @@ function Navbar() {
           <img src={notificationLogo} alt="notification-logo" className="max-w-full h-auto rounded-3xl w-8" />
         </div>
       </div>
-      <div className='mr-9 cursor-pointer' onClick={handleLogout}>Logout</div>
-      <div className='flex items-center'>
-        <Avatar src="/broken-image.jpg" className='mr-5' />
+      <div
+        className='flex items-center relative'
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Avatar src="/broken-image.jpg" className='mr-5 cursor-pointer' />
+        {showDropdown && (
+          <div className='absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10'>
+            <div className='p-2 cursor-pointer hover:bg-gray-100' onClick={handleLogout}>Logout</div>
+          </div>
+        )}
       </div>
     </div>
   );

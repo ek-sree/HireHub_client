@@ -102,7 +102,7 @@ const UserManagement: React.FC = () => {
     try {
       setLoading(true);
       const response = await adminAxios.get(
-        `${adminEndpoints.searchUser}?search=${debouncedSearchQuery}`,
+        `${adminEndpoints.searchUser}?search=${searchQuery}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

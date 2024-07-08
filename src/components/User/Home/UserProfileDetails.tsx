@@ -64,6 +64,9 @@ const UserProfileDetails = () => {
                     setName(response.data.details.name);
                     setTitle(response.data.details.title);
                 }
+                if(response.status== 403){
+                    toast.error("Token expired login again")
+                }
             } catch (error) {
                 toast.error("Error occurred, please log in after some time.");
             }

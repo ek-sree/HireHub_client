@@ -4,5 +4,5 @@ export const jobpostEndpoints = {
     addjob: `${API_GATEWAY_BASE_URL}/addjob`,
     getjobs: `${API_GATEWAY_BASE_URL}/getjob`,
     getallJobs: `${API_GATEWAY_BASE_URL}/getalljobs`,
-    editJobs: `${API_GATEWAY_BASE_URL}/editjobs`
+    editJobs: `${API_GATEWAY_BASE_URL}/editjobs`,
 }

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import ProfileSideNav from "./ProfileSideNav";
 import SidebarNav from "./SidebarNav";
+import CvModal from "./CvModal";
 
 interface CVItem {
     id: number;
@@ -8,18 +9,19 @@ interface CVItem {
     url: string;
 }
 
-const CV = () => {
-    const [cvItems, setCVItems] = useState<CVItem[]>([
-       
-    ]);
+const Cv = () => {
+    const [cvItems, setCVItems] = useState<CVItem[]>([]);
+    const [isOpenModal, setIsOpenModal] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null); 
 
     const handleAddCV = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
+        setIsOpenModal(true);
     };
+
+    const handleClose=()=>{
+        setIsOpenModal(false);
+    }
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -72,8 +74,14 @@ const CV = () => {
                     Add More CV
                 </button>
             </div>
+            {isOpenModal&&(
+                <CvModal
+                isOpen={isOpenModal}
+                onClose={handleClose}
+                />
+            )}
         </div>
     );
 };
 
-export default CV;
+export default Cv;
