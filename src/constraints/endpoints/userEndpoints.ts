@@ -15,6 +15,8 @@ export const userEndpoints = {
     userSkills: `${API_GATEWAY_BASE_URL}/userskills`,
     userSkillsAdd: `${API_GATEWAY_BASE_URL}/addUserSkills`,
     userSkillsEdit:`${API_GATEWAY_BASE_URL}/editSkills`,
-    cvUpload: `${API_GATEWAY_BASE_URL}/addCv`
+    cvUpload: `${API_GATEWAY_BASE_URL}/addCv`,
+    getCv: `${API_GATEWAY_BASE_URL}/getCv`,
+    deleteCv: `${API_GATEWAY_BASE_URL}/deleteCv`
 
 }

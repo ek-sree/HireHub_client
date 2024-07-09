@@ -30,12 +30,14 @@ const JobPostUser = () => {
   const [jobType, setJobType] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [jobId, setJobId] = useState('');
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
 
   const [debouncedQuery] = useDebonceSearch(searchQuery, 500);
 
-  const handleApplyClick = () => {
+  const handleApplyClick = (jobId:string) => {
+    setJobId(jobId);
     setModalOpen(true);
   };
 
@@ -46,10 +48,8 @@ const JobPostUser = () => {
   const handleSuccess = () => {
     toast.success('Applied successfully');
   };
- 
-console.log(debouncedQuery,'s');
 
-console.log("searchQuery",searchQuery);
+ 
 
   const getAllJobs = async () => {
     const params = new URLSearchParams();
@@ -67,6 +67,7 @@ console.log("searchQuery",searchQuery);
 
     if (response.data.success) {
       setLoading(false);
+      setJobId(response.data.job._id)
         setJobs(response.data.job);
     }
 };
@@ -89,7 +90,7 @@ console.log("searchQuery",searchQuery);
       checked ? [...prev, value] : prev.filter(type => type !== value)
     )
   }
-
+  console.log("job id in pobpost",jobId);
   return (
     <div className="max-w-[960px] h-auto mx-auto mt-10 mb-10 relative">
       <Toaster position="top-center" expand={false} richColors />
@@ -218,7 +219,7 @@ console.log("searchQuery",searchQuery);
                   skills: -{job.skills.join(', ')}
                 </div>
                 <div
-                  onClick={handleApplyClick}
+                   onClick={() => handleApplyClick(job._id)} 
                   className="flex justify-center bg-cyan-300 mt-6 rounded-lg text-white font-semibold hover:font-normal hover:bg-cyan-400 shadow-lg hover:cursor-pointer"
                 >
                   Apply Now
@@ -233,6 +234,7 @@ console.log("searchQuery",searchQuery);
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSuccess={handleSuccess}
+        jobId={jobId}
       />
     </div>
   );

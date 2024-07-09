@@ -18,7 +18,7 @@ const RecruiterRouter = () => {
         </Route>
         <Route element={<PrivateRouter/>}>
             <Route path='/home' element={<HomePage/>}/>
-            <Route path='/viewapplication' element={<ViewApplications/>}/>
+            <Route path='/viewapplication/:jobId' element={<ViewApplications/>}/>
         </Route>
     </Routes>
   )

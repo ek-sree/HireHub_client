@@ -3,15 +3,29 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { userAxios } from "../../../constraints/axios/userAxios";
 import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 interface CvModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSuccess:()=>void;
 }
 
-const CvModal: FC<CvModalProps> = ({ isOpen, onClose }) => {
+const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = React.useState(0);
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+          setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+        }, 800);
+    
+        return () => {
+          clearInterval(timer);
+        };
+      }, []);
 
     const token = useSelector((store: RootState) => store.UserAuth.token);
     const email = useSelector((store: RootState)=>store.UserAuth.userData?.email);
@@ -24,6 +38,7 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose }) => {
     };
 
     const handleSend = async () => {
+        setLoading(true);
         if (selectedFile) {
             const formData = new FormData();
             formData.set("cv", selectedFile);
@@ -37,13 +52,18 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose }) => {
                         "Content-Type": "multipart/form-data",
                     },
                 });
+console.log("api response add cv",response.data);
 
                 if (response.data.success) {
+                    setLoading(false)
+                    onSuccess()
                     onClose();
                 } else {
+                    setLoading(false)
                     console.error("CV upload failed:", response.data.message);
                 }
             } catch (error) {
+                setLoading(false)
                 console.error("Error uploading CV:", error);
             }
         }
@@ -86,13 +106,15 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose }) => {
                     >
                         Cancel
                     </button>
-                    <button
+                    {loading? <CircularProgress variant="determinate" value={progress} />
+                    :<button
                         onClick={handleSend}
                         className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ${selectedFile ? "" : "opacity-50 cursor-not-allowed"}`}
                         disabled={!selectedFile}
                     >
                         Send
                     </button>
+}
                 </div>
             </div>
         </div>

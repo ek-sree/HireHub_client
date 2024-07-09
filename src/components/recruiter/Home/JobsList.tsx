@@ -109,7 +109,7 @@ const JobsList = () => {
             </div>
             <div className='flex justify-between mt-6'>
               <span onClick={() =>handleEditClick(job)} className='bg-blue-500 px-2 p-1 rounded-md text-white hover:cursor-pointer hover:bg-blue-600'>Edit</span>
-              <Link to='/recruiter/viewapplication'><span className='bg-blue-500 px-2 p-1 rounded-md text-white hover:cursor-pointer hover:bg-blue-600'>View application</span></Link>
+              <Link to={`/recruiter/viewapplication/${job._id}`}><span className='bg-blue-500 px-2 p-1 rounded-md text-white hover:cursor-pointer hover:bg-blue-600'>View application</span></Link>
             </div>
           </div>
         )))}
