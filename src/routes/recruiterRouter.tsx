@@ -6,6 +6,7 @@ import SignupPage from '../pages/User/SignupPage'
 import PublicRouter from '../utils/user/PublicRouter'
 import OtpPage from '../pages/User/OtpPage'
 import ViewApplications from '../components/recruiter/Home/ViewApplications'
+import ShortListedCandidatesPages from '../pages/recruiter/ShortListedCandidatesPages'
 
 
 const RecruiterRouter = () => {
@@ -19,6 +20,7 @@ const RecruiterRouter = () => {
         <Route element={<PrivateRouter/>}>
             <Route path='/home' element={<HomePage/>}/>
             <Route path='/viewapplication/:jobId' element={<ViewApplications/>}/>
+            <Route path='/allCandidates' element={<ShortListedCandidatesPages/>}/>
         </Route>
     </Routes>
   )

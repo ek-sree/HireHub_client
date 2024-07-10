@@ -1,35 +1,27 @@
-import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
-import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
-import SkillLogo from '../../../assets/images/skills.png';
-import JopType from '../../../assets/images/man-working-on-a-laptop-from-side-view.png';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
 import { Link } from 'react-router-dom';
-import AddNewJob from './AddNewJob';
-import JobpostEditModal from './JobpostEditModal';
 import { jobpostAxios } from '../../../constraints/axios/jobpostAxios';
 import { jobpostEndpoints } from '../../../constraints/endpoints/jobpost.Endpoints';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
-
-interface Job {
-  _id: string;
-  position: string;
-  place: string;
-  jobType: string[];
-  employmentType: string[];
-  skills: string[];
-  companyName: string;
-}
+import { Button } from '@material-ui/core';
+import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
+import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
+import SkillLogo from '../../../assets/images/skills.png';
+import JopType from '../../../assets/images/man-working-on-a-laptop-from-side-view.png';
+import JobpostEditModal from './JobpostEditModal';
+import AddNewJob from './AddNewJob';
+import { Job } from '../../../interface/JobInterfaces/IJobInterface';
 
 const JobsList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNewJobModal, setNewJobModal] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [applicationCount, setApplicationCount] = useState<number[]>([]);
   const [editJob, setEditJob] = useState<Job | null>(null);
-
-  const token = useSelector((store: RootState)=> store.RecruiterAuth.token);
-  const recruiterId = useSelector((store: RootState)=> store.RecruiterAuth.recruiterData?._id);
+  const token = useSelector((store: RootState) => store.RecruiterAuth.token);
+  const recruiterId = useSelector((store: RootState) => store.RecruiterAuth.recruiterData?._id);
 
   const handleNewJobModal = () => {
     setNewJobModal(true);
@@ -53,69 +45,103 @@ const JobsList = () => {
   };
 
   const updateJobList = (updatedJob: Job) => {
-    setJobs(prevJobs => prevJobs.map(job => job._id === updatedJob._id ? updatedJob : job));
+    setJobs(prevJobs => prevJobs.map(job => (job._id === updatedJob._id ? updatedJob : job)));
   };
 
-  const getJobs = async()=>{
-    const response = await jobpostAxios.get(`${jobpostEndpoints.getjobs}?recruiterId=${recruiterId}`, {
-      headers:{
-        Authorization: `Bearer ${token}`
-      }
-    })
+  const getJobs = async () => {
+    try {
+      const response = await jobpostAxios.get(`${jobpostEndpoints.getjobs}?recruiterId=${recruiterId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    console.log("response from get all jobs api", response);
-    setJobs(response.data.job)
-  }
+      console.log("list data",response.data);
 
-  useEffect(()=>{
+      const jobsData: Job[] = response.data.job;
+      const applicationCounts = jobsData.map(job =>
+        job.applications?.filter(application => application.status === "pending").length || 0
+      );
+
+      setJobs(jobsData);
+      setApplicationCount(applicationCounts);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
+
+  useEffect(() => {
     getJobs();
-  },[recruiterId, token])
+  }, [recruiterId, token]);
 
-  console.log("hey recruiter home",jobs);
   return (
-    <div className="relative mt-16">
+    <div className="min-h-screen p-4 w-fit mx-auto">
       <Toaster position="top-center" expand={false} richColors />
-      <button onClick={handleNewJobModal} className="bottom-[300px] right-5 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg">
+
+      <Button variant="contained" color="primary" onClick={handleNewJobModal} className="mb-4">
         Add New Job
-      </button>
-      <div className="flex flex-wrap gap-4 p-4">
-        {jobs.length === 0?(
-          <div>No data found</div>
-        ):(
-        jobs.map(job => (
-          <div key={job._id} className="bg-slate-200 w-72 h-auto rounded-lg p-4 shadow-lg">
-            <div className="text-center font-semibold">
-             {job.companyName}
-            </div>
-            <div className="mt-4 text-center text-sm text-slate-500">
-              {job.position}
-            </div>
-            <div className="mt-3 flex items-center text-sm text-slate-500">
-              <LocationOnRoundedIcon fontSize='small' />
-              <span className='ml-1'>{job.place}</span>
-            </div>
-            <div className="mt-3 flex items-center text-sm text-slate-500">
-              <img src={JopType} alt="job type" className='h-4 w-4 mr-1' />
-              <span>{job.employmentType.join(', ')}</span>
-            </div>
-            <div className="mt-3 flex items-center text-sm text-slate-500">
-              <WorkRoundedIcon fontSize='small' />
-              <span className='ml-1'>{job.jobType.join(', ')}</span>
-            </div>
-            <div className="mt-3 flex items-center text-sm text-slate-500 flex-wrap">
-              <img src={SkillLogo} alt="skill logo" className='h-4 w-4 mr-1' />
-              <span>Skills: </span>
-              <span className="ml-1">{job.skills.join(', ')}</span>
-            </div>
-            <div className='flex justify-between mt-6'>
-              <span onClick={() =>handleEditClick(job)} className='bg-blue-500 px-2 p-1 rounded-md text-white hover:cursor-pointer hover:bg-blue-600'>Edit</span>
-              <Link to={`/recruiter/viewapplication/${job._id}`}><span className='bg-blue-500 px-2 p-1 rounded-md text-white hover:cursor-pointer hover:bg-blue-600'>View application</span></Link>
-            </div>
-          </div>
-        )))}
+      </Button>
+
+      <div className="overflow-x-auto mt-4">
+        {jobs.length === 0 ? (
+          <div className="text-center text-gray-500">No jobs found.</div>
+        ) : (
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden divide-y divide-gray-200">
+            <thead className="bg-gray-200">
+              <tr className="text-gray-600 text-sm">
+                <th className="py-3 px-6 text-left">Company Name</th>
+                <th className="py-3 px-6 text-left">Position</th>
+                <th className="py-3 px-6 text-left">Location, Employment Type, Job Type, Skills</th>
+                <th className="py-3 px-6 text-left">Total Applications</th>
+                <th className="py-3 px-6 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {jobs.map((job, index) => (
+                <tr key={job._id} className="text-gray-600 text-sm">
+                  <td className="py-4 px-6">{job.companyName}</td>
+                  <td className="py-4 px-6">{job.position}</td>
+                  <td className="py-4 px-6 flex items-center">
+                    <LocationOnRoundedIcon fontSize="small" />
+                    <span className="ml-1">{job.place}</span>
+                  </td>
+                  <td className="py-4 px-6 flex items-center">
+                    <img src={JopType} alt="job type" className="h-4 w-4 mr-1" />
+                    <span>{job.employmentType.join(', ')}</span>
+                  </td>
+                  <td className="py-4 px-6 flex items-center">
+                    <WorkRoundedIcon fontSize="small" />
+                    <span className="ml-1">{job.jobType.join(', ')}</span>
+                  </td>
+                  <td className="py-4 px-6 flex items-center">
+                    <img src={SkillLogo} alt="skill logo" className="h-4 w-4 mr-1" />
+                    <span>{job.skills.join(', ')}</span>
+                  </td>
+                  <td className="py-4 px-6 text-center">{applicationCount[index]}</td>
+                  <td className="py-4 px-6">
+                    <div className="flex">
+                      <button
+                        onClick={() => handleEditClick(job)}
+                        className="text-sm text-blue-500 hover:underline cursor-pointer mr-10"
+                      >
+                        Edit
+                      </button>
+                      <Link to={`/recruiter/viewapplication/${job._id}`}>
+                        <button className="text-sm text-blue-500 hover:underline cursor-pointer">
+                          View Application
+                        </button>
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
+
       <JobpostEditModal isOpen={isModalOpen} onClose={handleCloseModal} job={editJob} onUpdateJobList={updateJobList} />
-      <AddNewJob isNewJobModal={isNewJobModal} onClose={handleNewJobModalClose} addJobList={addJobList}/>
+      <AddNewJob isNewJobModal={isNewJobModal} onClose={handleNewJobModalClose} addJobList={addJobList} />
     </div>
   );
 };

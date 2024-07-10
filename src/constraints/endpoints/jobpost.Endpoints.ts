@@ -6,5 +6,8 @@ export const jobpostEndpoints = {
     getallJobs: `${API_GATEWAY_BASE_URL}/getalljobs`,
     editJobs: `${API_GATEWAY_BASE_URL}/editjobs`,
     applyJob: `${API_GATEWAY_BASE_URL}/applyjob`,
-    viewApplication: `${API_GATEWAY_BASE_URL}/viewApplications`
+    viewApplication: `${API_GATEWAY_BASE_URL}/viewApplications`,
+    acceptApplication: `${API_GATEWAY_BASE_URL}/acceptApplication`,
+    rejectedApplication: `${API_GATEWAY_BASE_URL}/rejectApplication`,
+    viewAcceptApplications:`${API_GATEWAY_BASE_URL}/acceptedApplications`
 }

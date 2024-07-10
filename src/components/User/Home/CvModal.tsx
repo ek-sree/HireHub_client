@@ -41,9 +41,7 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
         setLoading(true);
         if (selectedFile) {
             const formData = new FormData();
-            formData.set("cv", selectedFile);
-            console.log("selectedFile",selectedFile);
-            console.log("FormData:", formData); 
+            formData.set("cv", selectedFile); 
 
             try {
                 const response = await userAxios.post(`${userEndpoints.cvUpload}?email=${email}`, formData, {

@@ -20,6 +20,7 @@ const ViewApplications = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [resumeUrl, setResumeUrl] = useState('');
+  const [fetchTrigger, setFetchTrigger] = useState(false);
   const navigate = useNavigate();
   const { jobId } = useParams();
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
@@ -51,14 +52,46 @@ const ViewApplications = () => {
 
   useEffect(() => {
     fetchApplications();
-  }, [jobId]);
+  }, [jobId, fetchTrigger]);
 
-  const handleAccept = (id: string) => {
-    toast.success(`Accepted application ${id}`);
+  const handleAccept = async(id: string) => {
+    if(!jobId){
+      throw new Error("Job id is missing");
+    }
+    const response = await jobpostAxios.post(`${jobpostEndpoints.acceptApplication}?jobId=${jobId}&applicationId=${id}`, {},{
+      headers:{
+        Authorization: `Bearer: ${token}`
+      }
+    });
+    
+    if(response.data.success){
+      toast.success("Accepted application");
+      setFetchTrigger(!fetchTrigger);
+      return
+    }
+    else{
+      toast.error("Application is missing or cant accept right now !")
+    }
   };
 
-  const handleReject = (id: string) => {
-    toast.error(`Rejected application ${id}`);
+  const handleReject = async(id: string) => {
+    try {
+      if(!jobId){
+        throw new Error("Job id is missing");
+      }
+      const response = await jobpostAxios.post(`${jobpostEndpoints.rejectedApplication}?jobId=${jobId}&applicationId=${id}`,{},{
+        headers:{
+          Authorization:`Bearer: ${token}`
+        }
+      })
+      if(response.data.success){
+        toast.success("Successfully rejected application");
+        setFetchTrigger(!fetchTrigger);
+        return;
+      }
+    } catch (error) {
+      console.log("Error occured while handling application reject",error);
+    }
   };
 
   const handleBack = () => {
@@ -76,7 +109,7 @@ const ViewApplications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen  p-4 max-w-7xl mx-auto"> 
       <Toaster position="top-center" expand={false} richColors />
       <Button variant="text" className="mb-4 flex items-center gap-2" onClick={handleBack}>
         <ArrowLeftIcon strokeWidth={2} className="h-5 w-5" /> Back
