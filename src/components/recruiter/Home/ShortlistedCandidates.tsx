@@ -4,15 +4,7 @@ import { jobpostAxios } from '../../../constraints/axios/jobpostAxios';
 import { jobpostEndpoints } from '../../../constraints/endpoints/jobpost.Endpoints';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
-
-interface Candidate {
-  id: string;
-  name: string;
-  profilePhoto: string;
-  email: string;
-  phone: string;
-  resume: string;
-}
+import { Candidate } from '../../../interface/JobInterfaces/IJobInterface';
 
 const ShortListedCandidates = () => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -58,7 +50,7 @@ const ShortListedCandidates = () => {
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      <div className="flex justify-center mt-5 text-xl font-semibold underline text-slate-700">Selected Candidates</div>
+      <div className="flex justify-center mt-5 text-xl font-semibold underline text-slate-700">All Candidates</div>
       <div className="mt-5">
         {loading ? (
           <div className="text-center text-gray-500">Loading...</div>

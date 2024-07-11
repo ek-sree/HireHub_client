@@ -11,6 +11,7 @@ interface Job {
     place: string;
     jobType: string[];
     employmentType: string[];
+    experience:string;
     skills: string[];
     companyName: string;
   }
@@ -34,6 +35,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
     const [skills, setSkills] = useState<string[]>([]);
     const [skillInput, setSkillInput] = useState('');
     const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
+    const [experience, setExperience] = useState('');
 
     const token = useSelector((state: RootState) => state.RecruiterAuth.token);
     const recruiterId = useSelector((state: RootState)=>state.RecruiterAuth.recruiterData?._id)
@@ -47,6 +49,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
         place: '',
         jobType: '',
         employmentType: '',
+        experience:'',
         skills: '',
     });
 
@@ -93,6 +96,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
             place: place ? '' : 'Please fill the place',
             jobType: jobType.length > 0 ? '' : 'Please select at least one job type',
             employmentType: employmentType.length > 0 ? '' : 'Please select at least one employment type',
+            experience:experience ? '':"Please fill this",
             skills: skills.length > 0 ? '' : 'Please add at least one skill'
         };
 
@@ -112,6 +116,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
             place:upperCase,
             jobType,
             employmentType,
+            experience,
             skills,
             companyName,
             recruiterId
@@ -139,7 +144,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
 
     if (!isNewJobModal) return null;
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-x-auto">
             <Toaster position="top-center" expand={false} richColors />
             <div className="bg-white p-6 rounded shadow-lg w-[500px]">
                 <div className="flex justify-end">
@@ -154,6 +159,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
                             className="w-full p-2 border border-gray-300 rounded mt-1"
                             value={position}
                             onChange={(e) => setPosition(e.target.value)}
+                            placeholder="Which position"
                         />
                         {errors.position && <div className="text-red-500 text-xs">{errors.position}</div>}
                     </div>
@@ -164,6 +170,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
                             className="w-full p-2 border border-gray-300 rounded mt-1"
                             value={place}
                             onChange={(e) => setPlace(e.target.value)}
+                            placeholder="Enter the place"
                         />
                         {errors.place && <div className="text-red-500 text-xs">{errors.place}</div>}
                     </div>
@@ -197,6 +204,17 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
                         ))}
                         {errors.employmentType && <div className="text-red-500 text-xs">{errors.employmentType}</div>}
                     </div>
+                    <div className="mb-4 mt-8">
+                        <label className="block text-sm font-medium text-gray-700">Experience</label>
+                        <input
+                            type="text"
+                            className="w-full p-2 border border-gray-300 rounded mt-1"
+                            value={experience}
+                            onChange={(e) => setExperience(e.target.value)}
+                            placeholder="Freshers or 1 year experience"
+                        />
+                        {errors.experience && <div className="text-red-500 text-xs">{errors.experience}</div>}
+                    </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Skills</label>
                         <input
@@ -204,6 +222,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
                             className="w-full p-2 border border-gray-300 rounded mt-1"
                             value={skillInput}
                             onChange={handleSkillsChange}
+                            placeholder="What are the skills needed"
                         />
                         {filteredSkills.length > 0 && (
                             <ul className="border border-gray-300 mt-1 rounded max-h-40 overflow-y-auto">

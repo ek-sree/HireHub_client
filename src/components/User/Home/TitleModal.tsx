@@ -14,7 +14,7 @@ interface TitleModalProps {
 const TitleModal: FC<TitleModalProps> = ({ isOpen, onClose, titleData }) => {
   const [title, setTitle] = useState('');
   const [error, setError] = useState('');
-  const maxLength = 150;
+  const maxLength = 70;
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);

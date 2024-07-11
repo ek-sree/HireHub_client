@@ -7,6 +7,7 @@ import PublicRouter from '../utils/user/PublicRouter'
 import OtpPage from '../pages/User/OtpPage'
 import ViewApplications from '../components/recruiter/Home/ViewApplications'
 import ShortListedCandidatesPages from '../pages/recruiter/ShortListedCandidatesPages'
+import ShortListedOnJobPage from '../pages/recruiter/ShortListedOnJobPage'
 
 
 const RecruiterRouter = () => {
@@ -20,6 +21,7 @@ const RecruiterRouter = () => {
         <Route element={<PrivateRouter/>}>
             <Route path='/home' element={<HomePage/>}/>
             <Route path='/viewapplication/:jobId' element={<ViewApplications/>}/>
+            <Route path='/shortlistedOnJob/:jobId' element={<ShortListedOnJobPage/>}/>
             <Route path='/allCandidates' element={<ShortListedCandidatesPages/>}/>
         </Route>
     </Routes>

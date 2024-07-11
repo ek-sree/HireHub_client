@@ -25,6 +25,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState('');
   const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
+  const [experience, setExperience] = useState('');
   const [jobId, setJobId] = useState('');
 
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
@@ -34,6 +35,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
     place: '',
     jobType: '',
     employmentType: '',
+    experience:'',
     skills: ''
   });
 
@@ -43,6 +45,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
       setPosition(job.position);
       setPlace(job.place);
       setJobType(job.jobType);
+      setExperience(job.experience)
       setEmploymentType(job.employmentType);
       setSkills(job.skills);
     }
@@ -94,6 +97,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
       place: place ? '' : 'Please fill the place',
       jobType: jobType.length > 0 ? '' : 'Please select at least one job type',
       employmentType: employmentType.length > 0 ? '' : 'Please select at least one employment type',
+      experience: experience?'':"Please fill this",
       skills: skills.length > 0 ? '' : 'Please add at least one skill'
     };
 
@@ -113,6 +117,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
       place: upperCase,
       jobType,
       employmentType,
+      experience,
       skills,
     };
 
@@ -138,7 +143,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-x-auto">
       <Toaster position="top-center" expand={false} richColors />
       <div className="bg-white p-6 rounded shadow-lg w-[500px]">
         <div className="flex justify-end">
@@ -146,7 +151,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
         </div>
         <h2 className="text-xl font-bold mb-4">Edit Job Post</h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4 mt-8">
+          <div className="mt-3">
             <label className="block text-sm font-medium text-gray-700">Position</label>
             <input
               type="text"
@@ -196,6 +201,16 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
             ))}
             {errors.employmentType && <div className="text-red-500 text-xs">{errors.employmentType}</div>}
           </div>
+          <div className="">
+            <label className="block text-sm font-medium text-gray-700">Experience</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded mt-1"
+              value={experience}
+              onChange={(e) => setExperience(e.target.value)}
+            />
+            {errors.experience && <div className="text-red-500 text-xs">{errors.experience}</div>}
+          </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Skills</label>
             <input
@@ -233,7 +248,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
             </div>
             {errors.skills && <div className="text-red-500 text-xs">{errors.skills}</div>}
           </div>
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-4">
             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Update Job Post</button>
           </div>
         </form>

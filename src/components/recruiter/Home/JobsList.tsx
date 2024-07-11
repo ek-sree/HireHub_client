@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { jobpostAxios } from '../../../constraints/axios/jobpostAxios';
 import { jobpostEndpoints } from '../../../constraints/endpoints/jobpost.Endpoints';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
-import { Button } from '@material-ui/core';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
-import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
-import SkillLogo from '../../../assets/images/skills.png';
-import JopType from '../../../assets/images/man-working-on-a-laptop-from-side-view.png';
 import JobpostEditModal from './JobpostEditModal';
 import AddNewJob from './AddNewJob';
 import { Job } from '../../../interface/JobInterfaces/IJobInterface';
+import { XMarkIcon } from "@heroicons/react/24/outline"; 
 
 const JobsList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -48,6 +45,26 @@ const JobsList = () => {
     setJobs(prevJobs => prevJobs.map(job => (job._id === updatedJob._id ? updatedJob : job)));
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await jobpostAxios.delete(`${jobpostEndpoints.deleteJob}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        toast.success("Job deleted successfully");
+        setJobs(prevJobs => prevJobs.filter(job => job._id !== id));
+      } else {
+        toast.error("Failed to delete job");
+      }
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      toast.error('Error deleting job');
+    }
+  };
+
   const getJobs = async () => {
     try {
       const response = await jobpostAxios.get(`${jobpostEndpoints.getjobs}?recruiterId=${recruiterId}`, {
@@ -75,12 +92,12 @@ const JobsList = () => {
   }, [recruiterId, token]);
 
   return (
-    <div className="min-h-screen p-4 w-fit mx-auto">
+    <div className="min-h-screen p-4 w-full mx-auto">
       <Toaster position="top-center" expand={false} richColors />
 
-      <Button variant="contained" color="primary" onClick={handleNewJobModal} className="mb-4">
+      <button onClick={handleNewJobModal} className='bg-blue-800 py-2 px-2 rounded-md text-white font-medium hover:bg-blue-900'>
         Add New Job
-      </Button>
+      </button>
 
       <div className="overflow-x-auto mt-4">
         {jobs.length === 0 ? (
@@ -91,9 +108,16 @@ const JobsList = () => {
               <tr className="text-gray-600 text-sm">
                 <th className="py-3 px-6 text-left">Company Name</th>
                 <th className="py-3 px-6 text-left">Position</th>
-                <th className="py-3 px-6 text-left">Location, Employment Type, Job Type, Skills</th>
-                <th className="py-3 px-6 text-left">Total Applications</th>
-                <th className="py-3 px-6 text-left">Actions</th>
+                <th className="py-3 px-6 text-left">Location</th>
+                <th className="py-3 px-6 text-left">Employment Type</th>
+                <th className="py-3 px-6 text-left">Job Type</th>
+                <th className="py-3 px-6 text-left">Skills</th>
+                <th className="py-3 px-6 text-left">Experience</th>
+                <th className="py-3 px-6 text-left">Created Date</th> 
+                <th className="py-3 px-6 text-center">Total Applications</th>
+                <th className="py-3 px-6 text-center">Actions</th>
+                <th className="py-3 px-6 text-center">View Shortlisted Candidates</th>
+                <th className="py-3 px-6 text-center">Delete</th> 
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -105,33 +129,39 @@ const JobsList = () => {
                     <LocationOnRoundedIcon fontSize="small" />
                     <span className="ml-1">{job.place}</span>
                   </td>
-                  <td className="py-4 px-6 flex items-center">
-                    <img src={JopType} alt="job type" className="h-4 w-4 mr-1" />
-                    <span>{job.employmentType.join(', ')}</span>
-                  </td>
-                  <td className="py-4 px-6 flex items-center">
-                    <WorkRoundedIcon fontSize="small" />
-                    <span className="ml-1">{job.jobType.join(', ')}</span>
-                  </td>
-                  <td className="py-4 px-6 flex items-center">
-                    <img src={SkillLogo} alt="skill logo" className="h-4 w-4 mr-1" />
-                    <span>{job.skills.join(', ')}</span>
-                  </td>
+                  <td className="py-4 px-6">{job.employmentType.join(', ')}</td>
+                  <td className="py-4 px-6">{job.jobType.join(', ')}</td>
+                  <td className="py-4 px-6">{job.skills.join(', ')}</td>
+                  <td className="py-4 px-6">{job.experience}</td>
+                  <td className="py-4 px-6">{new Date(job.created_at).toLocaleDateString()}</td> 
                   <td className="py-4 px-6 text-center">{applicationCount[index]}</td>
-                  <td className="py-4 px-6">
-                    <div className="flex">
-                      <button
-                        onClick={() => handleEditClick(job)}
-                        className="text-sm text-blue-500 hover:underline cursor-pointer mr-10"
-                      >
-                        Edit
+                  <td className="py-4 px-6 text-center flex">
+                    <button
+                      onClick={() => handleEditClick(job)}
+                      className="text-sm text-blue-500 hover:underline cursor-pointer mr-4 bg-orange-100 px-1 rounded"
+                    >
+                      Edit
+                    </button>
+                    <Link to={`/recruiter/viewapplication/${job._id}`}>
+                      <button className="text-sm text-blue-500 hover:underline cursor-pointer bg-green-100 rounded">
+                        View Application
                       </button>
-                      <Link to={`/recruiter/viewapplication/${job._id}`}>
-                        <button className="text-sm text-blue-500 hover:underline cursor-pointer">
-                          View Application
-                        </button>
-                      </Link>
-                    </div>
+                    </Link>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <Link to={`/recruiter/shortlistedOnJob/${job._id}`}>
+                      <button className="text-sm text-blue-500 hover:underline cursor-pointer">
+                        Shortlisted Candidates
+                      </button>
+                    </Link>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <button
+                      onClick={() => handleDelete(job._id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <XMarkIcon className="h-5 w-5" />
+                    </button>
                   </td>
                 </tr>
               ))}
