@@ -10,6 +10,7 @@ import JobpostEditModal from './JobpostEditModal';
 import AddNewJob from './AddNewJob';
 import { Job } from '../../../interface/JobInterfaces/IJobInterface';
 import { XMarkIcon } from "@heroicons/react/24/outline"; 
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 const JobsList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -45,19 +46,22 @@ const JobsList = () => {
     setJobs(prevJobs => prevJobs.map(job => (job._id === updatedJob._id ? updatedJob : job)));
   };
 
-  const handleDelete = async (id: string) => {
+  const handlesoftDelete = async (id: string) => {
     try {
-      const response = await jobpostAxios.delete(`${jobpostEndpoints.deleteJob}/${id}`, {
+      const response = await jobpostAxios.put(`${jobpostEndpoints.softDeleteJob}/${id}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+console.log("response data", response.data);
 
       if (response.data.success) {
-        toast.success("Job deleted successfully");
-        setJobs(prevJobs => prevJobs.filter(job => job._id !== id));
+        toast.success(response.data.message);
+        setJobs(prevJobs => prevJobs.map(job => 
+          job._id === id ? { ...job, isBlocked: !job.isBlocked } : job
+        ));
       } else {
-        toast.error("Failed to delete job");
+        toast.error("Failed to update job status");
       }
     } catch (error) {
       console.error('Error deleting job:', error);
@@ -133,7 +137,7 @@ const JobsList = () => {
                   <td className="py-4 px-6">{job.jobType.join(', ')}</td>
                   <td className="py-4 px-6">{job.skills.join(', ')}</td>
                   <td className="py-4 px-6">{job.experience}</td>
-                  <td className="py-4 px-6">{new Date(job.created_at).toLocaleDateString()}</td> 
+                  <td className="py-4 px-6">{job.created_at ? new Date(job.created_at).toLocaleDateString() : 'N/A'}</td> 
                   <td className="py-4 px-6 text-center">{applicationCount[index]}</td>
                   <td className="py-4 px-6 text-center flex">
                     <button
@@ -157,10 +161,14 @@ const JobsList = () => {
                   </td>
                   <td className="py-4 px-6 text-center">
                     <button
-                      onClick={() => handleDelete(job._id)}
+                      onClick={() => handlesoftDelete(job._id)}
                       className="text-red-500 hover:text-red-700"
                     >
-                      <XMarkIcon className="h-5 w-5" />
+                      {job.isBlocked ? (
+                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <XMarkIcon className="h-5 w-5" />
+                      )}
                     </button>
                   </td>
                 </tr>

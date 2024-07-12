@@ -7,7 +7,8 @@ export interface Job {
   experience:string;
   skills: string[];
   companyName: string;
-  created_at?:Date;
+  isBlocked?:boolean;
+  created_at?:Date | undefined;
   applications?: {
     status: string;
   }[];

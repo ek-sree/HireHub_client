@@ -21,6 +21,7 @@ interface Jobs {
   employmentType: string[];
   skills: string[];
   companyName: string;
+  applications: Array<{ email: string }>; 
 }
 
 const JobPostUser = () => {
@@ -31,8 +32,10 @@ const JobPostUser = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [jobId, setJobId] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
+  const email = useSelector((store:RootState)=>store.UserAuth.userData?.email);
 
   const [debouncedQuery] = useDebonceSearch(searchQuery, 500);
 
@@ -46,12 +49,14 @@ const JobPostUser = () => {
   };
 
   const handleSuccess = () => {
+    setIsSuccess(prev=>!prev);
     toast.success('Applied successfully');
   };
 
  
 
   const getAllJobs = async () => {
+    setLoading(true);
     const params = new URLSearchParams();
 
     employmentType.forEach(type => params.append('employment', type));
@@ -63,7 +68,7 @@ const JobPostUser = () => {
         }
     });
 
-    console.log('get all jobs in userside', response);
+    console.log('get all jobs in userside', response.data);
 
     if (response.data.success) {
       setLoading(false);
@@ -75,7 +80,7 @@ const JobPostUser = () => {
 
   useEffect(() => {
     getAllJobs();
-  }, [employmentType, jobType, debouncedQuery]);
+  }, [employmentType, jobType, debouncedQuery, isSuccess]);
 
   const handleEmploymentTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
@@ -91,6 +96,7 @@ const JobPostUser = () => {
     )
   }
   console.log("job id in pobpost",jobId);
+  console.log("job",jobs);
   return (
     <div className="max-w-[960px] h-auto mx-auto mt-10 mb-10 relative">
       <Toaster position="top-center" expand={false} richColors />
@@ -175,7 +181,7 @@ const JobPostUser = () => {
           jobs.map(job => (
             <div
               key={job._id}
-              className="bg-slate-50 w-[600px] font-bold text-xl rounded-lg p-4 shadow-xl mb-4"
+              className="w-[600px] font-bold text-xl rounded-lg p-4 shadow-xl mb-4"
             >
               <div className="flex items-center">
                 <img
@@ -218,12 +224,18 @@ const JobPostUser = () => {
                   <img src={SkillLogo} alt="skills" className="h-5" />
                   skills: -{job.skills.join(', ')}
                 </div>
-                <div
-                   onClick={() => handleApplyClick(job._id)} 
-                  className="flex justify-center bg-cyan-300 mt-6 rounded-lg text-white font-semibold hover:font-normal hover:bg-cyan-400 shadow-lg hover:cursor-pointer"
-                >
-                  Apply Now
-                </div>
+                {!job.applications.some(application => application.email === email) ? (
+                    <div
+                      onClick={() => handleApplyClick(job._id)} 
+                      className="flex justify-center bg-cyan-300 mt-6 rounded-lg text-white font-semibold hover:font-normal hover:bg-cyan-400 shadow-lg hover:cursor-pointer"
+                    >
+                      Apply Now
+                    </div>
+                  ) : (
+                    <div className="flex justify-center bg-gray-300 mt-6 rounded-lg text-white font-semibold cursor-not-allowed">
+                      You have already applied
+                    </div>
+                  )}
               </div>
             </div>
           ))

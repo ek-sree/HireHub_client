@@ -5,7 +5,7 @@ import SidebarProfile from '../../components/User/Home/SidebarProfile'
 
 const JobPostUserPage = () => {
   return (
-    <div className='bg-slate-100'>
+    <div>
         <Navbar/>
         <SidebarProfile/>
         <SidebarNav/>
