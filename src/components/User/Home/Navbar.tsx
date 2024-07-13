@@ -3,18 +3,23 @@ import { useEffect, useState } from 'react';
 import HireHubLogo from '../../../assets/images/HireHub.png';
 import notificationLogo from '../../../assets/images/notificationLogo.jpg';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/slice/UserSlice';
 import { userAxios } from '../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import { toast } from 'sonner';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
+import { RootState } from '../../../redux/store/store';
 
 function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSticky, setIsSticky] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [profileImg, setProfileImg] = useState('');
+
+  const token = useSelector((store:RootState)=>store.UserAuth.token);
+  const email = useSelector((store:RootState)=>store.UserAuth.userData?.email);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,6 +55,29 @@ function Navbar() {
       toast.error("Error occurred. Please try again!!");
     }
   };
+
+  async function fetchProfileImg(){
+    try {
+      const response = await userAxios.get(`${userEndpoints.getProfileImages}?email=${email}`, {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      });
+      console.log("api data profile img", response.data);
+
+      if (response.data.success && response.data.data && response.data.data.imageUrl) {
+          setProfileImg(response.data.data.imageUrl);
+      } else {
+        setProfileImg("/broken-image.jpg"); 
+            }
+  } catch (error) {
+      console.error("Error fetching profile image:", error);
+      setProfileImg("/broken-image.jpg"); 
+      }
+  }
+  useEffect(()=>{
+    fetchProfileImg();
+  },[email, token,profileImg])
 
   const handleMouseEnter = () => {
     setShowDropdown(true);
@@ -87,8 +115,8 @@ function Navbar() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Avatar src="/broken-image.jpg" className='mr-5 cursor-pointer' />
-        {showDropdown && (
+<Avatar src={profileImg || "/broken-image.jpg"} className='mr-5 cursor-pointer' />
+{showDropdown && (
           <div className='absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10'>
             <div className='p-2 cursor-pointer hover:bg-gray-100' onClick={handleLogout}>Logout</div>
           </div>

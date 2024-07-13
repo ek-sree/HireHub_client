@@ -11,12 +11,13 @@ import { toast } from 'sonner';
 const SidebarProfile = () => {
   const [title, setTitle] = useState('');
   const [name, setName] = useState('');
+  const [profileImg, setProfileImg] = useState<string>(user);
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
 
-  useEffect(() => {
-    const userDetails = async () => {
+  
+    async function userDetails() {
       try {
         const response = await userAxios.get(`${userEndpoints.viewDetails}?email=${email}`, {
           headers: {
@@ -33,16 +34,40 @@ const SidebarProfile = () => {
       } catch (error) {
         toast.error("Error occurred, please log in after some time.");
       }
-    };
+    }
+
+
+    async function showImage() {
+      try {
+          const response = await userAxios.get(`${userEndpoints.getProfileImages}?email=${email}`, {
+              headers: {
+                  Authorization: `Bearer ${token}`
+              }
+          });
+          console.log("api data profile img", response.data);
+
+          if (response.data.success && response.data.data && response.data.data.imageUrl) {
+              setProfileImg(response.data.data.imageUrl);
+          } else {
+              setProfileImg(user); 
+          }
+      } catch (error) {
+          console.error("Error fetching profile image:", error);
+          setProfileImg(user);
+      }
+  }
+
+  useEffect(()=>{
+    showImage();
     userDetails();
-  }, [email, token]);
+  },[token,email])
 
   return (
     <div className="fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">
       <div className="bg-white rounded-md relative shadow-xl hover:shadow-2xl">
         <img src={HireHub} alt="Cover photo" className="w-full h-16 object-cover rounded-lg hover:border-2" />
         <div className="rounded-full bg-slate-300 w-12 h-12 sm:w-16 sm:h-16 absolute left-1/2 transform -translate-x-1/2 -bottom-6 sm:-bottom-8 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden hover:shadow-2xl hover:border-2">
-          <img src={user} alt="profile photo" className="w-full h-full object-cover rounded-full" />
+          <img src={profileImg} alt="profile photo" className="w-full h-full object-cover rounded-full" />
         </div>
       </div>
       <div className="absolute bottom-[40px] sm:bottom-[50px] left-1/2 transform -translate-x-1/2 text-center w-full">
