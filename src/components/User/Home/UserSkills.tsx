@@ -7,15 +7,28 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import SkillAdd from "./SkillAdd";
 import EditSkills from "./EditSkills";
+import { useParams } from "react-router-dom";
 
 const UserSkills = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
   const [showAllSkills, setShowAllSkills] = useState(false);
+  const [sameUser , setSameUser] = useState<boolean>(true);
+
+  const {id} = useParams<{id?:string}>();
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
+  const userId = useSelector((store: RootState)=>store.UserAuth.userData?._id);
+
+  useEffect(() => {
+    if (userId && id && userId.toString() === id || id=== undefined) {
+        setSameUser(true);
+    } else {
+        setSameUser(false);
+    }
+}, [id, userId]);
 
   useEffect(() => {
     if (email) {
@@ -77,14 +90,14 @@ const UserSkills = () => {
         UserSkills
       </div>
       {skills.length > 0 && (
-        <div className="flex justify-end">
+        sameUser&&(<div className="flex justify-end">
           <button
             onClick={handleEditSkills}
             className="bg-cyan-400 py-1 px-3 rounded text-white hover:bg-cyan-300"
           >
             Add more skills 
           </button>
-        </div>
+        </div>)
       )}
       {skills.length > 0 ? (
         skillsToShow.map((skill, index) => (
@@ -99,9 +112,9 @@ const UserSkills = () => {
         </div>
       )}
       {skills.length==0? 
-    <div onClick={handleSkillAdd} className="mt-5 py-1 text-center w- bg-slate-500 rounded text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
+    sameUser&&(<div onClick={handleSkillAdd} className="mt-5 py-1 text-center w- bg-slate-500 rounded text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
     Add Skills
-  </div> : (
+  </div>) : (
    skills.length > 3 && (
     <div onClick={toggleShowAllSkills} className="mt-5 py-1 text-center w-full bg-slate-300 rounded-xl text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
       {showAllSkills ? "Show Less 🔼" : "Show More 🔽"}

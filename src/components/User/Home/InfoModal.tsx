@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { toast } from "sonner";
 import EditInfo from "./EditInfo";
+import { useParams } from "react-router-dom";
 
 interface InfoModalInterface {
   isOpen: boolean;
@@ -22,10 +23,23 @@ const InfoModal: FC<InfoModalInterface> = ({ isOpen, onClose }) => {
     const [place,setPlace] = useState<string[]>([]);
     const [phone, setPhone] = useState('');
     const [Education, setEducation] = useState<string[]>([]);
-    const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+    const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
+    const [sameUser, setSameUser] = useState<boolean>(true);
 
     const email = useSelector((store: RootState)=>store.UserAuth.userData?.email);
     const token = useSelector((store:RootState)=> store.UserAuth.token);
+    const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+
+    const {id} = useParams<{id:string}>();
+console.log("howwwwww",id);
+
+useEffect(() => {
+  if (userId && id && userId.toString() === id || id=== undefined) {
+      setSameUser(true);
+  } else {
+      setSameUser(false);
+  }
+}, [id, userId]);
 
     async function userInfo(){
         
@@ -106,11 +120,11 @@ const InfoModal: FC<InfoModalInterface> = ({ isOpen, onClose }) => {
             <div className="p-2  rounded">{Education.length!== 0 ? Education.join(', ') : "Not yet added"}</div>
           </div>
         </div>
-        <div className="flex justify-end mt-6">
+        {sameUser&&(<div className="flex justify-end mt-6">
           <button onClick={handleEdit}  className="bg-blue-500 text-white px-4 py-2 rounded">
             Edit
           </button>
-        </div>
+        </div>)}
       </div>
       {isOpenEditModal && (
         <EditInfo

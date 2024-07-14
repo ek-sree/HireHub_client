@@ -1,5 +1,4 @@
 import Slider from "react-slick";
-import user from '../../../assets/images/user.png';
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
 import "slick-carousel/slick/slick.css"; 
@@ -11,29 +10,30 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 
 const Post = () => {
-const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
 
-const token  = useSelector((store:RootState)=>store.UserAuth.token);
+  const token = useSelector((store: RootState) => store.UserAuth.token);
 
-async function getAllPosts(){
-  try {
-    const response = await postAxios.get(postEndpoints.getPosts,{
-      headers:{
-        Authorization: `Bearer ${token}`
+  async function getAllPosts() {
+    try {
+      const response = await postAxios.get(postEndpoints.getPosts, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("api data post", response.data);
+      
+      if (response.data.success) {
+        setPosts(response.data.data);
       }
-    })
-    if(response.data.success){
-      setPosts(response.data.results)
+    } catch (error) {
+      console.log("Error occurred fetching all data", error);
     }
-  } catch (error) {
-    console.log("Error occured fetching all data",error);
-    
   }
-}
 
-useEffect(()=>{
-  getAllPosts()
-},[token])
+  useEffect(() => {
+    getAllPosts();
+  }, [token]);
 
   const settings = {
     dots: true,
@@ -48,35 +48,33 @@ useEffect(()=>{
       {posts.map((post, index) => (
         <div key={index} className="bg-white rounded-lg shadow-lg p-4 mb-10">
           <div className="flex items-center mb-4">
-            <img src={user} alt="user" className="rounded-full w-11 h-11 border-4 border-gray-100" />
+            <img src={post.user.avatar.imageUrl} alt="user" className="rounded-full w-11 h-11 border-4 border-gray-100" />
             <div className="ml-4">
-              <div className="font-semibold">{post.userName}</div>
-              <div className="text-gray-500 text-sm">{post.time}</div>
+              <div className="font-semibold">{post.user.name}</div>
+              <div className="text-gray-500 text-sm">{new Date(post.created_at).toLocaleString()}</div>
             </div>
           </div>
           <div className="mb-4">
-            <p>{post.content}</p>
+            <p>{post.description}</p>
           </div>
-          <div className="rounded-lg overflow-hidden">
-        
+          <div className="post-images">
+            {/* Wrap the Slider component around the images */}
             <Slider {...settings}>
-           
-              {post.images.map((image, imgIndex) => (
+              {post.imageUrl.map((image, imgIndex) => (
                 <div key={imgIndex}>
-                  <img src={image} alt={`post content ${imgIndex}`} className="w-full h-auto" />
+                  <img src={image} alt={`Post image ${imgIndex + 1}`} />
                 </div>
               ))}
             </Slider>
-               <div className="text-white">{posts.length+1}</div>
           </div>
           <div className="flex justify-between mt-10 mb-4">
             <div className="flex items-center space-x-2">
               <ThumbUpRoundedIcon fontSize="small" />
-              <span className="text-gray-500">{post.likes} Likes</span>
+              <span className="text-gray-500">{post.likes.length} Likes</span>
             </div>
             <div className="flex items-center space-x-2">
               <ModeCommentRoundedIcon fontSize="small" />
-              <span className="text-gray-500">{post.comments} Comments</span>
+              <span className="text-gray-500">{post.comments.length} Comments</span>
             </div>
           </div>
         </div>

@@ -1,11 +1,27 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
 
 
 
 const ProfileSideNav = () => {
+  const [sameUser, setSameUser] = useState(true);
+
+  const {id} = useParams<{id?:string}>();
+  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+
+  useEffect(() => {
+    if (userId && id && userId.toString() === id || id=== undefined) {
+        setSameUser(true);
+    } else {
+        setSameUser(false);
+    }
+}, [id, userId]);
+
   return (
     <div className="fixed top-15 left-0 w-72 h- ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
     <NavLink
@@ -19,7 +35,7 @@ const ProfileSideNav = () => {
       <HomeRoundedIcon />
       <span>Skills</span>
     </NavLink>
-    <NavLink
+    {sameUser&&(<NavLink
       to="/userprofile/user-resume"
       className={({ isActive }) =>
         isActive
@@ -29,7 +45,7 @@ const ProfileSideNav = () => {
     >
       <GroupRoundedIcon />
       <span>C V</span>
-    </NavLink>
+    </NavLink>)}
     <NavLink
       to="/userprofile/user-post"
       className={({ isActive }) =>

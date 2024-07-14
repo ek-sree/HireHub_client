@@ -23,10 +23,9 @@ const EditDetailsModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, 
   const [TitleError, setTitleError] = useState('')
   const maxTitleLength = 70;
 
+
   const token = useSelector((store:RootState)=> store.UserAuth.token);
   const email = useSelector((store: RootState)=> store.UserAuth.userData?.email);
-
-
 
 const data = {
   name,

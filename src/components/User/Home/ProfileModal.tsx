@@ -6,6 +6,7 @@ import { userAxios } from "../../../constraints/axios/userAxios";
 import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
+import { toast, Toaster } from "sonner";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -22,7 +23,10 @@ const ProfileModal: FC<ProfileEditModalProps> = ({ isOpen, onClose, onSuccess, i
   const token = useSelector((store: RootState) => store.UserAuth.token);
 
   const handleUploadImage = async () => {
-    if (!image) return;
+    if (!image) {
+      toast.error("select one image")
+      return;
+    }
 
     const formData = new FormData();
     formData.append('image', image);
@@ -58,6 +62,7 @@ const ProfileModal: FC<ProfileEditModalProps> = ({ isOpen, onClose, onSuccess, i
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-slate-500 bg-opacity-50 z-50">
+            <Toaster position="top-center" expand={false} richColors />
       <div className="bg-slate-50 p-6 rounded-lg shadow-lg w-96">
         <div className="flex justify-end mb-4">
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">&times;</button>

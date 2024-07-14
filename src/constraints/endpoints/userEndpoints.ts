@@ -19,5 +19,7 @@ export const userEndpoints = {
     getCv: `${API_GATEWAY_BASE_URL}/getCv`,
     deleteCv: `${API_GATEWAY_BASE_URL}/deleteCv`,
     addProfilePhoto: `${API_GATEWAY_BASE_URL}/addProfileImg`,
-    getProfileImages:`${API_GATEWAY_BASE_URL}/getProfileImages`
+    getProfileImages:`${API_GATEWAY_BASE_URL}/getProfileImages`,
+    addCoverPhoto: `${API_GATEWAY_BASE_URL}/addCoverPhoto`,
+    getCoverImage:`${API_GATEWAY_BASE_URL}/getCoverImage`
 }
