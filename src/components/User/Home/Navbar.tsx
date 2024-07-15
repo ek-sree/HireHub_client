@@ -19,7 +19,7 @@ function Navbar() {
   const [profileImg, setProfileImg] = useState('');
 
   const token = useSelector((store:RootState)=>store.UserAuth.token);
-  const email = useSelector((store:RootState)=>store.UserAuth.userData?.email);
+  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,12 +58,11 @@ function Navbar() {
 
   async function fetchProfileImg(){
     try {
-      const response = await userAxios.get(`${userEndpoints.getProfileImages}?email=${email}`, {
+      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`, {
           headers: {
               Authorization: `Bearer ${token}`
           }
       });
-      console.log("api data profile img", response.data);
 
       if (response.data.success && response.data.data && response.data.data.imageUrl) {
           setProfileImg(response.data.data.imageUrl);
@@ -77,7 +76,7 @@ function Navbar() {
   }
   useEffect(()=>{
     fetchProfileImg();
-  },[email, token,profileImg])
+  },[ token,profileImg])
 
   const handleMouseEnter = () => {
     setShowDropdown(true);

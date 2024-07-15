@@ -33,18 +33,19 @@ const InfoModal: FC<InfoModalInterface> = ({ isOpen, onClose }) => {
     const {id} = useParams<{id:string}>();
 console.log("howwwwww",id);
 
-useEffect(() => {
-  if (userId && id && userId.toString() === id || id=== undefined) {
-      setSameUser(true);
-  } else {
+useEffect(()=>{
+  if(userId !== id){
       setSameUser(false);
+  }else{
+      setSameUser(true);
   }
-}, [id, userId]);
+  userInfo();
+},[userId, id, token,sameUser])
 
     async function userInfo(){
-        
+        const sentId = sameUser ? userId : id;
      try {
-        const response = await userAxios.get(`${userEndpoints.userInfo}?email=${email}`,{
+        const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${sentId}`,{
             headers:{
                 Authorization: `Bearer ${token}`
             }
@@ -81,7 +82,7 @@ useEffect(() => {
 
     useEffect(()=>{
         userInfo();
-    },[])
+    },[sameUser])
 
   if (!isOpen) return null;
 

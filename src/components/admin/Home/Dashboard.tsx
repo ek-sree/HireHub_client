@@ -5,7 +5,6 @@ function Dashboard() {
 
   const adminData = useSelector((state: RootState)=> state.AdminAuth.adminData)
   const isAuthenticated = useSelector((state: RootState) => state.AdminAuth.isAuthenticated)
-console.log("Admin is AUthenticated ?", isAuthenticated);
 
   return (
     <div className="pl-72">

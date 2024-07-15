@@ -1,32 +1,33 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { userAxios } from "../../../constraints/axios/userAxios";
 import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
 import ProfileSideNav from "./ProfileSideNav";
 import SidebarNav from "./SidebarNav";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import SkillAdd from "./SkillAdd";
 import EditSkills from "./EditSkills";
-import { useParams } from "react-router-dom";
+import { RootState } from "../../../redux/store/store";
 
 const UserSkills = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
   const [showAllSkills, setShowAllSkills] = useState(false);
-  const [sameUser , setSameUser] = useState<boolean>(true);
+  const [sameUser, setSameUser] = useState<boolean>(true);
 
-  const {id} = useParams<{id?:string}>();
-
+  const { id } = useParams<{ id?: string }>();
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
-  const userId = useSelector((store: RootState)=>store.UserAuth.userData?._id);
+  const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
+
 
   useEffect(() => {
-    if (userId && id && userId.toString() === id || id=== undefined) {
-        setSameUser(true);
-    } else {
+    
+    if (userId !== id) {
         setSameUser(false);
+    } else {
+        setSameUser(true);
     }
 }, [id, userId]);
 
@@ -34,51 +35,48 @@ const UserSkills = () => {
     if (email) {
       userSkills();
     }
-  }, [email]);
+  }, [email, sameUser]);
+
+  const sentId = sameUser ? userId : id;
 
   async function userSkills() {
     try {
-      const response = await userAxios.get(`${userEndpoints.userSkills}?email=${email}`, {
+      const response = await userAxios.get(`${userEndpoints.userSkills}?userId=${sentId}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.data.success) {
         setSkills(response.data.skills);
       }
     } catch (error) {
-      console.log("Error occurred showing skills", error);
-      throw new Error("Error occurred fetching user skills");
+      console.error("Error fetching user skills:", error);
     }
   }
 
-  const handleOnSuccess=(skills:string[])=>{
+  const handleOnSuccess = (skills: string[]) => {
     setSkills(skills);
-  }
+  };
 
-  const hahndleonSuccess =(skills:string[])=>{
-    setSkills(skills);
-  }
-
-  const handleSkillAdd = ()=>{
+  const handleSkillAdd = () => {
     setIsModalOpen(true);
-  }
+  };
 
-  const handleClose = ()=>{
+  const handleClose = () => {
     setIsModalOpen(false);
-  }
+  };
 
-  const handleEditSkills= () =>{
+  const handleEditSkills = () => {
     setIsEditModal(true);
-  }
+  };
 
-  const handleEditClose=()=>{
+  const handleEditClose = () => {
     setIsEditModal(false);
-  }
+  };
 
-  const toggleShowAllSkills=()=>{
-    setShowAllSkills(prevShowSkills=> !prevShowSkills);
-  }
+  const toggleShowAllSkills = () => {
+    setShowAllSkills(prevShowSkills => !prevShowSkills);
+  };
 
   const skillsToShow = showAllSkills ? skills : skills.slice(0, 3);
 
@@ -86,23 +84,21 @@ const UserSkills = () => {
     <div className="max-w-2xl mx-auto mb-8 bg-white mt-10 p-4 rounded-lg shadow-lg">
       <ProfileSideNav />
       <SidebarNav />
-      <div className="text-center font-semibold font-sans">
-        UserSkills
-      </div>
-      {skills.length > 0 && (
-        sameUser&&(<div className="flex justify-end">
+      <div className="text-center font-semibold font-sans">User Skills</div>
+      {skills.length > 0 && sameUser && (
+        <div className="flex justify-end">
           <button
             onClick={handleEditSkills}
             className="bg-cyan-400 py-1 px-3 rounded text-white hover:bg-cyan-300"
           >
-            Add more skills 
+            Add more skills
           </button>
-        </div>)
+        </div>
       )}
       {skills.length > 0 ? (
         skillsToShow.map((skill, index) => (
           <div key={index} className="mt-4 ml-10">
-            <label> * {skill}</label>
+            <label>* {skill}</label>
             <hr className="my-2 border-gray-200" />
           </div>
         ))
@@ -111,30 +107,32 @@ const UserSkills = () => {
           <p>No skills added yet</p>
         </div>
       )}
-      {skills.length==0? 
-    sameUser&&(<div onClick={handleSkillAdd} className="mt-5 py-1 text-center w- bg-slate-500 rounded text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
-    Add Skills
-  </div>) : (
-   skills.length > 3 && (
-    <div onClick={toggleShowAllSkills} className="mt-5 py-1 text-center w-full bg-slate-300 rounded-xl text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
-      {showAllSkills ? "Show Less 🔼" : "Show More 🔽"}
-    </div>
-    )
-  )
-      }
-      {isModalOpen &&(
+      {skills.length === 0 ? (
+        sameUser && (
+          <div onClick={handleSkillAdd} className="mt-5 py-1 text-center w-full bg-slate-500 rounded text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
+            Add Skills
+          </div>
+        )
+      ) : (
+        skills.length > 3 && (
+          <div onClick={toggleShowAllSkills} className="mt-5 py-1 text-center w-full bg-slate-300 rounded-xl text-white font-semibold hover:bg-slate-400 hover:font-normal hover:cursor-pointer">
+            {showAllSkills ? "Show Less 🔼" : "Show More 🔽"}
+          </div>
+        )
+      )}
+      {isModalOpen && (
         <SkillAdd
-        isOpen={isModalOpen}
-        onClose={handleClose}
-        onSuccess={hahndleonSuccess}
+          isOpen={isModalOpen}
+          onClose={handleClose}
+          onSuccess={handleOnSuccess}
         />
       )}
-      {isEditModal &&(
+      {isEditModal && (
         <EditSkills
-        isOpen={isEditModal}
-        onClose={handleEditClose}
-        skillsValue={skills}
-        onSuccess={handleOnSuccess}
+          isOpen={isEditModal}
+          onClose={handleEditClose}
+          skillsValue={skills}
+          onSuccess={handleOnSuccess}
         />
       )}
     </div>

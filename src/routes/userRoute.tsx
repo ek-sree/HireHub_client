@@ -24,13 +24,13 @@ const UserRoute = () => {
         <Route path="/sidenav" element={<SidebarNav/>}/>
         <Route path="/sidenavprofile" element={<SidebarProfile/>}/>
         <Route path="/postbar" element={<Postbar/>} />
-        <Route path="/posts" element={<Post/>} />
+        <Route path="/posts/:id" element={<Post/>} />
         <Route path="/friendSuggestion" element={<FriendSuggestion/>}/>
-        <Route path="/userprofile" element={<UserProfilePage/>}/>
+        <Route path="/userprofile/:id" element={<UserProfilePage/>}/>
         <Route path="/jobposts" element={<JobPostUserPage/>}/>
-        <Route path="/userprofile/user-resume" element={<CV/>}/>
-        <Route path="/userprofile/user-post" element={<UserPost/>}/>
-        <Route path="/userprofile/user-skills" element={<UserSkills/>}/>
+        <Route path="/userprofile/user-resume/:id" element={<CV/>}/>
+        <Route path="/userprofile/user-post/:id" element={<UserPost/>}/>
+        <Route path="/userprofile/user-skills/:id" element={<UserSkills/>}/>
       </Route>
       <Route element={<PublicRouter />}>
         <Route path="/" element={<LoginPage />} />

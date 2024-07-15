@@ -1,17 +1,17 @@
 import Slider from "react-slick";
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useEffect, useState } from "react";
 import { postAxios } from "../../../constraints/axios/postAxios";
 import { postEndpoints } from "../../../constraints/endpoints/postEndpoints";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
+import { Link } from "react-router-dom";
 
 const Post = () => {
   const [posts, setPosts] = useState([]);
-
   const token = useSelector((store: RootState) => store.UserAuth.token);
 
   async function getAllPosts() {
@@ -21,7 +21,6 @@ const Post = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("api data post", response.data);
       
       if (response.data.success) {
         setPosts(response.data.data);
@@ -50,7 +49,9 @@ const Post = () => {
           <div className="flex items-center mb-4">
             <img src={post.user.avatar.imageUrl} alt="user" className="rounded-full w-11 h-11 border-4 border-gray-100" />
             <div className="ml-4">
-              <div className="font-semibold">{post.user.name}</div>
+              <Link to={`/userprofile/${post.UserId}`}>
+                <div className="font-semibold cursor-pointer">{post.user.name}</div>
+              </Link>
               <div className="text-gray-500 text-sm">{new Date(post.created_at).toLocaleString()}</div>
             </div>
           </div>
@@ -58,7 +59,6 @@ const Post = () => {
             <p>{post.description}</p>
           </div>
           <div className="post-images">
-            {/* Wrap the Slider component around the images */}
             <Slider {...settings}>
               {post.imageUrl.map((image, imgIndex) => (
                 <div key={imgIndex}>

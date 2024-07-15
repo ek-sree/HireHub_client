@@ -12,8 +12,6 @@ function Landing() {
 
   const userData = useSelector((state: RootState) => state.UserAuth.userData);
   const isAuthenticated = useSelector((state: RootState) => state.UserAuth.token);
-  console.log("is authenticated", isAuthenticated);
-  console.log("is dssts", userData?.status);
 
   if (!isAuthenticated && userData?.status) {
     return <Navigate to='/'/>

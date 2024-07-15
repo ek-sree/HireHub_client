@@ -21,57 +21,32 @@ const UserProfileDetails = () => {
     const [sameUser, setSameUser] = useState<boolean>(true);
 
     const { id } = useParams<{ id?: string }>();
-
     const token = useSelector((store: RootState) => store.UserAuth.token);
     const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
-    const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+    const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
 
-    console.log("userId:", userId);
-console.log("viewed user id:", id);
-console.log("is same user:", userId?.toString() === id);
-
-    useEffect(() => {
-        if (userId && id && userId.toString() === id || id=== undefined) {
-            setSameUser(true);
-        } else {
+    useEffect(()=>{
+        if(userId !== id){
             setSameUser(false);
+        }else{
+            setSameUser(true);
         }
-    }, [id, userId]);
-    
+        userDetails();
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
+      },[userId, id, token,sameUser])
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleTitleModal = () => {
-        setTitleModalOpen(true);
-    };
-
-    const handleCloseTitleModal = () => {
-        setTitleModalOpen(false);
-    };
-
-    const onTitleData = (data: string) => {
-        setTitle(data);
-    };
-
-    const handleSuccess = (data: { name: string, profileTitle: string }) => {
+    const handleOpenModal = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
+    const handleTitleModal = () => setTitleModalOpen(true);
+    const handleCloseTitleModal = () => setTitleModalOpen(false);
+    const onTitleData = (data: string) => setTitle(data);
+    const handleSuccess = (data: { name: string; profileTitle: string }) => {
         setName(data.name);
         setTitle(data.profileTitle);
     };
-
-    const handleOpenInfoModal = () => {
-        setIsInfoModal(true);
-    };
-
-    const handleCloseInfoModal = () => {
-        setIsInfoModal(false);
-    };
+    const handleOpenInfoModal = () => setIsInfoModal(true);
+    const handleCloseInfoModal = () => setIsInfoModal(false);
 
     const toggleFollow = async () => {
         try {
@@ -82,7 +57,7 @@ console.log("is same user:", userId?.toString() === id);
             });
             if (response.data.success) {
                 setIsFollowing(!isFollowing);
-                setFollowersCount(prevCount => isFollowing ? prevCount - 1 : prevCount + 1);
+                setFollowersCount((prevCount) => (isFollowing ? prevCount - 1 : prevCount + 1));
             } else {
                 toast.error("Unable to follow/unfollow user.");
             }
@@ -91,10 +66,13 @@ console.log("is same user:", userId?.toString() === id);
         }
     };
 
-    useEffect(() => {
+    const sentId = sameUser ? userId : id;
+
         const userDetails = async () => {
+            if (!sentId) return; 
+
             try {
-                const response = await userAxios.get(`${userEndpoints.viewDetails}?email=${email}`, {
+                const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -112,9 +90,11 @@ console.log("is same user:", userId?.toString() === id);
                 toast.error("Error occurred, please log in after some time.");
             }
         };
-        userDetails();
-    }, [email, token]);
+    useEffect(() => {
+        
 
+        userDetails();
+    }, [sameUser, id, userId, email, token]);
 
     return (
         <div className="flex flex-col items-center text-center mt-6">
@@ -123,30 +103,39 @@ console.log("is same user:", userId?.toString() === id);
             </div>
             <div className="flex items-center mb-2 gap-3">
                 {!title ? (
-                    sameUser&&(
-
-                        <div className="bg-slate-200 py-1 px-2 rounded-md shadow-md hover:cursor-pointer hover:bg-slate-300" onClick={handleTitleModal}>
-                        Add title
-                    </div>
+                    sameUser && (
+                        <div
+                            className="bg-slate-200 py-1 px-2 rounded-md shadow-md hover:cursor-pointer hover:bg-slate-300"
+                            onClick={handleTitleModal}
+                        >
+                            Add title
+                        </div>
                     )
                 ) : (
                     <span className="font-medium text-lg">{title}</span>
                 )}
-                {sameUser&&(
+                {sameUser && (
                     <EditRoundedIcon onClick={handleOpenModal} className="cursor-pointer" />
                 )}
             </div>
             <div className="flex items-center gap-4 mb-4">
                 <span className="font-medium text-lg">{followersCount} Followers</span>
                 <span className="font-medium text-lg">{followersCount} Following</span>
-                </div>
-                {!sameUser&&(<button
+            </div>
+            {!sameUser && (
+                <button
                     onClick={toggleFollow}
                     className={`px-4 py-2 rounded-lg w-full ${isFollowing ? 'text-black border-4 hover:bg-slate-200 font-medium' : 'bg-cyan-400 text-white'}`}
                 >
                     {isFollowing ? 'Unfollow' : 'Follow'}
-                </button>)}
-            <div onClick={handleOpenInfoModal} className='mt-3 font-semibold text-blue-800 hover:cursor-pointer hover:text-blue-400 italic shadow-sm'>More info .!</div>
+                </button>
+            )}
+            <div
+                onClick={handleOpenInfoModal}
+                className='mt-3 font-semibold text-blue-800 hover:cursor-pointer hover:text-blue-400 italic shadow-sm'
+            >
+                More info .!
+            </div>
             {isModalOpen && (
                 <EditDetailsModal
                     isOpen={isModalOpen}

@@ -4,8 +4,12 @@ import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded';
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
+
 
 const SidebarNav = () => {
+  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
   return (
     <div className="fixed top-96 left-0 w-72 h- ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
       <NavLink
@@ -20,7 +24,7 @@ const SidebarNav = () => {
         <span>HOME</span>
       </NavLink>
       <NavLink
-        to="/userprofile"
+        to={`/userprofile/${userId}`}
         className={({ isActive }) =>
           isActive
             ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'

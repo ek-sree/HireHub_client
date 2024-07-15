@@ -18,13 +18,14 @@ const UserProfilePage = () => {
 
   const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
-    useEffect(() => {
-        if (userId && id && userId.toString() === id || id=== undefined) {
-            setSameUser(true);
-        } else {
-            setSameUser(false);
-        }
-    }, [id, userId]);
+  useEffect(()=>{
+    if(userId !== id){
+        setSameUser(false);
+    }else{
+        setSameUser(true);
+    }
+
+  },[userId, id,sameUser])
 
   return (
     <>

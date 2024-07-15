@@ -20,16 +20,19 @@ const UserProfile = () => {
     const {id} = useParams<{id?:string}>();
 
     const token = useSelector((store: RootState) => store.UserAuth.token);
-    const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
     const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
     useEffect(() => {
-        if (userId && id && userId.toString() === id || id=== undefined) {
-            setSameUser(true);
-        } else {
+        
+        if (userId !== id) {
             setSameUser(false);
+        } else {
+            setSameUser(true);
         }
-    }, [id, userId]);
+        showCoverImg();
+            showImage();
+    }, [id, userId,token,sameUser,coverImg,profileImg]);
+    
 
     const handleProfileOpenModal = () => {
         setIsProfileModalOpen(true);
@@ -55,14 +58,14 @@ const UserProfile = () => {
         setCoverImg(coverUrl);
     };
 
+    const sentId = sameUser ? userId : id;
     async function showImage() {
         try {
-            const response = await userAxios.get(`${userEndpoints.getProfileImages}?email=${email}`, {
+            const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log("api data profile img", response.data);
 
             if (response.data.success) {
                 const imageUrl = response.data.data?.imageUrl || User; 
@@ -77,8 +80,10 @@ const UserProfile = () => {
     }
 
     async function showCoverImg() {
+        console.log("Sending userId:", sentId);
+
         try {
-            const response = await userAxios.get(`${userEndpoints.getCoverImage}?email=${email}`, {
+            const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -100,7 +105,7 @@ const UserProfile = () => {
             showCoverImg();
             showImage();
         }
-    }, [token]);
+    }, [token,sameUser,coverImg,profileImg,id,userId]);
 
     return (
         <div className="max-w-2xl mx-auto mt-10 px-6 py-8 rounded-lg shadow-md relative">

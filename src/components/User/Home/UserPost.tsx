@@ -1,42 +1,107 @@
-import User from '../../../assets/images/user.png';
-import HireHub from '../../../assets/images/HireHub.png';
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
 import ProfileSideNav from './ProfileSideNav';
 import SidebarNav from './SidebarNav';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store/store';
+import { postAxios } from '../../../constraints/axios/postAxios';
+import { postEndpoints } from '../../../constraints/endpoints/postEndpoints';
+import Slider from 'react-slick';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const UserPost = () => {
+    const [posts, setPosts] = useState([]);
+    const [sameUser, setSameUser] = useState<boolean>(true);
+  const token = useSelector((store: RootState) => store.UserAuth.token);
+  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+
+  const {id} = useParams<{id?:string}>()
+  console.log("params id", id);
+
+  useEffect(()=>{
+    if(userId !== id){
+        setSameUser(false);
+    }else{
+        setSameUser(true);
+    }
+    getUserPosts();
+
+  },[userId, id, token,sameUser])
+
+  async function getUserPosts() {
+      try {
+        const sentId = sameUser ? userId : id;
+        console.log("same same",sameUser);
+        console.log("id sent",sentId);
+        
+        
+      const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${sentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("api data post of user", response.data);
+      
+      if (response.data.success) {
+        setPosts(response.data.data);
+      }
+    } catch (error) {
+      console.log("Error occurred fetching all data", error);
+    }
+  }
+
+  useEffect(() => {
+    getUserPosts();
+  }, [token,sameUser]);
+
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  };
+
   return (
-    <div className="max-w-2xl mx-auto mt-10 mb-10">
-        <ProfileSideNav/>
-        <SidebarNav/>
-        <div className="bg-white rounded-lg shadow-lg p-4">
-            <div className='flex items-center mb-4'>
-                <img src={User} alt="userprofile" className='rounded-full w-11 h-11 border-4 border-gray-100'/>
-                <div className='ml-4'>
-                    <div className='font-semibold'>User Name</div>
-                    <div className='text-gray-500 text-sm'>Time</div>
+    <div className="max-w-2xl mx-auto mt-10">
+         <ProfileSideNav/>
+         <SidebarNav/>
+      {posts.map((post, index) => (
+        <div key={index} className="bg-white rounded-lg shadow-lg p-4 mb-10">
+          <div className="flex items-center mb-4">
+            {/* <img src={post.user.avatar.imageUrl} alt="user" className="rounded-full w-11 h-11 border-4 border-gray-100" /> */}
+            <div className="ml-4">
+                {/* <div className="font-semibold cursor-pointer">{post.user.name}</div> */}
+              <div className="text-gray-500 text-sm">{new Date(post.created_at).toLocaleString()}</div>
+            </div>
+          </div>
+          <div className="mb-4">
+            <p>{post.description}</p>
+          </div>
+          <div className="post-images">
+            <Slider {...settings}>
+              {post.imageUrl.map((image, imgIndex) => (
+                <div key={imgIndex}>
+                  <img src={image} alt={`Post image ${imgIndex + 1}`} />
                 </div>
+              ))}
+            </Slider>
+          </div>
+          <div className="flex justify-between mt-10 mb-4">
+            <div className="flex items-center space-x-2">
+              <ThumbUpRoundedIcon fontSize="small" />
+              <span className="text-gray-500">{post.likes.length} Likes</span>
             </div>
-            <div className='mb-4 pt-3'>
-                <p>Here is the place for add text or decription..</p>
+            <div className="flex items-center space-x-2">
+              <ModeCommentRoundedIcon fontSize="small" />
+              <span className="text-gray-500">{post.comments.length} Comments</span>
             </div>
-            <div className='rounded-lg overflow-hidden'>
-                <img src={HireHub} alt="Post content" className='w-full h-auto'/>
-            </div>
-            <div className='flex justify-between mt-4'>
-                <div className='flex items-center space-x-2'>
-                    <ThumbUpRoundedIcon fontSize='small'/>
-                    <span className='text-gray-500 hover:text-gray-800 hover:cursor-pointer'>100 Likes</span>
-                </div>
-                <div className='flex items-center space-x-2'>
-                    <ModeCommentRoundedIcon fontSize='small'/>
-                    <span className='text-gray-500 hover:text-gray-800 hover:cursor-pointer'>50 Comment</span>
-                </div>
-            </div>
+          </div>
         </div>
+      ))}
     </div>
-  )
+  );
 }
 
 export default UserPost

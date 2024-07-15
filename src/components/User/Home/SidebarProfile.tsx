@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import HireHub from '../../../assets/images/HireHub.png';
 import user from '../../../assets/images/user.png';
 import { useSelector } from 'react-redux';
@@ -13,14 +13,29 @@ const SidebarProfile = () => {
   const [name, setName] = useState('');
   const [profileImg, setProfileImg] = useState<string>(user);
   const [coverImg, setCoverImg] = useState<string>(HireHub);
+  const [sameUser, setSameUser] = useState<boolean>(true);
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
-  const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
+  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+
+  const {id} = useParams<{id?:string}>();
+  
+  useEffect(() => {
+        
+    if (userId !== id) {
+        setSameUser(false);
+    } else {
+        setSameUser(true);
+    }
+    showCoverImg();
+        showImage();
+}, [id, userId]);
 
   
+const sentId = sameUser ? userId : id
     async function userDetails() {
       try {
-        const response = await userAxios.get(`${userEndpoints.viewDetails}?email=${email}`, {
+        const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,12 +55,11 @@ const SidebarProfile = () => {
 
     async function showImage() {
       try {
-          const response = await userAxios.get(`${userEndpoints.getProfileImages}?email=${email}`, {
+          const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`, {
               headers: {
                   Authorization: `Bearer ${token}`
               }
           });
-          console.log("api data profile img", response.data);
 
           if (response.data.success && response.data.data && response.data.data.imageUrl) {
               setProfileImg(response.data.data.imageUrl);
@@ -60,7 +74,9 @@ const SidebarProfile = () => {
 
   async function showCoverImg(){
     try {
-        const response = await userAxios.get(`${userEndpoints.getCoverImage}?email=${email}`,{
+      console.log("Sending userId:", sentId);
+      
+        const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`,{
             headers:{
                 Authorization: `Bearer ${token}`
             }
@@ -78,7 +94,7 @@ const SidebarProfile = () => {
     showImage();
     userDetails();
     showCoverImg();
-  },[token,email])
+  },[token])
 
   return (
     <div className="fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">
@@ -93,7 +109,7 @@ const SidebarProfile = () => {
         <div className="text-xs sm:text-sm text-gray-600">{title}</div>
       </div>
       <div className="absolute mt-16 sm:mt-20 bottom-0 left-1/2 transform -translate-x-1/2 w-full px-4">
-        <Link to='/userprofile'>
+        <Link to='/userprofile/:id'>
           <button className="w-full text-slate-400 rounded-md text-xs sm:text-sm font-semibold shadow-lg border-2 border-slate-500 hover:bg-slate-200 hover:font-bold">View Profile</button>
         </Link>
       </div>
