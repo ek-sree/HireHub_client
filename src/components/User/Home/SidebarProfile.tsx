@@ -29,7 +29,8 @@ const SidebarProfile = () => {
     }
     showCoverImg();
         showImage();
-}, [id, userId]);
+        userDetails()
+}, [id, userId,token]);
 
   
 const sentId = sameUser ? userId : id
@@ -90,11 +91,11 @@ const sentId = sameUser ? userId : id
     }
 }
 
-  useEffect(()=>{
-    showImage();
-    userDetails();
-    showCoverImg();
-  },[token])
+  // useEffect(()=>{
+  //   showImage();
+  //   userDetails();
+  //   showCoverImg();
+  // },[token])
 
   return (
     <div className="fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">

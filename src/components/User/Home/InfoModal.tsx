@@ -26,7 +26,6 @@ const InfoModal: FC<InfoModalInterface> = ({ isOpen, onClose }) => {
     const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
     const [sameUser, setSameUser] = useState<boolean>(true);
 
-    const email = useSelector((store: RootState)=>store.UserAuth.userData?.email);
     const token = useSelector((store:RootState)=> store.UserAuth.token);
     const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
@@ -80,9 +79,9 @@ useEffect(()=>{
         setPlace(data.place)
     }
 
-    useEffect(()=>{
-        userInfo();
-    },[sameUser])
+    // useEffect(()=>{
+    //     userInfo();
+    // },[sameUser])
 
   if (!isOpen) return null;
 

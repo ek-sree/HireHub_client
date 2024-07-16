@@ -100,12 +100,12 @@ const UserProfile = () => {
         }
     }
 
-    useEffect(() => {
-        if (token) {
-            showCoverImg();
-            showImage();
-        }
-    }, [token,sameUser,coverImg,profileImg,id,userId]);
+    // useEffect(() => {
+    //     if (token) {
+    //         showCoverImg();
+    //         showImage();
+    //     }
+    // }, [token,sameUser,coverImg,profileImg,id,userId]);
 
     return (
         <div className="max-w-2xl mx-auto mt-10 px-6 py-8 rounded-lg shadow-md relative">

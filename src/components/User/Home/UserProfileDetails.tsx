@@ -17,12 +17,12 @@ const UserProfileDetails = () => {
     const [title, setTitle] = useState('');
     const [name, setName] = useState('');
     const [followersCount, setFollowersCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [sameUser, setSameUser] = useState<boolean>(true);
 
     const { id } = useParams<{ id?: string }>();
     const token = useSelector((store: RootState) => store.UserAuth.token);
-    const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
     const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
 
@@ -34,7 +34,7 @@ const UserProfileDetails = () => {
         }
         userDetails();
 
-      },[userId, id, token,sameUser])
+      },[token,sameUser,id])
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -48,16 +48,16 @@ const UserProfileDetails = () => {
     const handleOpenInfoModal = () => setIsInfoModal(true);
     const handleCloseInfoModal = () => setIsInfoModal(false);
 
-    const toggleFollow = async () => {
+    const handleFollow = async () => {
         try {
-            const response = await userAxios.post(`${userEndpoints.toggleFollow}`, { email }, {
+            const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             if (response.data.success) {
                 setIsFollowing(!isFollowing);
-                setFollowersCount((prevCount) => (isFollowing ? prevCount - 1 : prevCount + 1));
+                setFollowersCount((prevCount) => (prevCount + 1));
             } else {
                 toast.error("Unable to follow/unfollow user.");
             }
@@ -72,15 +72,18 @@ const UserProfileDetails = () => {
             if (!sentId) return; 
 
             try {
-                const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}`, {
+                const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}&followerId=${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
+                console.log("checkkkkkkk",response.data);
+                
                 if (response.data.success) {
                     setName(response.data.details.name);
                     setTitle(response.data.details.title);
-                    setFollowersCount(response.data.details.followersCount || 0);
+                    setFollowersCount(response.data.details.followers || 0);
+                    setFollowingCount(response.data.details.following || 0);
                     setIsFollowing(response.data.details.isFollowing || false);
                 }
                 if (response.status === 403) {
@@ -90,11 +93,28 @@ const UserProfileDetails = () => {
                 toast.error("Error occurred, please log in after some time.");
             }
         };
-    useEffect(() => {
-        
 
-        userDetails();
-    }, [sameUser, id, userId, email, token]);
+        const handleUnFollow= async()=>{
+            try {
+                const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`, {}, {
+                    headers:{
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                console.log("unfollow res",response.data);
+                
+                if(response.data.success){
+                    setIsFollowing(!isFollowing);
+                    setFollowersCount((prevCount)=>prevCount-1);
+                }
+            } catch (error) {
+                console.log("Error occured while unfollowing",);
+                
+            }
+        }
+    // useEffect(() => {
+    //     userDetails();
+    // }, [sameUser,token]);
 
     return (
         <div className="flex flex-col items-center text-center mt-6">
@@ -119,16 +139,35 @@ const UserProfileDetails = () => {
                 )}
             </div>
             <div className="flex items-center gap-4 mb-4">
-                <span className="font-medium text-lg">{followersCount} Followers</span>
-                <span className="font-medium text-lg">{followersCount} Following</span>
+                <span className="font-medium text-lg">{followersCount.length} Followers</span>
+                <span className="font-medium text-lg">{followingCount.length} Following</span>
             </div>
             {!sameUser && (
-                <button
-                    onClick={toggleFollow}
-                    className={`px-4 py-2 rounded-lg w-full ${isFollowing ? 'text-black border-4 hover:bg-slate-200 font-medium' : 'bg-cyan-400 text-white'}`}
+                <div className="flex w-full gap-2">
+                {isFollowing?(
+                    <>
+                    <button
+                    onClick={handleUnFollow}
+                    className={"flex-1 px-4 py-2 rounded-lg  text-black border-4 hover:bg-slate-200 font-medium"}
                 >
-                    {isFollowing ? 'Unfollow' : 'Follow'}
+                    Unfollow
                 </button>
+                <button
+                // onClick={Follow}
+                className={"flex-1 px-4 py-2 rounded-lg  text-black bg-slate-300 hover:bg-slate-200 font-medium"}
+            >
+                Message
+            </button>
+            </>):(
+                <button
+                    onClick={handleFollow}
+                    className={"px-4 py-2 rounded-lg w-full bg-cyan-400 text-white"}
+                >
+                    Follow
+                </button>
+                
+)}
+                </div> 
             )}
             <div
                 onClick={handleOpenInfoModal}

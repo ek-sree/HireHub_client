@@ -21,5 +21,8 @@ export const userEndpoints = {
     addProfilePhoto: `${API_GATEWAY_BASE_URL}/addProfileImg`,
     getProfileImages:`${API_GATEWAY_BASE_URL}/getProfileImages`,
     addCoverPhoto: `${API_GATEWAY_BASE_URL}/addCoverPhoto`,
-    getCoverImage:`${API_GATEWAY_BASE_URL}/getCoverImage`
+    getCoverImage:`${API_GATEWAY_BASE_URL}/getCoverImage`,
+    follow:`${API_GATEWAY_BASE_URL}/follow`,
+    unfollow:`${API_GATEWAY_BASE_URL}/unfollow`,
+    searchUsers:`${API_GATEWAY_BASE_URL}/seachUsers`
 }

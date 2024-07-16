@@ -51,9 +51,9 @@ const UserPost = () => {
     }
   }
 
-  useEffect(() => {
-    getUserPosts();
-  }, [token,sameUser]);
+  // useEffect(() => {
+  //   getUserPosts();
+  // }, [token,sameUser]);
 
   const settings = {
     dots: true,
