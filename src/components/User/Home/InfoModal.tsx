@@ -30,7 +30,6 @@ const InfoModal: FC<InfoModalInterface> = ({ isOpen, onClose }) => {
     const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
     const {id} = useParams<{id:string}>();
-console.log("howwwwww",id);
 
 useEffect(()=>{
   if(userId !== id){

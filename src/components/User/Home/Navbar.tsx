@@ -2,7 +2,7 @@ import { Avatar } from '@mui/material';
 import { useEffect, useState } from 'react';
 import HireHubLogo from '../../../assets/images/HireHub.png';
 import notificationLogo from '../../../assets/images/notificationLogo.jpg';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/slice/UserSlice';
 import { userAxios } from '../../../constraints/axios/userAxios';
@@ -129,12 +129,18 @@ function Navbar() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          {searchResults.length > 0 ? (
+          {searchResults && searchResults.length > 0 ? (
             <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-10">
               {searchResults.map((result, index) => (
-                <div key={index} className="p-2 cursor-pointer hover:bg-gray-100">
-                  {result.name}
+                <Link to={`/userprofile/${result._id}`}>
+                <div key={index} className="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
+                  <img src={result.avatar.imageUrl} alt={result.name} className="h-10 w-10 rounded-full mr-3" />
+                  <div>
+                    <div>{result.name}</div>
+                    <div className="text-sm text-gray-500">{result.profileTitle}</div>
+                  </div>
                 </div>
+                </Link>
               ))}
             </div>
           ) : (

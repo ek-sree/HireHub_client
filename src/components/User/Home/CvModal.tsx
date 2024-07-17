@@ -50,7 +50,6 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-console.log("api response add cv",response.data);
 
                 if (response.data.success) {
                     setLoading(false)

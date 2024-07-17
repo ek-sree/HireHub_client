@@ -9,30 +9,94 @@ import { postEndpoints } from "../../../constraints/endpoints/postEndpoints";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { Link } from "react-router-dom";
+import CommentModal from "./CommentModal";
 
 const Post = () => {
   const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedPostId, setSelectedPostId] = useState<string>('');
+
   const token = useSelector((store: RootState) => store.UserAuth.token);
+  const userId = useSelector((store: RootState)=> store.UserAuth.userData?._id);
 
   async function getAllPosts() {
     try {
-      const response = await postAxios.get(postEndpoints.getPosts, {
+      const response = await postAxios.get(`${postEndpoints.getPosts}?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log("api res",response.data);
       
       if (response.data.success) {
-        setPosts(response.data.data);
+        setPosts((prev) => [...prev, ...response.data.data.map(post => ({
+          ...post,
+          isLiked: post.likes.some(like => like.userId === userId)
+        }))]);
       }
     } catch (error) {
       console.log("Error occurred fetching all data", error);
     }
   }
 
+  const handleLike = async (postId: string) => {
+    try {
+      const response = await postAxios.post(`${postEndpoints.likePost}?postId=${postId}&userId=${userId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setPosts(posts.map(post => 
+          post._id === postId ? { ...post, likes: [...post.likes, { userId }], isLiked: true } : post
+        ));
+      }
+    } catch (error) {
+      console.log("error liking post", error);
+    }
+  }
+
+  const handleUnlike = async (postId: string) => {
+    try {
+      const response = await postAxios.post(`${postEndpoints.unlikePost}?postId=${postId}&userId=${userId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setPosts(posts.map(post =>
+          post._id === postId ? { ...post, likes: post.likes.filter(like => like.userId !== userId), isLiked: false } : post
+        ));
+      }
+    } catch (error) {
+      console.log("error unliking post", error);
+    }
+  }
+
+  const handleCommentModal = (postId) => {
+    setSelectedPostId(postId);
+    setIsModalOpen(true);
+  }
+
+  const handleScroll = () => {
+    if (window.innerHeight + document.documentElement.scrollTop + 1 >= document.documentElement.scrollHeight) {
+      setPage(prev => prev + 1);
+    }
+  }
+
   useEffect(() => {
-    getAllPosts();
-  }, [token]);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [page]);
+
+  useEffect(() => {
+    if (token) {
+      getAllPosts();
+    }
+  }, [page]);
 
   const settings = {
     dots: true,
@@ -69,16 +133,27 @@ const Post = () => {
           </div>
           <div className="flex justify-between mt-10 mb-4">
             <div className="flex items-center space-x-2">
-              <ThumbUpRoundedIcon fontSize="small" />
+              <ThumbUpRoundedIcon 
+                fontSize="small" 
+                onClick={() => post.isLiked ? handleUnlike(post._id) : handleLike(post._id)}
+                className={post.isLiked ? "text-blue-500 cursor-pointer" : "text-gray-500 cursor-pointer"}
+              />
               <span className="text-gray-500">{post.likes.length} Likes</span>
             </div>
             <div className="flex items-center space-x-2">
-              <ModeCommentRoundedIcon fontSize="small" />
+              <ModeCommentRoundedIcon fontSize="small" onClick={() => handleCommentModal(post._id)} />
               <span className="text-gray-500">{post.comments.length} Comments</span>
             </div>
           </div>
         </div>
       ))}
+      {isModalOpen && (
+        <CommentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          postId={selectedPostId}
+        />
+      )}
     </div>
   );
 }
