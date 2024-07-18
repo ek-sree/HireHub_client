@@ -23,3 +23,21 @@ export interface Candidate {
   phone: string;
   resume: string;
 }
+
+
+export interface Posts {
+  _id: string;
+  user: {
+    avatar: {
+      imageUrl: string;
+    };
+    name: string;
+  };
+  UserId: string;
+  created_at: string; 
+  description: string;
+  imageUrl: string[]; 
+  likes: { UserId: string }[]; 
+  comments: Comment[]; 
+  isLiked: boolean; 
+}

@@ -6,5 +6,8 @@ export const postEndpoints ={
     userPosts:`${API_GATEWAY_BASE_URL}/userPosts`,
     likePost:`${API_GATEWAY_BASE_URL}/likePost`,
     unlikePost: `${API_GATEWAY_BASE_URL}/unlikePost`,
-    fetchComment: `${API_GATEWAY_BASE_URL}/viewComments`
+    addComment: `${API_GATEWAY_BASE_URL}/addComment`,
+    fetchComment: `${API_GATEWAY_BASE_URL}/viewComments`,
+    deleteComment: `${API_GATEWAY_BASE_URL}/deleteComment`,
+    deletePost: `${API_GATEWAY_BASE_URL}/deletePost`
 }
