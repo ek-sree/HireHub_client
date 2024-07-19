@@ -22,44 +22,45 @@ const ProfileSideNav = () => {
 
   const sentId = sameUser ? userId : id;
 
+  const navItems = [
+    { to: `/userprofile/user-skills/${sentId}`, icon: <HomeRoundedIcon />, label: 'Skills' },
+    ...(sameUser ? [{ to: `/userprofile/user-resume/${sentId}`, icon: <GroupRoundedIcon />, label: 'CV' }] : []),
+    { to: `/userprofile/user-post/${sentId}`, icon: <WorkRoundedIcon />, label: 'Posts' },
+  ];
+
+  const NavItem = ({ to, icon, label }) => (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `flex mb-3 items-center justify-center p-2 ${
+          isActive
+            ? 'text-white bg-cyan-300 rounded-lg'
+            : 'text-slate-400 hover:text-cyan-300'
+        }`
+      }
+    >
+      {icon}
+      <span className="text-xs mt-1">{label}</span>
+    </NavLink>
+  );
+
   return (
-    <div className="fixed top-28 left-0 w-72 ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
-      <NavLink
-        to={`/userprofile/user-skills/${sentId}`}
-        className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-semibold'
-        }
-      >
-        <HomeRoundedIcon />
-        <span>Skills</span>
-      </NavLink>
-      {sameUser && (
-        <NavLink
-          to={`/userprofile/user-resume/${sentId}`}
-          className={({ isActive }) =>
-            isActive
-              ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-              : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-normal'
-          }
-        >
-          <GroupRoundedIcon />
-          <span>C V</span>
-        </NavLink>
-      )}
-      <NavLink
-        to={`/userprofile/user-post/${sentId}`}
-        className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-normal'
-        }
-      >
-        <WorkRoundedIcon />
-        <span>Posts</span>
-      </NavLink>
-    </div>
+    <>
+      <div className="hidden md:block fixed top-28 left-0 w-72 ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
+        {navItems.map((item) => (
+          <NavItem key={item.to} {...item} />
+        ))}
+      </div>
+
+
+      <div className="md:hidden fixed bottom-6 left-0 right-0 bg-white shadow-lg z-50">
+        <div className="flex justify-around items-center h-16">
+          {navItems.map((item) => (
+            <NavItem key={item.to} {...item} />
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

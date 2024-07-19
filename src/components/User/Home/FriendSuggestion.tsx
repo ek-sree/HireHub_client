@@ -2,7 +2,7 @@ import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 
 const FriendSuggestion = () => {
   return (
-    <div className="fixed top-32 right-10 w-60 h-auto rounded-lg shadow-2xl py-6 px-2 z-50 bg-white">
+    <div className="hidden sm:block fixed top-32 right-10 w-60 h-auto rounded-lg shadow-2xl py-6 px-2 z-50 bg-white">
       <div className="text-center font-semibold mb-4">Friend Suggestions</div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">

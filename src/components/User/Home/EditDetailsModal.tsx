@@ -74,7 +74,7 @@ const data = {
   return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
         <Toaster position="top-center" expand={false} richColors />
-      <div className="bg-white p-6 rounded shadow-lg w-[500px]">
+      <div className="bg-white p-6 rounded shadow-lg sm:w-[500px]">
         <div className="flex justify-end">
           <button onClick={onClose}>&times;</button>
         </div>

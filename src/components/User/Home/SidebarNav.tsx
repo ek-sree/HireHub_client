@@ -7,65 +7,75 @@ import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 
-
 const SidebarNav = () => {
-  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+  const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
+
   return (
-    <div className="fixed top-96 left-0 w-72 h- ml-10 rounded-lg shadow-2xl py-6 px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20">
+    <div className="fixed md:top-96 md:left-0 md:w-72 md:h-auto bottom-0 left-0 right-0 md:ml-10 rounded-lg shadow-2xl md:py-6 md:px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20 flex md:flex-col justify-around md:justify-start">
       <NavLink
         to="/home"
         className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-semibold'
+          `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
+            isActive
+              ? 'text-cyan-300 md:bg-cyan-300 md:text-white md:rounded-lg'
+              : 'text-slate-400 hover:text-cyan-300'
+          }`
         }
       >
         <HomeRoundedIcon />
-        <span>HOME</span>
+        <span className="text-xs md:text-base text-black">HOME</span>
       </NavLink>
       <NavLink
         to={`/userprofile/${userId}`}
         className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-normal'
+          `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
+            isActive
+              ? 'text-cyan-300 md:bg-cyan-300 md:text-white md:rounded-lg'
+              : 'text-slate-400 hover:text-cyan-300'
+          }`
         }
       >
         <GroupRoundedIcon />
-        <span>Profile</span>
+        <span className="text-xs md:text-base text-black">Profile</span>
       </NavLink>
       <NavLink
         to="/jobposts"
         className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-normal'
+          `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
+            isActive
+              ? 'text-cyan-300 md:bg-cyan-300 md:text-white md:rounded-lg'
+              : 'text-slate-400 hover:text-cyan-300'
+          }`
         }
       >
         <WorkRoundedIcon />
-        <span>Work</span>
+        <span className="text-xs md:text-base text-black">Work</span>
       </NavLink>
       <NavLink
         to="/new-post"
         className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-normal'
+          `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
+            isActive
+              ? 'text-cyan-300 md:bg-cyan-300 md:text-white md:rounded-lg'
+              : 'text-slate-400 hover:text-cyan-300'
+          }`
         }
       >
         <DriveFileRenameOutlineRoundedIcon />
-        <span>New post</span>
+        <span className="text-xs md:text-base text-black">New post</span>
       </NavLink>
       <NavLink
         to="/message"
         className={({ isActive }) =>
-          isActive
-            ? 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-white bg-cyan-300 rounded-lg'
-            : 'py-3 flex items-center gap-4 font-semibold justify-start pl-2 text-slate-400 hover:font-normal'
+          `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
+            isActive
+              ? 'text-cyan-300 md:bg-cyan-300 md:text-white md:rounded-lg'
+              : 'text-slate-400 hover:text-cyan-300'
+          }`
         }
       >
         <ChatRoundedIcon />
-        <span>Message</span>
+        <span className="text-xs md:text-base text-black">Message</span>
       </NavLink>
     </div>
   );

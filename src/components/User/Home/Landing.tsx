@@ -20,13 +20,11 @@ function Landing() {
   return (
     <div className=''>
       <Navbar/>
-      <div className=''>
         <Postbar/>
         <Post/>
         <FriendSuggestion/>
         <SidebarProfile />
         <SidebarNav />
-      </div>
     </div>
   )
 }

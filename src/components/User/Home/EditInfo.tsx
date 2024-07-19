@@ -63,7 +63,7 @@ const EditInfo: FC<EditInfoModalProps> = ({isOpen, onClose, onSuccess, phoneValu
     if(!isOpen)return null
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-slate-500 bg-opacity-50">
-        <div className="bg-white p-6 w-[556px] rounded shadow-lg">
+        <div className="bg-white p-6 w-[556px]  rounded shadow-lg">
             <div className="flex justify-end">
                 <button onClick={onClose}> &times; </button>
             </div>

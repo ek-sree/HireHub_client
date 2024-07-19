@@ -98,7 +98,7 @@ const sentId = sameUser ? userId : id
   // },[token])
 
   return (
-    <div className="fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">
+    <div className="hidden sm:block fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">
       <div className="bg-white rounded-md relative shadow-xl hover:shadow-2xl">
         <img src={coverImg} alt="Cover photo" className="w-full h-16 object-cover rounded-lg hover:border-2" />
         <div className="rounded-full bg-slate-300 w-12 h-12 sm:w-16 sm:h-16 absolute left-1/2 transform -translate-x-1/2 -bottom-6 sm:-bottom-8 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden hover:shadow-2xl hover:border-2">
