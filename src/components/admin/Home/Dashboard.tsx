@@ -4,7 +4,7 @@ import { RootState } from "../../../redux/store/store"
 function Dashboard() {
 
   const adminData = useSelector((state: RootState)=> state.AdminAuth.adminData)
-  const isAuthenticated = useSelector((state: RootState) => state.AdminAuth.isAuthenticated)
+  // const isAuthenticated = useSelector((state: RootState) => state.AdminAuth.isAuthenticated)
 
   return (
     <div className="pl-72">

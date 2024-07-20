@@ -9,5 +9,6 @@ export const postEndpoints ={
     addComment: `${API_GATEWAY_BASE_URL}/addComment`,
     fetchComment: `${API_GATEWAY_BASE_URL}/viewComments`,
     deleteComment: `${API_GATEWAY_BASE_URL}/deleteComment`,
-    deletePost: `${API_GATEWAY_BASE_URL}/deletePost`
+    deletePost: `${API_GATEWAY_BASE_URL}/deletePost`,
+    reportPost: `${API_GATEWAY_BASE_URL}/reportPost`,
 }

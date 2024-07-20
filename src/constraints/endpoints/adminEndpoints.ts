@@ -10,6 +10,7 @@
      blockUser: `${API_GATEWAY_BASE_URL}/blockuser`,
      blockRecruiter: `${API_GATEWAY_BASE_URL}/blockRecruiter`,
      searchUser: `${API_GATEWAY_BASE_URL}/searchUser`,
-     searchRecruiter :`${API_GATEWAY_BASE_URL}/searchRecruiter`
+     searchRecruiter :`${API_GATEWAY_BASE_URL}/searchRecruiter`,
+     getReportPost: `${API_GATEWAY_BASE_URL}/fetchRepostPost`
 
     }

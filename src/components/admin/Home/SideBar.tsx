@@ -35,6 +35,16 @@ const Sidebar = () => {
           Recruiter Management
         </NavLink>
       </div>
+      <div className="pt-16 pl-8">
+        <NavLink
+          to="/admin/repostpostmanagment"
+          className={({ isActive }) =>
+            isActive ? "text-black font-bold rounded-s-xl px-4 py-2 text-sm bg-white block text-center" : "text-white px-4 py-2 block text-center"
+          }
+        >
+          Repost Post Management
+        </NavLink>
+      </div>
     </div>
   );
 };

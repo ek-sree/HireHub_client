@@ -14,6 +14,7 @@ import { postEndpoints } from "../../../constraints/endpoints/postEndpoints";
 import DeletePostModal from './DeletePostModal';
 import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
 import { toast, Toaster } from 'sonner';
+import ReportPostModal from './ReportPostModal';
 
 const Post = () => {
   const [posts, setPosts] = useState<Posts[]>([]);
@@ -24,6 +25,7 @@ const Post = () => {
   const [dropdowns, setDropdowns] = useState<{ [key: string]: boolean }>({});
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState<string>('');
+  const [isReportModal, setIsReportModal] = useState(false);
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
@@ -138,6 +140,15 @@ const Post = () => {
     setDeleteModal(false);
   }
 
+  const handleReport=(postId:string)=>{
+    setIsReportModal(true);
+    setSelectedPostId(postId);
+  }
+
+const handleIsReportModalClose=()=>{
+  setDropdowns({})
+  setIsReportModal(false);
+}
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -179,8 +190,10 @@ const Post = () => {
               <MoreVertIcon className="cursor-pointer" onClick={() => toggleDropdown(post._id)} />
               {dropdowns[post._id] && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
-                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleEdit(post._id)}>Edit</button>
-                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleDelete(post._id, post.imageUrl)}>Delete</button>
+                  {post.UserId==userId?(<><button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleEdit(post._id)}>Edit</button>
+                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleDelete(post._id, post.imageUrl)}>Delete</button></>):(
+                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleReport(post._id)}>Report</button>
+              )}
                 </div>
               )}
             </div>
@@ -228,6 +241,13 @@ const Post = () => {
           postId={selectedPostId}
           imageUrl={selectedImageUrl}
           onSuccess={handleOnSuccess}
+        />
+      )}
+      {isReportModal&&(
+        <ReportPostModal
+        isOpen={isReportModal}
+        onClose={handleIsReportModalClose}
+        postId={selectedPostId}
         />
       )}
     </div>
