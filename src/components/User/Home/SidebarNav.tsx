@@ -1,7 +1,6 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
-import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 import ChatRoundedIcon from '@mui/icons-material/ChatRounded';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -51,7 +50,7 @@ const SidebarNav = () => {
         <WorkRoundedIcon />
         <span className="text-xs md:text-base text-black">Work</span>
       </NavLink>
-      <NavLink
+      {/* <NavLink
         to="/new-post"
         className={({ isActive }) =>
           `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
@@ -63,7 +62,7 @@ const SidebarNav = () => {
       >
         <DriveFileRenameOutlineRoundedIcon />
         <span className="text-xs md:text-base text-black">New post</span>
-      </NavLink>
+      </NavLink> */}
       <NavLink
         to="/message"
         className={({ isActive }) =>

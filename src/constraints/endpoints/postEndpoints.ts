@@ -11,4 +11,5 @@ export const postEndpoints ={
     deleteComment: `${API_GATEWAY_BASE_URL}/deleteComment`,
     deletePost: `${API_GATEWAY_BASE_URL}/deletePost`,
     reportPost: `${API_GATEWAY_BASE_URL}/reportPost`,
+    updatePost:`${API_GATEWAY_BASE_URL}/updatePost`
 }

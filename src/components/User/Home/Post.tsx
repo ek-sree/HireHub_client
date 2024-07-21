@@ -15,6 +15,7 @@ import DeletePostModal from './DeletePostModal';
 import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
 import { toast, Toaster } from 'sonner';
 import ReportPostModal from './ReportPostModal';
+import EditPostModal from './EditPostModal';
 
 const Post = () => {
   const [posts, setPosts] = useState<Posts[]>([]);
@@ -26,6 +27,8 @@ const Post = () => {
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState<string>('');
   const [isReportModal, setIsReportModal] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Posts | null>(null);
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
@@ -118,10 +121,6 @@ const Post = () => {
     setDropdowns(prev => ({ ...prev, [postId]: !prev[postId] }));
   };
 
-  const handleEdit = (postId: string) => {
-    console.log("Edit post", postId);
-  };
-
   const handleDelete = (postId: string, imageUrl: string) => {
     setDeleteModal(true);
     setSelectedPostId(postId);
@@ -140,15 +139,35 @@ const Post = () => {
     setDeleteModal(false);
   }
 
-  const handleReport=(postId:string)=>{
+  const handleReport = (postId: string) => {
     setIsReportModal(true);
     setSelectedPostId(postId);
   }
 
-const handleIsReportModalClose=()=>{
-  setDropdowns({})
-  setIsReportModal(false);
-}
+  const handleEdit = (postId: string) => {
+    const post = posts.find(p => p._id === postId);
+    if (post) {
+      setSelectedPost(post);
+      setIsEditModal(true);
+    }
+  };
+
+  const handleIsEditModalClose = () => {
+    setDropdowns({});
+    setIsEditModal(false);
+    setSelectedPost(null);
+  }
+
+  const handleIsReportModalClose = () => {
+    setDropdowns({})
+    setIsReportModal(false);
+  }
+
+  const handleEditSuccess = (postId: string, newDescription: string) => {
+    setPosts(posts.map(post =>
+      post._id === postId ? { ...post, description: newDescription } : post
+    ));
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -171,7 +190,7 @@ const handleIsReportModalClose=()=>{
 
   return (
     <div className="max-w-2xl mx-auto mt-10">
-               <Toaster position="top-center" expand={false} richColors />
+      <Toaster position="top-center" expand={false} richColors />
       {posts.map((post, index) => (
         <div key={`${post._id}-${index}`} className="bg-white rounded-lg shadow-lg p-4 mb-10">
           <div className="flex items-center justify-between mb-4">
@@ -190,10 +209,14 @@ const handleIsReportModalClose=()=>{
               <MoreVertIcon className="cursor-pointer" onClick={() => toggleDropdown(post._id)} />
               {dropdowns[post._id] && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
-                  {post.UserId==userId?(<><button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleEdit(post._id)}>Edit</button>
-                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleDelete(post._id, post.imageUrl)}>Delete</button></>):(
-                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleReport(post._id)}>Report</button>
-              )}
+                  {post.UserId === userId ? (
+                    <>
+                      <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleEdit(post._id)}>Edit</button>
+                      <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleDelete(post._id, post.imageUrl[0])}>Delete</button>
+                    </>
+                  ) : (
+                    <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => handleReport(post._id)}>Report</button>
+                  )}
                 </div>
               )}
             </div>
@@ -243,11 +266,19 @@ const handleIsReportModalClose=()=>{
           onSuccess={handleOnSuccess}
         />
       )}
-      {isReportModal&&(
+      {isReportModal && (
         <ReportPostModal
-        isOpen={isReportModal}
-        onClose={handleIsReportModalClose}
-        postId={selectedPostId}
+          isOpen={isReportModal}
+          onClose={handleIsReportModalClose}
+          postId={selectedPostId}
+        />
+      )}
+      {isEditModal && selectedPost && (
+        <EditPostModal
+          isOpen={isEditModal}
+          onClose={handleIsEditModalClose}
+          post={selectedPost}
+          onSuccess={handleEditSuccess}
         />
       )}
     </div>
