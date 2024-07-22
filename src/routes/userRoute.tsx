@@ -15,6 +15,7 @@ import JobPostUserPage from "../pages/User/JobPostUserPage";
 import CV from "../components/User/Home/CV";
 import UserPost from "../components/User/Home/UserPost";
 import UserSkills from "../components/User/Home/UserSkills";
+import MessagePage from "../pages/User/MessagePage";
 
 const UserRoute = () => {
   return (
@@ -31,6 +32,7 @@ const UserRoute = () => {
         <Route path="/userprofile/user-resume/:id" element={<CV/>}/>
         <Route path="/userprofile/user-post/:id" element={<UserPost/>}/>
         <Route path="/userprofile/user-skills/:id" element={<UserSkills/>}/>
+        <Route path="/message/:id" element={<MessagePage/>}/>
       </Route>
       <Route element={<PublicRouter />}>
         <Route path="/" element={<LoginPage />} />

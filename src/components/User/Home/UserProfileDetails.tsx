@@ -8,7 +8,9 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import InfoModal from './InfoModal';
-import { useParams } from 'react-router-dom';
+import {  useNavigate, useParams } from 'react-router-dom';
+import { messageAxios } from '../../../constraints/axios/messageAxios';
+import { messageEndpoints } from '../../../constraints/endpoints/messageEndpoints';
 
 const UserProfileDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +27,7 @@ const UserProfileDetails = () => {
     const token = useSelector((store: RootState) => store.UserAuth.token);
     const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
+    const navigate = useNavigate();
 
     useEffect(()=>{
         if(userId !== id){
@@ -112,6 +115,25 @@ const UserProfileDetails = () => {
                 
             }
         }
+        const handleSendMessage = async () => {
+            try {
+                const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log("data for message profile", response.data);
+                
+                if (response.data.success) {
+                    const chatId = response.data.data._id;
+                    console.log("Chat ID from server:", chatId);
+                    navigate(`/message/:?chatId=${chatId}&recieverId=${id}`);
+                }
+            } catch (error) {
+                console.log("Error occurred while navigating message area", error);
+            }
+        };
+        
     // useEffect(() => {
     //     userDetails();
     // }, [sameUser,token]);
@@ -153,7 +175,7 @@ const UserProfileDetails = () => {
                     Unfollow
                 </button>
                 <button
-                // onClick={Follow}
+               onClick={handleSendMessage}
                 className={"flex-1 px-4 py-2 rounded-lg  text-black bg-slate-300 hover:bg-slate-200 font-medium"}
             >
                 Message
