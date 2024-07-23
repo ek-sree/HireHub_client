@@ -64,7 +64,7 @@ const SidebarNav = () => {
         <span className="text-xs md:text-base text-black">New post</span>
       </NavLink> */}
       <NavLink
-        to={`/message/${userId}`}
+        to="/message"
         className={({ isActive }) =>
           `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
             isActive

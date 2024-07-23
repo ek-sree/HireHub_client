@@ -127,7 +127,7 @@ const UserProfileDetails = () => {
                 if (response.data.success) {
                     const chatId = response.data.data._id;
                     console.log("Chat ID from server:", chatId);
-                    navigate(`/message/:?chatId=${chatId}&recieverId=${id}`);
+                    navigate(`/message/?chatId=${chatId}&recieverId=${id}`);
                 }
             } catch (error) {
                 console.log("Error occurred while navigating message area", error);

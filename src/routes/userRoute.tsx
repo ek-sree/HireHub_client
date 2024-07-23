@@ -32,7 +32,7 @@ const UserRoute = () => {
         <Route path="/userprofile/user-resume/:id" element={<CV/>}/>
         <Route path="/userprofile/user-post/:id" element={<UserPost/>}/>
         <Route path="/userprofile/user-skills/:id" element={<UserSkills/>}/>
-        <Route path="/message/:id" element={<MessagePage/>}/>
+        <Route path="/message" element={<MessagePage/>}/>
       </Route>
       <Route element={<PublicRouter />}>
         <Route path="/" element={<LoginPage />} />
