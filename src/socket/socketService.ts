@@ -32,7 +32,7 @@ class SocketService {
         this.socket.emit('joinConversation', chatId);
     }
 
-    sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string }) {
+    sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string, images:string[] }) {
         console.log("Sending message via socket:", message);
         this.socket.emit('sendMessage', message, (error: any) => {
             if (error) {

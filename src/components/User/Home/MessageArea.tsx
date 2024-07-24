@@ -5,6 +5,7 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import ImageIcon from "@mui/icons-material/Image";
 import SendIcon from "@mui/icons-material/Send";
 import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { messageAxios } from "../../../constraints/axios/messageAxios";
@@ -12,12 +13,14 @@ import { messageEndpoints } from "../../../constraints/endpoints/messageEndpoint
 import socketService from "../../../socket/socketService";
 import messageWallpaper from '../../../assets/images/WhatsApp-Chat-theme-iPhone-stock-744.webp';
 import EmojiPicker from 'emoji-picker-react';
+import { toast, Toaster } from "sonner";
 
 interface Message {
   _id: string;
   senderId: string;
   receiverId: string;
   content: string;
+  imagesUrl:string[];
   chatId: string;
   createdAt: string;
   updatedAt: string;
@@ -62,9 +65,11 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [theme, setTheme] = useState('light');
   const [skinTone, setSkinTone] = useState('light');
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function getMessages() {
     try {
@@ -125,6 +130,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             senderId: message.senderId,
             receiverId: message.receiverId,
             content: message.content,
+            imagesUrl: message.data?.imagesUrl || [], 
             chatId: message.chatId,
             createdAt: message.createdAt || new Date().toISOString(),
             updatedAt: message.updatedAt || new Date().toISOString(),
@@ -167,23 +173,73 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     return new Date(date).toLocaleDateString();
   };
 
-  const handleSendMessage = () => {
+  const handleEmojiPickerToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setShowEmojiPicker(prev => !prev);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 5) {
+      toast.error("You can only select up to 5 images at a time.");
+      return;
+    }
+    setSelectedImages(prevImages => [...prevImages, ...files].slice(0, 5));
+  };
+
+  const removeSelectedImage = (index: number) => {
+    setSelectedImages(prevImages => prevImages.filter((_, i) => i !== index));
+  };
+
+  const uploadImages = async (images: File[]) => {
     const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
-    if (messageInput.trim() && chat._id && userId && receiverId) {
-      console.log("Attempting to send message:", { chatId: chat._id, userId, receiverId, messageInput });
+    if (!images || images.length == 0) {
+      return;
+    }
+    const formData = new FormData();
+    images.forEach(image => {
+      formData.append('images', image);
+    });
+    const response = await messageAxios.post(`${messageEndpoints.sendImages}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("Image upload response:", response.data);
+    
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return [];
+  };
+
+  const handleSendMessage = async () => {
+    const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
+    if ((messageInput.trim() || selectedImages.length > 0) && chat._id && userId && receiverId) {
+      let imageUrls: string[] = [];
+
+      if (selectedImages.length > 0) {
+        imageUrls = await uploadImages(selectedImages);
+      }
+
+      console.log("Attempting to send message:", { chatId: chat._id, userId, receiverId, messageInput, images: imageUrls });
+      
       socketService.sendMessage({
         chatId: chat._id,
         senderId: userId,
         receiverId: receiverId,
-        content: messageInput
+        content: messageInput,
+        images: imageUrls
       });
+      
       setMessageInput('');
+      setSelectedImages([]);
       setShowEmojiPicker(false);
     } else {
-      console.error("Missing required data for sending message:", { chatId: chat._id, userId, receiverId, messageInput });
+      console.error("Missing required data for sending message:", { chatId: chat._id, userId, receiverId, messageInput, images: selectedImages });
     }
   };
-
+  
   const addEmoji = (emojiObject: { emoji: string }) => {
     setMessageInput(prevInput => prevInput + emojiObject.emoji);
   };
@@ -196,14 +252,14 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
         </div>
       );
     }
-
+  
     let currentDate = '';
-
+  
     return data.messages.map((message) => {
       const messageDate = new Date(message.createdAt).toISOString().split('T')[0];
       const showDate = messageDate !== currentDate;
       currentDate = messageDate;
-
+  
       return (
         <div key={message._id}>
           {showDate && (
@@ -213,7 +269,19 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
           )}
           <div className={`flex ${message.senderId === userId ? 'justify-end' : 'justify-start'}`}>
             <div className={`p-2 rounded-lg max-w-xs ${message.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-              <div>{message.content}</div>
+              {message.content && <div>{message.content}</div>}
+              {message.imagesUrl && message.imagesUrl.length > 0 && (
+                <div className="mt-2">
+                  {message.imagesUrl.map((imageUrl, index) => (
+                    <img 
+                      key={index} 
+                      src={imageUrl} 
+                      alt={`Shared image ${index + 1}`} 
+                      className="max-w-full h-auto rounded mb-2" 
+                    />
+                  ))}
+                </div>
+              )}
               <div className="flex items-center mt-1 text-xs text-gray-400">
                 <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
                 {message.senderId === userId && (
@@ -231,6 +299,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
 
   return (
     <div className="flex flex-col h-full">
+      <Toaster position="top-center" expand={false} richColors />
       <div className="flex items-center justify-between p-4 border-b border-gray-300">
         <div className="flex items-center gap-4">
           <Avatar src={chat.users.find(user => user.id !== userId)?.avatar.imageUrl} />
@@ -258,8 +327,20 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
       </div>
 
       <div className="p-4 border-t border-gray-300">
+        {selectedImages.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-2">
+            {selectedImages.map((img, index) => (
+              <div key={index} className="relative">
+                <img src={URL.createObjectURL(img)} alt={`Selected ${index}`} className="w-16 h-16 object-cover rounded" />
+                <button onClick={() => removeSelectedImage(index)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
+                  <CloseIcon fontSize="small" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="relative flex items-center gap-2">
-          <IconButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+          <IconButton onClick={handleEmojiPickerToggle}>
             <InsertEmoticonIcon />
           </IconButton>
           {showEmojiPicker && (
@@ -270,11 +351,9 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
                 skinTone={skinTone}
               />
               <div onClick={() => setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light')} className="flex gap-2 mt-2 border-2 border-slate-500 w-16 rounded-xl shadow-xl hover:bg-slate-300 cursor-pointer">
-                <button  className="pl-3 font-medium">
-                  Dark
+                <button className="pl-3 font-medium">
+                  {theme === 'light' ? 'Dark' : 'Light'}
                 </button>
-                {/* <button onClick={() => setSkinTone('light')}>Light Skin</button>
-                <button onClick={() => setSkinTone('dark')}>Dark Skin</button> */}
               </div>
             </div>
           )}
@@ -285,8 +364,16 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             placeholder="Type a message..."
             className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
           />
-          <IconButton>
+          <IconButton onClick={() => fileInputRef.current?.click()}>
             <ImageIcon />
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              style={{ display: 'none' }} 
+              onChange={handleFileChange}
+              multiple
+              accept="image/*"
+            />
           </IconButton>
           <IconButton color="primary" onClick={handleSendMessage}>
             <SendIcon />
