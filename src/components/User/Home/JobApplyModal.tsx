@@ -33,6 +33,7 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
   const reduxPhone = useSelector((store: RootState) => store.UserAuth.userData?.phone) || '';
   const reduxName = useSelector((store: RootState) => store.UserAuth.userData?.name) || '';
   const token = useSelector((store: RootState) => store.UserAuth.token);
+  const userId = useSelector((store: RootState)=>store.UserAuth.userData?._id);
 
   useEffect(() => {
     setEmail(reduxEmail);
@@ -56,6 +57,7 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
       }
       const resumeIds = resumes.map((resume) => resume.url).filter(Boolean).join('');
       const data = {
+        userId,
         name,
         email,
         phone,

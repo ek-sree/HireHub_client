@@ -50,6 +50,8 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log("Message list datas",response.data);
+      
       if (response.data.success) {
         setChats(response.data.data);
       }

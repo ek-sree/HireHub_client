@@ -62,72 +62,72 @@ const ViewApplications = () => {
   const handleAccept = async (id: string) => {
     setLoading(true);
     if (!jobId) {
-        throw new Error("Job id is missing");
+      throw new Error("Job id is missing");
     }
     try {
-        const response = await jobpostAxios.post(`${jobpostEndpoints.acceptApplication}?jobId=${jobId}&applicationId=${id}`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        if (response.data.success) {
-            toast.success("Accepted application");
-            setFetchTrigger(!fetchTrigger);
-        } else {
-            toast.error("Application is missing or can't be accepted right now!");
+      const response = await jobpostAxios.post(`${jobpostEndpoints.acceptApplication}?jobId=${jobId}&applicationId=${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-    } catch (error) {
-        console.error("Error accepting application:", error);
-        toast.error("Failed to accept application");
-    } finally {
-        setLoading(false);
-    }
-};
+      });
 
-const handleReject = async (id: string) => {
+      if (response.data.success) {
+        toast.success("Accepted application");
+        setFetchTrigger(!fetchTrigger);
+      } else {
+        toast.error("Application is missing or can't be accepted right now!");
+      }
+    } catch (error) {
+      console.error("Error accepting application:", error);
+      toast.error("Failed to accept application");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async (id: string) => {
     setLoading(true);
     try {
-        if (!jobId) {
-            throw new Error("Job id is missing");
+      if (!jobId) {
+        throw new Error("Job id is missing");
+      }
+      const response = await jobpostAxios.post(`${jobpostEndpoints.rejectedApplication}?jobId=${jobId}&applicationId=${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-        const response = await jobpostAxios.post(`${jobpostEndpoints.rejectedApplication}?jobId=${jobId}&applicationId=${id}`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+      });
 
-        if (response.data.success) {
-            toast.success("Successfully rejected application");
-            setFetchTrigger(!fetchTrigger);
-        } else {
-            toast.error("Failed to reject application");
-        }
-    } catch (error) {
-        console.error("Error rejecting application:", error);
+      if (response.data.success) {
+        toast.success("Successfully rejected application");
+        setFetchTrigger(!fetchTrigger);
+      } else {
         toast.error("Failed to reject application");
+      }
+    } catch (error) {
+      console.error("Error rejecting application:", error);
+      toast.error("Failed to reject application");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
-const getItemProps = (index: number) => ({
-  variant: currentPage === index ? "filled" : "text",
-  color: currentPage === index ? "green" : "black",
-  onClick: () => setCurrentPage(index),
-  className: "rounded-full",
-  size: currentPage === index ? "lg" : "md",
-});
+  const getItemProps = (index: number) => ({
+    variant: currentPage === index ? "filled" : "text",
+    color: currentPage === index ? "green" : "black",
+    onClick: () => setCurrentPage(index),
+    className: "rounded-full",
+    size: currentPage === index ? "lg" : "md",
+  });
 
-const prev = () => {
-  if (currentPage === 1) return;
-  setCurrentPage(currentPage - 1);
-};
+  const prev = () => {
+    if (currentPage === 1) return;
+    setCurrentPage(currentPage - 1);
+  };
 
-const next = () => {
-  if (currentPage === totalPages) return;
-  setCurrentPage(currentPage + 1);
-};
+  const next = () => {
+    if (currentPage === totalPages) return;
+    setCurrentPage(currentPage + 1);
+  };
 
   const handleBack = () => {
     navigate('/recruiter/home');
@@ -144,7 +144,7 @@ const next = () => {
   };
 
   return (
-    <div className="min-h-screen  p-4 max-w-7xl mx-auto"> 
+    <div className="min-h-screen p-4 max-w-7xl mx-auto">
       <Toaster position="top-center" expand={false} richColors />
       <Button variant="text" className="mb-4 flex items-center gap-2" onClick={handleBack}>
         <ArrowLeftIcon strokeWidth={2} className="h-5 w-5" /> Back
@@ -184,62 +184,56 @@ const next = () => {
                     </a>
                   </td>
                   <td className="py-3 px-6 text-left">
-    <button
-        className={`py-1 px-3 rounded mr-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 text-white'}`}
-        onClick={() => handleAccept(application._id)}
-        disabled={loading}
-    >
-        {loading? 'Loading...' : 'Accept'}
-    </button>
-    <button
-        className={`py-1 px-3 rounded ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white'}`}
-        onClick={() => handleReject(application._id)}
-        disabled={loading}
-    >
-        {loading ? 'Loading...' : 'Reject'}
-    </button>
-</td>
-
+                    <button
+                      className={`py-1 px-3 rounded mr-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 text-white'}`}
+                      onClick={() => handleAccept(application._id)}
+                      disabled={loading}
+                    >
+                      {loading ? 'Loading...' : 'Accept'}
+                    </button>
+                    <button
+                      className={`py-1 px-3 rounded ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white'}`}
+                      onClick={() => handleReject(application._id)}
+                      disabled={loading}
+                    >
+                      {loading ? 'Loading...' : 'Reject'}
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-        
       </div>
       <div className="flex items-center gap-4 mt-4 justify-center">
-                  <Button
-                    variant="text"
-                    className={`flex items-center gap-2 rounded-full ${
-                      currentPage === 1 ? "text-gray-400" : ""
-                    }`}
-                    onClick={prev}
-                    disabled={currentPage === 1}
-                  >
-                    <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Previous
-                  </Button>
-                  <div className="flex items-center gap-2 font-semibold">
-                    {[...Array(totalPages)].map((_, index) => (
-                      <IconButton key={index + 1} {...getItemProps(index + 1)}>
-                        {index + 1}
-                      </IconButton>
-                    ))}
-                  </div>
-                  <Button
-                    variant="text"
-                    className={`flex items-center gap-2 rounded-full ${
-                      currentPage === totalPages ? "text-gray-400" : ""
-                    }`}
-                    onClick={next}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
-                  </Button>
-                </div>
+        <Button
+          variant="text"
+          className={`flex items-center gap-2 rounded-full ${currentPage === 1 ? "text-gray-400" : ""}`}
+          onClick={prev}
+          disabled={currentPage === 1}
+        >
+          <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Previous
+        </Button>
+        <div className="flex items-center gap-2 font-semibold">
+          {[...Array(totalPages)].map((_, index) => (
+            <IconButton key={index + 1} {...getItemProps(index + 1)}>
+              {index + 1}
+            </IconButton>
+          ))}
+        </div>
+        <Button
+          variant="text"
+          className={`flex items-center gap-2 rounded-full ${currentPage === totalPages ? "text-gray-400" : ""}`}
+          onClick={next}
+          disabled={currentPage === totalPages}
+        >
+          Next <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
+        </Button>
+      </div>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg">
-            <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={closeModal}>
+          <div className="bg-white p-6 rounded-lg relative">
+            <button className="absolute top-1 right-2 text-gray-500 hover:text-gray-700" onClick={closeModal}>
               <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
                 <path d="M6.225 4.811L4.811 6.225 10.586 12l-5.775 5.775 1.414 1.414L12 13.414l5.775 5.775 1.414-1.414L13.414 12l5.775-5.775-1.414-1.414L12 10.586z" />
               </svg>

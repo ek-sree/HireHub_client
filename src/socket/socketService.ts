@@ -6,7 +6,7 @@ class SocketService {
     private socket: Socket;
 
     constructor() {
-        this.socket = io(SOCKET_URL);
+        this.socket = io(SOCKET_URL, { autoConnect: false });
         this.socket.on('connect', () => {
             console.log('Socket connected');
         });

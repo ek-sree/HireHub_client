@@ -5,11 +5,16 @@ import { jobpostEndpoints } from '../../../constraints/endpoints/jobpost.Endpoin
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { Candidate } from '../../../interface/JobInterfaces/IJobInterface';
+import { NavLink } from 'react-router-dom';
+import { userAxios } from '../../../constraints/axios/userAxios';
+import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
+import UserImg from '../../../assets/images/user.png';
 
 const ShortListedCandidates = () => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [profileImages, setProfileImages] = useState<{ [key: string]: string }>({});
 
   const recruiterId = useSelector((store: RootState) => store.RecruiterAuth.recruiterData?._id);
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
@@ -22,9 +27,14 @@ const ShortListedCandidates = () => {
           Authorization: `Bearer ${token}`
         }
       });
+      console.log("All user details candidates", response.data);
 
       if (response.data.success && response.data.candidates) {
         setCandidates(response.data.candidates);
+        // Fetch profile images for each candidate
+        response.data.candidates.forEach(async (candidate: Candidate) => {
+          await showImage(candidate.userId);
+        });
       } else {
         setError('Failed to fetch candidates');
       }
@@ -33,6 +43,23 @@ const ShortListedCandidates = () => {
       console.error('Error fetching candidates:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const showImage = async (userId: string) => {
+    try {
+      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("is img got?>", response.data);
+
+      const imageUrl = response.data.success ? response.data.data?.imageUrl || UserImg : UserImg;
+      setProfileImages(prev => ({ ...prev, [userId]: imageUrl }));
+    } catch (error) {
+      console.error("Error fetching profile image:", error);
+      setProfileImages(prev => ({ ...prev, [userId]: UserImg }));
     }
   };
 
@@ -58,10 +85,10 @@ const ShortListedCandidates = () => {
           <div className="text-center text-gray-500">{error}</div>
         ) : candidates.length > 0 ? (
           candidates.map(candidate => (
-            <div key={candidate.id} className="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer">
+            <div key={candidate._id} className="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer">
               <div className="flex items-center">
                 <img
-                  src={candidate.profilePhoto || user}
+                  src={profileImages[candidate.userId] || user}
                   alt="profile"
                   className="w-12 h-12 rounded-full"
                 />
@@ -85,7 +112,7 @@ const ShortListedCandidates = () => {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleSendMessage(candidate.id);
+                        handleSendMessage(candidate.userId);
                       }}
                     >
                       Send Message
@@ -94,7 +121,9 @@ const ShortListedCandidates = () => {
                 </div>
               </div>
               <div> 
-                <div className='text-sm text-blue-500 hover:underline cursor-pointer'>View Profile</div>
+                <NavLink to={`/recruiter/userprofile/${candidate.userId}`}>
+                  <div className='text-sm text-blue-500 hover:underline cursor-pointer'>View Profile</div>
+                </NavLink>
               </div>
             </div>
           ))

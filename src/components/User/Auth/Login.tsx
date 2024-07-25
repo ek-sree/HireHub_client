@@ -44,6 +44,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
   
       const response = await axiosInstance.post(endpoint.login, values);
       console.log("Success logging", response);
+  console.log("LOgin dataaaa",response.data);
   
       if (response.data.success && response.data.isRecruiter === false) {
         console.log("Dispatching user login");

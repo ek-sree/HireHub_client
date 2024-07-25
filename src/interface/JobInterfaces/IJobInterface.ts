@@ -17,6 +17,7 @@ export interface Job {
 
 export interface Candidate {
   id: string;
+  userId: string;
   name: string;
   profilePhoto: string;
   email: string;
