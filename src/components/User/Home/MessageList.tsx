@@ -1,12 +1,13 @@
+import React, { useEffect, useState } from 'react';
 import { Avatar } from "@mui/material";
-import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { messageEndpoints } from "../../../constraints/endpoints/messageEndpoints";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { toast } from "sonner";
 import { messageAxios } from "../../../constraints/axios/messageAxios";
+import socketService from '../../../socket/socketService';
+import { messageEndpoints } from "../../../constraints/endpoints/messageEndpoints";
 
 interface User {
   id: string;
@@ -15,6 +16,7 @@ interface User {
     imageUrl: string;
     originalname: string;
   };
+  isOnline?: boolean;
 }
 
 interface ChatData {
@@ -50,7 +52,7 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("Message list datas",response.data);
+      console.log("Message list data", response.data);
       
       if (response.data.success) {
         setChats(response.data.data);
@@ -67,7 +69,28 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
 
   useEffect(() => {
     loadConversation();
-  }, [token]);
+
+    socketService.connect();
+
+    if (userId) {
+      socketService.emitUserOnline(userId);
+    }
+
+    socketService.onUserStatusChanged((data) => {
+      setChats(prevChats => 
+        prevChats.map(chat => {
+          const updatedUsers = chat.users.map(user => 
+            user.id === data.userId ? { ...user, isOnline: data.isOnline } : user
+          );
+          return { ...chat, users: updatedUsers };
+        })
+      );
+    });
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, [userId, token]);
 
   const getOtherUser = (chat: ChatData) => {
     return chat.users.find(user => user.id !== userId) || chat.users[0];
@@ -109,18 +132,19 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
               >
                 <Avatar src={otherUser.avatar.imageUrl} alt={otherUser.name} />
                 <div className="flex-1">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="font-medium">{otherUser.name}</span>
-                    {chat.lastMessage && (
-                      <span className="text-xs text-gray-500">
-                        {formatDate(chat.lastMessage.createdAt)}
-                      </span>
-                    )}
+                    <span className={`h-3 w-3 rounded-full ${otherUser.isOnline ? 'bg-green-500' : 'bg-gray-500'}`}></span>
                   </div>
                   {chat.lastMessage ? (
                     <span className="text-sm text-gray-500">{chat.lastMessage.content}</span>
                   ) : (
                     <span className="text-sm text-gray-400">No messages yet</span>
+                  )}
+                  {chat.lastMessage && (
+                    <span className="text-xs text-gray-500">
+                      {formatDate(chat.lastMessage.createdAt)}
+                    </span>
                   )}
                 </div>
               </div>

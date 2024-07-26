@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import { RootState } from '../../../redux/store/store';
 import { useDebonceSearch } from '../../../customHook/searchHook';
+import socketService from '../../../socket/socketService';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -39,8 +40,9 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await userAxios.post(userEndpoints.logout);
+      const response = await userAxios.post(`${userEndpoints.logout}?userId=${userId}`);
       if (response.data.success) {
+        socketService.disconnect();
         dispatch(logout());
         navigate('/');
       } else {

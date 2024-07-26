@@ -14,6 +14,7 @@ import { login as userlogin } from '../../../redux/slice/UserSlice';
 import {login as recruiterlogin} from '../../../redux/slice/RecruiterSlice'
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
+import socketService from '../../../socket/socketService';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required("Email is required"),
@@ -48,6 +49,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
   
       if (response.data.success && response.data.isRecruiter === false) {
         console.log("Dispatching user login");
+        socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
         navigate('/home');
       } else if (response.data.success && response.data.isRecruiter === true) {

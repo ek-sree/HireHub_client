@@ -204,7 +204,7 @@ const RecruiterManagement = () => {
                     No recruiter found.
                   </p>
                 ) : (
-                  <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+                  <div className="flex justify-center overflow-x-auto bg-white shadow-md rounded-lg">
                     <table className="min-w-full bg-white">
                       <thead>
                         <tr className="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
