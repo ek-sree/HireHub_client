@@ -70,7 +70,7 @@ const Postbar = () => {
         }
       });
 console.log("api data",response.data);
-setLoading(false);
+
       if (response.data.success) {
         toast.success("Post added successfully");
         setText('');
@@ -79,6 +79,8 @@ setLoading(false);
     } catch (error) {
       console.log("Error occurred while adding images", error);
       toast("Error occurred while adding posts");
+    }finally{
+      setLoading(false);
     }
   };
 

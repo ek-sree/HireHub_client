@@ -25,7 +25,7 @@ class SocketService {
     this.socket.emit('joinConversation', chatId);
   }
 
-  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string, images: string[] }) {
+  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string, images: string[], video:string }) {
     this.socket.emit('sendMessage', message);
   }
 

@@ -13,6 +13,7 @@ import { recruiterEndpoints } from '../../../constraints/endpoints/recruiterEndp
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
 import { login as userlogin } from '../../../redux/slice/UserSlice';
+import socketService from '../../../socket/socketService';
 
 const initialValues = {
   name: '',
@@ -89,6 +90,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
       console.log('Google Login Response', response);
 
       if (response.data.success) {
+        socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
         navigate("/home");
       } else {

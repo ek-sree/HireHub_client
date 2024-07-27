@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Avatar, IconButton } from "@mui/material";
+import { Avatar, CircularProgress, IconButton } from "@mui/material";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import ImageIcon from "@mui/icons-material/Image";
@@ -14,13 +14,17 @@ import socketService from "../../../socket/socketService";
 import messageWallpaper from '../../../assets/images/WhatsApp-Chat-theme-iPhone-stock-744.webp';
 import EmojiPicker from 'emoji-picker-react';
 import { toast, Toaster } from "sonner";
+import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
+import TheatersIcon from '@mui/icons-material/Theaters';
+
 
 interface Message {
   _id: string;
   senderId: string;
   receiverId: string;
   content: string;
-  imagesUrl:string[];
+  imagesUrl: string[];
+  videoUrl:string;
   chatId: string;
   createdAt: string;
   updatedAt: string;
@@ -66,10 +70,26 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const [theme, setTheme] = useState('light');
   const [skinTone, setSkinTone] = useState('light');
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
   const token = useSelector((store: RootState) => store.UserAuth.token);
+  const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading]= useState(false);
+  const [progress, setProgress] = React.useState(0);
+
+  React.useEffect(() => {
+      const timer = setInterval(() => {
+        setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+      }, 800);
+  
+      return () => {
+        clearInterval(timer);
+      };
+    }, []);
 
   async function getMessages() {
     try {
@@ -112,8 +132,29 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     if (chat && userId) {
       getMessages();
     }
+    socketService.connect();
+  
+    if (userId) {
+      socketService.emitUserOnline(userId);
+    }
+  
+    const otherUser = chat.users.find(user => user.id !== userId);
+    if (otherUser) {
+      setIsOtherUserOnline(otherUser.isOnline || false);
+    }
+  
+    socketService.onUserStatusChanged((data) => {
+      if (data.userId === otherUser?.id) {
+        setIsOtherUserOnline(data.isOnline);
+      }
+    });
+  
+    return () => {
+      socketService.disconnect();
+    };
   }, [chat, userId, token]);
 
+  
   useEffect(() => {
     if (chat._id) {
       console.log("Setting up socket for chatId:", chat._id);
@@ -123,7 +164,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
       const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
 
       socketService.onNewMessage((message) => {
-        console.log("Received new message:", message);
+        console.log("Received new message in real-time:", message);
         setData(prevData => {
           const newMessage: Message = {
             _id: message._id || Date.now().toString(),
@@ -131,6 +172,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             receiverId: message.receiverId,
             content: message.content,
             imagesUrl: message.data?.imagesUrl || [], 
+            videoUrl: message.data?.videoUrl,
             chatId: message.chatId,
             createdAt: message.createdAt || new Date().toISOString(),
             updatedAt: message.updatedAt || new Date().toISOString(),
@@ -163,6 +205,12 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [data?.messages]);
+
   const getFormattedDate = (date: string) => {
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
@@ -191,6 +239,36 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     setSelectedImages(prevImages => prevImages.filter((_, i) => i !== index));
   };
 
+  const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 1) {
+      toast.error("You can only select one video at a time.");
+      return;
+    }
+  
+    const file = files[0];
+    console.log("Selected video file:", file);
+    const videoElement = document.createElement('video');
+    
+    videoElement.preload = 'metadata';
+    videoElement.src = URL.createObjectURL(file);
+    
+    videoElement.onloadedmetadata = () => {
+      URL.revokeObjectURL(videoElement.src);
+      if (videoElement.duration > 60) {
+        toast.error("Video length must be below 1 minute.");
+        setSelectedVideo(null);
+      } else {
+        setSelectedVideo(file);
+      }
+    };
+  };
+
+  const removeSelectedVideo = () => {
+    setSelectedVideo(null);
+    console.log("Video removed");
+  };
+
   const uploadImages = async (images: File[]) => {
     const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
     if (!images || images.length == 0) {
@@ -213,13 +291,41 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     return [];
   };
 
-  const handleSendMessage = async () => {
+  const uploadVideo= async(video:File)=>{
+    try {
     const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
-    if ((messageInput.trim() || selectedImages.length > 0) && chat._id && userId && receiverId) {
-      let imageUrls: string[] = [];
+    if(!video){
+      return;
+    }
+    const formData = new FormData();
+    formData.append('video', video);
+      const response = await messageAxios.post(`${messageEndpoints.sendVideo}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`,formData,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if(response.data.success){
+        return response.data.data;
+      }
+      return '';
+    } catch (error) {
+      console.log("error uploading video");
+      
+    }
+  }
 
+  const handleSendMessage = async () => {
+    try {
+      setLoading(true)
+    const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
+    if ((messageInput.trim() || selectedImages.length > 0 || selectedVideo) && chat._id && userId && receiverId) {
+      let imageUrls: string[] = [];
+      let videoUrls: string='';
       if (selectedImages.length > 0) {
         imageUrls = await uploadImages(selectedImages);
+      }
+      if(selectedVideo){
+        videoUrls = await uploadVideo(selectedVideo);
       }
 
       console.log("Attempting to send message:", { chatId: chat._id, userId, receiverId, messageInput, images: imageUrls });
@@ -229,15 +335,25 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
         senderId: userId,
         receiverId: receiverId,
         content: messageInput,
-        images: imageUrls
+        images: imageUrls,
+        video: videoUrls
       });
       
       setMessageInput('');
       setSelectedImages([]);
+      setSelectedVideo(null);
       setShowEmojiPicker(false);
     } else {
+      toast.error("Error something is missing,try later")
       console.error("Missing required data for sending message:", { chatId: chat._id, userId, receiverId, messageInput, images: selectedImages });
     }
+    } catch (error) {
+      console.log("Error happended sendinf message",error);
+      toast.error("Error occured ,try later")
+    }finally{
+      setLoading(false);
+    }
+    
   };
   
   const addEmoji = (emojiObject: { emoji: string }) => {
@@ -282,6 +398,15 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
                   ))}
                 </div>
               )}
+              {message.videoUrl && (
+          <div className="mt-2">
+            <video controls className="max-w-full h-auto rounded">
+              <source src={message.videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+                  <div ref={messagesEndRef} />
               <div className="flex items-center mt-1 text-xs text-gray-400">
                 <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
                 {message.senderId === userId && (
@@ -297,6 +422,8 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     });
   };
 
+  console.log("selectedVideo:", selectedVideo);
+
   return (
     <div className="flex flex-col h-full">
       <Toaster position="top-center" expand={false} richColors />
@@ -305,7 +432,9 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
           <Avatar src={chat.users.find(user => user.id !== userId)?.avatar.imageUrl} />
           <div>
             <h2 className="text-lg font-semibold">{chat.users.find(user => user.id !== userId)?.name || 'Username'}</h2>
-            <span className="text-sm text-gray-500">Online</span>
+            <div className={`text-sm ${isOtherUserOnline ? 'text-green-500' : 'text-red-500'}`}>
+              {isOtherUserOnline ? 'Online' : 'Offline'}
+            </div>
           </div>
         </div>
         <IconButton>
@@ -339,6 +468,18 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             ))}
           </div>
         )}
+        
+        {selectedVideo && (
+  <div className="relative mt-2">
+    <video controls className="w-64 h-36 object-cover rounded">
+    <source src={URL.createObjectURL(selectedVideo)} type={selectedVideo.type} />
+      Your browser does not support the video tag.
+    </video>
+    <button onClick={removeSelectedVideo} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
+      <CloseIcon fontSize="small" />
+    </button>
+  </div>
+)}
         <div className="relative flex items-center gap-2">
           <IconButton onClick={handleEmojiPickerToggle}>
             <InsertEmoticonIcon />
@@ -375,9 +516,26 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
               accept="image/*"
             />
           </IconButton>
-          <IconButton color="primary" onClick={handleSendMessage}>
-            <SendIcon />
+          <IconButton onClick={() => videoInputRef.current?.click()}>
+            <TheatersIcon />
+            <input 
+              type="file"
+              ref={videoInputRef}
+              style={{ display: 'none' }}
+              onChange={handleVideoFileChange}
+              accept="video/*"
+            />
           </IconButton>
+          {messageInput.trim() || selectedImages.length > 0 || selectedVideo ? (
+            
+            <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
+             {loading? <CircularProgress variant="determinate" value={progress} /> : <SendIcon />}
+          </IconButton>
+          ) : (
+            <IconButton>
+              <KeyboardVoiceIcon />
+            </IconButton>
+          )}
         </div>
       </div>
     </div>
