@@ -16,52 +16,14 @@ import EmojiPicker from 'emoji-picker-react';
 import { toast, Toaster } from "sonner";
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import TheatersIcon from '@mui/icons-material/Theaters';
+import DeleteIcon from '@mui/icons-material/Delete';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import WaveSurfer from 'wavesurfer.js'
+import { Message , User, ChatData, MessageAreaProps, ImageData  } from "../../../interface/Message/IMessage";
 
 
-interface Message {
-  _id: string;
-  senderId: string;
-  receiverId: string;
-  content: string;
-  imagesUrl: string[];
-  videoUrl:string;
-  chatId: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-interface User {
-  id: string;
-  name: string;
-  avatar: {
-    imageUrl: string;
-    originalname: string;
-  };
-}
-
-interface ChatData {
-  _id: string;
-  lastMessage?: {
-    chatId: string;
-    content: string;
-    createdAt: string;
-    receiverId: string;
-    senderId: string;
-    updatedAt: string;
-    _id: string;
-  };
-  participants: string[];
-  users: User[];
-}
-
-interface MessageAreaProps {
-  chat: ChatData;
-}
-
-interface ImageData {
-  messages: Message[];
-}
 
 const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const [data, setData] = useState<ImageData | null>(null);
@@ -80,17 +42,169 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading]= useState(false);
   const [progress, setProgress] = React.useState(0);
-
-  React.useEffect(() => {
-      const timer = setInterval(() => {
-        setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
-      }, 800);
+  const [handleVoiceToogle, setHandleVoiceToogle] = useState<boolean>(false);
+  const [recordingDuriation, setRecordingDuriation] = useState(0);
+  const [waveform, setWaveform] = useState(null);
+  const [currentPlayBackTime, setCurrentPlayBackTime] = useState(0);
+  const [totalDuriation, setTotalDuriation] = useState(0);
+  const [recordedAudio, setRecordedAudio] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [renderedAudio, setRenderedAudio] = useState(null);
+  const [forTest, setForTest] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   
-      return () => {
-        clearInterval(timer);
-      };
-    }, []);
+  
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const waveFormRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+    }, 800);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const handleVoiceStart = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
+    setIsRecording(true);
+    setHandleVoiceToogle(true);
+    setRecordingDuriation(0);
+    setCurrentPlayBackTime(0);
+    setTotalDuriation(0);
+    
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioRef.current = new Audio();
+  
+      const chunks: BlobPart[] = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+        const audioURL = URL.createObjectURL(blob);
+        const audio = new Audio(audioURL);
+        setRecordedAudio(audio);
+  
+        waveform?.load(audioURL);
+      }
+      mediaRecorder.start();
+    }).catch(error => {
+      console.log("Error recording", error);
+    });
+  }
+  
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isRecording) {
+      interval = setInterval(() => {
+        setRecordingDuriation((prevDuration) => {
+          setTotalDuriation(prevDuration + 1);
+          return prevDuration + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(interval);
+    }
+  }, [isRecording]); 
+
+  const handleDeleteVoice = () => {
+    setRecordingDuriation(0);
+    setCurrentPlayBackTime(0);
+    setTotalDuriation(0);
+    setRecordedAudio(null);
+    setRenderedAudio(null);
+    setIsPlaying(false);
+    setHandleVoiceToogle(false);
+    setForTest(false);
+    setIsRecording(false);
+  
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
+  
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+  
+    if (waveform) {
+      waveform.empty();
+      waveform.destroy();
+      setWaveform(null);
+    }
+  
+    URL.revokeObjectURL(recordedAudio?.src);
+  
+    if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+  };
+  
+
+  const handleStopRecording = () => {
+    setForTest(true);
+    setIsRecording(false);  
+    if (mediaRecorderRef.current && handleVoiceToogle) {
+      mediaRecorderRef.current.stop();
+      waveform?.stop();
+  
+      const audioChunks: BlobPart[] = [];
+      mediaRecorderRef.current.addEventListener('dataavailable', (event) => {
+        audioChunks.push(event.data);
+      });
+  
+      mediaRecorderRef.current.addEventListener("stop", () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        setRecordedAudio(audio);
+        setRenderedAudio(audioBlob);
+        
+        if (waveform) {
+          waveform.load(audioUrl);
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (recordedAudio) {
+      const updatePlayBackTime = () => {
+        setCurrentPlayBackTime(recordedAudio.currentTime);
+      };
+      recordedAudio.addEventListener("timeupdate", updatePlayBackTime);
+      return () => {
+        recordedAudio.removeEventListener("timeupdate", updatePlayBackTime);
+      };
+    }
+  }, [recordedAudio]);
+
+  const handlePlayAudio = () => {
+    setIsPlaying(true);
+    if (recordedAudio) {
+      recordedAudio.play();
+      if (waveform) {
+        waveform.play();
+      }
+    }
+  };
+
+  const handlePauseAudio = () => {
+    setIsPlaying(false);
+    waveform?.stop();
+    recordedAudio?.pause();
+  };
   async function getMessages() {
     try {
       if (!userId || !chat || !chat.users) {
@@ -127,6 +241,42 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
       console.error("Error fetching messages:", error);
     }
   }
+
+
+
+  useEffect(() => {
+    if (waveFormRef.current) {
+      const wavesurfer = WaveSurfer.create({
+        container: waveFormRef.current,
+        waveColor: "#ccc",
+        progressColor: "#4a9eff",
+        cursorColor: "#7ae3c3",
+        barWidth: 2,
+        height: 30,
+        responsive: true
+      });
+      setWaveform(wavesurfer);
+
+      wavesurfer.on("finish", () => {
+        setIsPlaying(false);
+      });
+
+      return () => {
+        wavesurfer.destroy();
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (waveform) handleVoiceStart();
+  }, [waveform]);
+
+  const formatTimes = (time: number): string => {
+    if (isNaN(time)) return "00:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   useEffect(() => {
     if (chat && userId) {
@@ -424,6 +574,10 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
 
   console.log("selectedVideo:", selectedVideo);
 
+  function formatTime(currentPlayBackTime: number): React.ReactNode {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="flex flex-col h-full">
       <Toaster position="top-center" expand={false} richColors />
@@ -484,7 +638,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
           <IconButton onClick={handleEmojiPickerToggle}>
             <InsertEmoticonIcon />
           </IconButton>
-          {showEmojiPicker && (
+          {showEmojiPicker && !handleVoiceToogle &&(
             <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-10">
               <EmojiPicker
                 onEmojiClick={addEmoji}
@@ -498,6 +652,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
               </div>
             </div>
           )}
+        {!handleVoiceToogle ? (
           <input
             type="text"
             value={messageInput}
@@ -505,7 +660,17 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             placeholder="Type a message..."
             className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
           />
-          <IconButton onClick={() => fileInputRef.current?.click()}>
+        ) : (
+          <div className="voice-recording-controls">
+            <IconButton onClick={handleDeleteVoice}>
+              <DeleteIcon />
+            </IconButton>
+            <span className="border-2 rounded-lg p-2 drop-shadow-xl">Recording : {recordingDuriation} .s</span>
+          </div>
+        )}
+          {!handleVoiceToogle&&(
+            <>
+            <IconButton onClick={() => fileInputRef.current?.click()}>
             <ImageIcon />
             <input 
               type="file" 
@@ -525,17 +690,44 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
               onChange={handleVideoFileChange}
               accept="video/*"
             />
-          </IconButton>
-          {messageInput.trim() || selectedImages.length > 0 || selectedVideo ? (
-            
-            <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
-             {loading? <CircularProgress variant="determinate" value={progress} /> : <SendIcon />}
-          </IconButton>
-          ) : (
-            <IconButton>
-              <KeyboardVoiceIcon />
-            </IconButton>
+          </IconButton></>
           )}
+          {messageInput.trim() || selectedImages.length > 0 || selectedVideo ? (
+  <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
+    {loading ? <CircularProgress variant="determinate" value={progress} /> : <SendIcon />}
+  </IconButton>
+) : (!handleVoiceToogle ? (
+  <IconButton onClick={handleVoiceStart}>
+    <KeyboardVoiceIcon />
+  </IconButton>
+) : (
+  <>
+    {!recordedAudio ? (
+      <IconButton onClick={handleStopRecording}>
+        <StopCircleIcon />
+      </IconButton>
+    ) : (
+      <>
+        <IconButton onClick={isPlaying ? handlePauseAudio : handlePlayAudio}>
+          {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
+        </IconButton>
+        <div className="w-60" ref={waveFormRef} hidden={handleVoiceToogle} />{
+  recordedAudio && isPlaying &&(
+    <span>{formatTimes(currentPlayBackTime)}</span>
+  )
+}{
+  recordedAudio && !isPlaying &&(
+    <span>{formatTimes(totalDuriation)}</span>
+  )
+}
+<audio ref={audioRef} hidden/>
+        <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
+          {loading ? <CircularProgress variant="determinate" value={progress} /> : <SendIcon />}
+        </IconButton>
+      </>
+    )}
+  </>
+))}
         </div>
       </div>
     </div>
