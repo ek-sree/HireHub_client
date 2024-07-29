@@ -125,7 +125,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     setRenderedAudio(null);
     setIsPlaying(false);
     setHandleVoiceToogle(false);
-    setForTest(false);
+    // setForTest(false);
     setIsRecording(false);
   
     if (mediaRecorderRef.current) {
@@ -311,7 +311,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
       socketService.connect();
       socketService.joinConversation(chat._id);
 
-      const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
+      // const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
 
       socketService.onNewMessage((message) => {
         console.log("Received new message in real-time:", message);
@@ -323,6 +323,8 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             content: message.content,
             imagesUrl: message.data?.imagesUrl || [], 
             videoUrl: message.data?.videoUrl,
+            recordUrl: message.data?.recordUrl,
+            recordDuration: message.data?.recordDuration, // Add this line
             chatId: message.chatId,
             createdAt: message.createdAt || new Date().toISOString(),
             updatedAt: message.updatedAt || new Date().toISOString(),
@@ -459,51 +461,98 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
       }
       return '';
     } catch (error) {
-      console.log("error uploading video");
+      console.log("error uploading video",error);
+      toast.error("Cant send video right now")
+    }
+  }
+
+  const uploadAudio = async(audio:string)=>{
+    try {
+      console.log("Audio here for send",audio);
       
+      const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
+      if(!audio){
+        return;
+      }
+      const formData = new FormData();
+      formData.append('audio', audio);
+      const response = await messageAxios.post(`${messageEndpoints.sendAudio}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log("response",response.data);
+      if(response.data.success){
+        return response.data.data
+      }
+      return '';
+    } catch (error) {
+      console.log("Error uploading audio",error);
+      toast.error("Error cant send audio right now")
     }
   }
 
   const handleSendMessage = async () => {
     try {
-      setLoading(true)
-    const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
-    if ((messageInput.trim() || selectedImages.length > 0 || selectedVideo) && chat._id && userId && receiverId) {
-      let imageUrls: string[] = [];
-      let videoUrls: string='';
-      if (selectedImages.length > 0) {
-        imageUrls = await uploadImages(selectedImages);
+      setLoading(true);
+      const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
+      if ((messageInput.trim() || selectedImages.length > 0 || selectedVideo || recordedAudio) && chat._id && userId && receiverId) {
+        let imageUrls: string[] = [];
+        let videoUrls: string = '';
+        let recordUrl: string = '';
+        
+        if (selectedImages.length > 0) {
+          imageUrls = await uploadImages(selectedImages);
+        }
+        if (selectedVideo) {
+          videoUrls = await uploadVideo(selectedVideo);
+        }
+        if (recordedAudio) {
+          recordUrl = await uploadAudio(renderedAudio);
+        }
+  
+        console.log("Attempting to send message:", { chatId: chat._id, userId, receiverId, messageInput, images: imageUrls, videoUrls, recordUrl });
+        
+        socketService.sendMessage({
+          chatId: chat._id,
+          senderId: userId,
+          receiverId: receiverId,
+          content: messageInput,
+          images: imageUrls,
+          video: videoUrls,
+          record: recordUrl,
+          recordDuration: totalDuriation
+        });
+        
+        setMessageInput('');
+        setSelectedImages([]);
+        setSelectedVideo(null);
+        setShowEmojiPicker(false);
+        
+        // Clear recorded audio and close voice toggle
+        if (recordedAudio) {
+          setRecordedAudio(null);
+          setRenderedAudio(null);
+          setHandleVoiceToogle(false);
+          setIsRecording(false);
+          setRecordingDuriation(0);
+          setCurrentPlayBackTime(0);
+          setTotalDuriation(0);
+          setIsPlaying(false);
+          if (waveform) {
+            waveform.empty();
+          }
+        }
+      } else {
+        toast.error("Error something is missing, try later");
+        console.error("Missing required data for sending message:", { chatId: chat._id, userId, receiverId, messageInput, images: selectedImages });
       }
-      if(selectedVideo){
-        videoUrls = await uploadVideo(selectedVideo);
-      }
-
-      console.log("Attempting to send message:", { chatId: chat._id, userId, receiverId, messageInput, images: imageUrls });
-      
-      socketService.sendMessage({
-        chatId: chat._id,
-        senderId: userId,
-        receiverId: receiverId,
-        content: messageInput,
-        images: imageUrls,
-        video: videoUrls
-      });
-      
-      setMessageInput('');
-      setSelectedImages([]);
-      setSelectedVideo(null);
-      setShowEmojiPicker(false);
-    } else {
-      toast.error("Error something is missing,try later")
-      console.error("Missing required data for sending message:", { chatId: chat._id, userId, receiverId, messageInput, images: selectedImages });
-    }
     } catch (error) {
-      console.log("Error happended sendinf message",error);
-      toast.error("Error occured ,try later")
-    }finally{
+      console.log("Error happened sending message", error);
+      toast.error("Error occurred, try later");
+    } finally {
       setLoading(false);
     }
-    
   };
   
   const addEmoji = (emojiObject: { emoji: string }) => {
@@ -556,6 +605,33 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             </video>
           </div>
         )}
+     {message.recordUrl && (
+          <div className="mt-2">
+            <audio controls className="w-full">
+              <source src={message.recordUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+            <div className="waveform" ref={el => {
+              if (el && !el.hasChildNodes()) {
+                const wavesurfer = WaveSurfer.create({
+                  container: el,
+                  waveColor: "#ccc",
+                  progressColor: "#4a9eff",
+                  cursorColor: "#7ae3c3",
+                  barWidth: 2,
+                  height: 30,
+                  responsive: true
+                });
+                wavesurfer.load(message.recordUrl);
+              }
+            }} />
+            {message.recordDuration && (
+              <span className="text-xs text-gray-500 ml-2">
+                Duration: {formatTimes(message.recordDuration)}
+              </span>
+            )}
+          </div>
+        )}
                   <div ref={messagesEndRef} />
               <div className="flex items-center mt-1 text-xs text-gray-400">
                 <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
@@ -572,7 +648,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     });
   };
 
-  console.log("selectedVideo:", selectedVideo);
+  console.log("is it rerendering without any change i made?");
 
   function formatTime(currentPlayBackTime: number): React.ReactNode {
     throw new Error("Function not implemented.");

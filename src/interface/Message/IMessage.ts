@@ -5,6 +5,8 @@ export interface Message {
     content: string;
     imagesUrl: string[];
     videoUrl:string;
+    recordUrl?: string;
+    totalDuriation?: number;
     chatId: string;
     createdAt: string;
     updatedAt: string;
@@ -15,6 +17,7 @@ export interface Message {
   export interface User {
     id: string;
     name: string;
+    isOnline:boolean;
     avatar: {
       imageUrl: string;
       originalname: string;

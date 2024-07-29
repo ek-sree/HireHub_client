@@ -5,5 +5,6 @@ export const messageEndpoints ={
     createChatId: `${API_GATEWAY_BASE_URL}/createChatId`,
     getMessage: `${API_GATEWAY_BASE_URL}/getmessages`,
     sendImages: `${API_GATEWAY_BASE_URL}/sendimage`,
-    sendVideo: `${API_GATEWAY_BASE_URL}/sendvideo`
+    sendVideo: `${API_GATEWAY_BASE_URL}/sendvideo`,
+    sendAudio: `${API_GATEWAY_BASE_URL}/sendaudio`
 }
