@@ -22,6 +22,7 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import WaveSurfer from 'wavesurfer.js'
 import { Message , User, ChatData, MessageAreaProps, ImageData  } from "../../../interface/Message/IMessage";
+import { useWebRTC } from "../../../Contex/ProviderWebRTC";
 
 
 
@@ -52,8 +53,11 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const [renderedAudio, setRenderedAudio] = useState(null);
   const [forTest, setForTest] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+
+  const { startCall } = useWebRTC();
   
-  
+  const otherUserId = chat.users.find(user => user.id !== userId)?.id;
+
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -324,7 +328,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             imagesUrl: message.data?.imagesUrl || [], 
             videoUrl: message.data?.videoUrl,
             recordUrl: message.data?.recordUrl,
-            recordDuration: message.data?.recordDuration, // Add this line
+            recordDuration: message.data?.recordDuration, 
             chatId: message.chatId,
             createdAt: message.createdAt || new Date().toISOString(),
             updatedAt: message.updatedAt || new Date().toISOString(),
@@ -667,8 +671,8 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
             </div>
           </div>
         </div>
-        <IconButton>
-          <VideocamIcon />
+        <IconButton onClick={() => otherUserId && startCall(otherUserId)}>         
+           <VideocamIcon />
         </IconButton>
       </div>
 

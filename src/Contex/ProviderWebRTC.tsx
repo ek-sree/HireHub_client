@@ -1,12 +1,12 @@
 import React, { createContext, useEffect, useRef, useState, useContext } from "react";
-import { WebRTCContextProps } from "../interface/ContextInterface/WebRTCInterface";
+import { WebRTCContextProps } from "../interface/VideoCallInterface/WebRTCInterface";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
 import socketService from "../socket/socketService";
 
 const WebRTCContext = createContext<WebRTCContextProps | undefined>(undefined);
 
-export const WebRTCProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
+export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
     const [guestId, setGuestId] = useState<string>('');
@@ -14,86 +14,94 @@ export const WebRTCProvider: React.FC<{children: React.ReactNode}> = ({children}
     const name = useSelector((store: RootState) => store.UserAuth.userData?.name);
     const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
     const peerConnection = useRef<RTCPeerConnection | null>(null);
+    const [incomingCall, setIncomingCall] = useState<{ fromId: string; from: string, offer: RTCSessionDescriptionInit } | null>(null);
+    const [pendingCandidates, setPendingCandidates] = useState<RTCIceCandidate[]>([]);
+    let ID ;
 
-    const startCall = async (id: string) => {
-        try {
-            setGuestId(id);
-            const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-            setLocalStream(stream);
-
-            if (!peerConnection.current) {
-                peerConnection.current = new RTCPeerConnection({
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' },
-                    ],
-                });
-
-                peerConnection.current.ontrack = (e) => {
-                    if (e.streams && e.streams.length > 0) {
-                        setRemoteStream(e.streams[0]);
-                    }
-                };
-
-                peerConnection.current.onicecandidate = (e) => {
-                    if (e.candidate) {
-                        socketService.signal(id, e);
-                    }
-                };
-
-                stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
+    const createPeerConnection = () => {
+        const pc = new RTCPeerConnection({
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+          ],
+        });
+      
+        pc.ontrack = (e) => {
+          console.log("Received remote track", e.track);
+          if (e.streams && e.streams.length > 0) {
+            console.log("Setting remote stream");
+            setRemoteStream(e.streams[0]);
+          }
+        };
+      
+        pc.onicecandidate = (e) => {
+            if (e.candidate) {
+              console.log("Sending ICE candidate", e.candidate);
+              socketService.signal({ userId: guestId, type: 'candidate', candidate: e.candidate, context: 'webRTC' });
             }
-            const offer = await peerConnection.current.createOffer();
-            await peerConnection.current.setLocalDescription(offer);
+          };
+      
+        return pc;
+      };
 
-            socketService.callUser({userToCall: id, from: name!, offer, fromId: userId!});
-            setInCall(true);      
-        } catch (error) {
-            console.error("Error starting call:", error);
-        }
-    };
-
-    const acceptCall = async (id: string, fromId: string, offer: RTCSessionDescriptionInit) => {
+      const startCall = async (id: string) => {
         try {
-            setGuestId(id);
-            const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-            setLocalStream(stream);
-
-            if (!peerConnection.current) {
-                peerConnection.current = new RTCPeerConnection({
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' },
-                        { urls: 'stun:stun3.l.google.com:19302' },
-                    ]
-                });
-
-                peerConnection.current.ontrack = (e) => {
-                    if (e.streams && e.streams.length > 0) {
-                        setRemoteStream(e.streams[0]);
-                    }
-                };
-
-                peerConnection.current.onicecandidate = (e) => {
-                    if (e.candidate) {
-                        socketService.signal(id, e);
-                    }
-                };
-                stream.getTracks().forEach((track) => peerConnection.current!.addTrack(track, stream));
-            }
-
-            await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnection.current.createAnswer();
-            await peerConnection.current.setLocalDescription(answer);
-
-            socketService.callAccepted({userId: fromId, answer, context: 'webRTC'});
-            setInCall(true);
+          ID = id;
+          setGuestId(id);
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          setLocalStream(stream);
+      
+          peerConnection.current = createPeerConnection();
+          stream.getTracks().forEach((track) => {
+            console.log("Adding local track to peer connection", track);
+            peerConnection.current!.addTrack(track, stream);
+          });
+      
+          const offer = await peerConnection.current.createOffer();
+          await peerConnection.current.setLocalDescription(offer);
+      
+          console.log("Sending call offer", offer);
+          socketService.callUser({ userToCall: id, from: name!, offer, fromId: userId! });
+          setInCall(true);
         } catch (error) {
-            console.log("Error accepting call", error);
+          console.error("Error starting call:", error);
         }
-    };
+      };
+
+      const acceptCall = async (id: string, fromId: string, offer: RTCSessionDescriptionInit) => {
+        try {
+          setGuestId(fromId);
+          console.log("Accepting call", id, fromId, offer);
+          
+          setGuestId(id);
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          setLocalStream(stream);
+      
+          peerConnection.current = createPeerConnection();
+          stream.getTracks().forEach((track) => {
+            console.log("Adding local track to peer connection", track);
+            peerConnection.current!.addTrack(track, stream);
+          });
+      
+          await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+          const answer = await peerConnection.current.createAnswer();
+          await peerConnection.current.setLocalDescription(answer);
+      
+          console.log("Sending call accepted signal", answer);
+          socketService.onCallAccepted({ userId: fromId, answer, context: 'webRTC' });
+          setInCall(true);
+      
+          // Add pending candidates
+          pendingCandidates.forEach(async (candidate) => {
+            await peerConnection.current!.addIceCandidate(candidate);
+          });
+          setPendingCandidates([]);
+        } catch (error) {
+          console.log("Error accepting call", error);
+        }
+      };
+    
 
     const endCall = () => {
         try {
@@ -120,52 +128,55 @@ export const WebRTCProvider: React.FC<{children: React.ReactNode}> = ({children}
     };
 
     useEffect(() => {
-        const handleSignal = async (data: {userId: string, type: string, candidate?: RTCIceCandidateInit; answer?: RTCSessionDescriptionInit}) => {
-            try {
-                const {type, candidate, answer} = data;
-                console.log("Received signal", type, candidate, answer);
-                
-                if (peerConnection.current) {
-                    if (type === 'answer' && answer) {
-                        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
-                    } else if (type === 'candidate' && candidate) {
-                        await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-                    }
+        socketService.connect();
+      
+        socketService.onSignal(async (data) => {
+          try {
+            console.log("Received signal in WebRTCProvider", data);
+            const { type, candidate, answer } = data;
+      
+            if (peerConnection.current) {
+              if (type === 'answer' && answer) {
+                console.log("Setting remote description (answer)");
+                await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+              } else if (type === 'candidate' && candidate) {
+                if (peerConnection.current.remoteDescription) {
+                  console.log("Adding ICE candidate");
+                  await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+                } else {
+                  console.log("Storing pending ICE candidate");
+                  setPendingCandidates((prev) => [...prev, candidate]);
                 }
-            } catch (error) {
-                console.log("Error handling signal", error);
+              }
             }
-        };
-
-        const handleCallUser = async (data: {userToCall: string, from: string, offer: RTCSessionDescriptionInit, fromId: string}) => {
-            const {from, offer, fromId} = data;
-            console.log(`Incoming call from ${from}`);
-            await acceptCall(from, fromId, offer);
-        };
-
-        const handleCallEnded = () => {
-            console.log("Call ended");
-            endCall();
-        };
-
-        socketService.on('signal', (data) => handleSignal(data));
-        socketService.on('callUser', (data) => handleCallUser(data));
-        socketService.on('callEnded', handleCallEnded);
-
+          } catch (error) {
+            console.error("Error handling signal", error);
+          }
+        });
+      
         return () => {
-            socketService.off('signal', (data) => handleSignal(data));
-            socketService.off('callUser', (data) => handleCallUser(data));
-            socketService.off('callEnded', handleCallEnded);
+          socketService.disconnect();
+          socketService.removeListener('signal');
+          socketService.removeListener('incomingCall');
         };
-    }, [endCall]);
+      }, []);
+      
 
     return (
-        <WebRTCContext.Provider value={{ localStream, remoteStream, inCall, startCall, acceptCall, endCall }}>
+        <WebRTCContext.Provider value={{
+            localStream,
+            remoteStream,
+            inCall,
+            startCall,
+            acceptCall,
+            endCall,
+            incomingCall,
+            setIncomingCall
+        }}>
             {children}
         </WebRTCContext.Provider>
     );
 };
-
 
 export const useWebRTC = (): WebRTCContextProps => {
     const context = useContext(WebRTCContext);

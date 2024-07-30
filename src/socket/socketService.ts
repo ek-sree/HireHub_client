@@ -1,14 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:4000'; 
+const SOCKET_URL = 'http://localhost:4000';
 
 class SocketService {
-  on(arg0: string, handleCallEnded: () => void) {
-      throw new Error("Method not implemented.");
-  }
-  off(arg0: string, handleSignal: (data: { userId: string; type: string; candidate?: RTCIceCandidateInit; answer?: RTCSessionDescriptionInit; }) => Promise<void>) {
-      throw new Error("Method not implemented.");
-  }
   private socket: Socket;
 
   constructor() {
@@ -31,7 +25,7 @@ class SocketService {
     this.socket.emit('joinConversation', chatId);
   }
 
-  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string, images: string[], video:string, record:string,recordDuration:number }) {
+  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string, images: string[], video: string, record: string, recordDuration: number }) {
     this.socket.emit('sendMessage', message);
   }
 
@@ -47,22 +41,54 @@ class SocketService {
     this.socket.on('userStatusChanged', callback);
   }
 
-  signal(userId: string, event: any) {
-    this.socket.emit('signal', { userId, type: 'candidate', candidate: event.candidate, context: 'webRTC' }); // Corrected here
-  }
+  // Video call methods
 
+  signal(data: 
+    | { userId: string, type: 'candidate', candidate: RTCIceCandidate, context: string }
+    | { userId: string, type: 'answer', answer: RTCSessionDescriptionInit, context: string }
+  ) {
+    console.log("Sending signal", data);
+    this.socket.emit('signal', data);
+  }
+  
   callUser({ userToCall, from, offer, fromId }: { userToCall: string, from: string, offer: RTCSessionDescriptionInit, fromId: string }) {
     this.socket.emit('callUser', { userToCall, from, offer, fromId });
   }
 
-  callAccepted({userId, answer, context: 'webRTC'}){
-    this.socket.emit('callAccepted',{userId,answer, context:"webRTC"})
+  onCallAccepted(data: { userId: string, answer: RTCSessionDescriptionInit, context: string }) {
+    console.log("Sending callAccepted signal", data);
+    this.socket.emit('callAccepted', data);
   }
 
-  callEnd(guestId:string){
-    this.socket.emit('callEnd',guestId)
+  callEnd(guestId: string) {
+    this.socket.emit('callEnd', guestId);
   }
 
+  onIncomingCall(callback: (data: { from: string, offer: RTCSessionDescriptionInit, fromId: string }) => void) {
+    console.log("Setting up incomingCall listener");
+    this.socket.on('incomingCall', (data) => {
+      console.log("Received incomingCall event", data);
+      callback(data);
+    });
+  }
+
+  onSignal(callback: (data: { userId: string, type: string, candidate?: RTCIceCandidate, answer?: RTCSessionDescriptionInit }) => void) {
+    this.socket.on('signal', callback);
+  }
+
+
+  onCallEnded(callback: () => void) {
+    this.socket.on('callEnded', callback);
+  }
+
+  removeListener(event: string) {
+    this.socket.off(event);
+  }
+
+  setUserOnline(userId: string) {
+    console.log('Emitting userOnline for:', userId);
+    this.socket.emit('userOnline', userId);
+  }
 }
 
 export default new SocketService();
