@@ -9,18 +9,16 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, onEndC
 
     useEffect(() => {
         if (localVideoRef.current && localStream) {
-            console.log("Setting local stream");
-            localVideoRef.current.srcObject = localStream;
+          localVideoRef.current.srcObject = localStream;
         }
-    }, [localStream]);
-
-    useEffect(() => {
+      }, [localStream]);
+      
+      useEffect(() => {
         if (remoteVideoRef.current && remoteStream) {
-          console.log("Setting remote stream");
           remoteVideoRef.current.srcObject = remoteStream;
         }
       }, [remoteStream]);
-
+      
     const toggleCamera = () => {
         if (localStream) {
             localStream.getVideoTracks().forEach(track => {

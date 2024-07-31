@@ -57,6 +57,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const { startCall } = useWebRTC();
   
   const otherUserId = chat.users.find(user => user.id !== userId)?.id;
+;
 
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -652,7 +653,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     });
   };
 
-  console.log("is it rerendering without any change i made?");
+ 
 
   function formatTime(currentPlayBackTime: number): React.ReactNode {
     throw new Error("Function not implemented.");

@@ -41,15 +41,23 @@ class SocketService {
     this.socket.on('userStatusChanged', callback);
   }
 
+  //notification
+
+
+emitLikeNotification(data: { userId: string, postId: string, likedBy: string }) {
+  this.socket.emit('likeNotification', data);
+}
+
+
+
   // Video call methods
 
   signal(data: 
     | { userId: string, type: 'candidate', candidate: RTCIceCandidate, context: string }
-    | { userId: string, type: 'answer', answer: RTCSessionDescriptionInit, context: string }
-  ) {
-    console.log("Sending signal", data);
+    | { userId: string, type: 'answer', answer: RTCSessionDescriptionInit, context: string }) {
     this.socket.emit('signal', data);
   }
+  
   
   callUser({ userToCall, from, offer, fromId }: { userToCall: string, from: string, offer: RTCSessionDescriptionInit, fromId: string }) {
     this.socket.emit('callUser', { userToCall, from, offer, fromId });

@@ -2,7 +2,7 @@ import { Avatar } from '@mui/material';
 import { useEffect, useState } from 'react';
 import HireHubLogo from '../../../assets/images/HireHub.png';
 import notificationLogo from '../../../assets/images/notificationLogo.jpg';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/slice/UserSlice';
 import { userAxios } from '../../../constraints/axios/userAxios';
@@ -154,7 +154,9 @@ function Navbar() {
           )}
         </div>
         <div className="ml-3 md:ml-0 flex items-center">
+          <NavLink to='/notifications'>
           <img src={notificationLogo} alt="notification-logo" className="h-auto rounded-3xl w-8" />
+          </NavLink>
         </div>
       </div>
       <div className="flex items-center relative ml-4" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>

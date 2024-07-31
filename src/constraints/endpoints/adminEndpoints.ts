@@ -11,6 +11,14 @@
      blockRecruiter: `${API_GATEWAY_BASE_URL}/blockRecruiter`,
      searchUser: `${API_GATEWAY_BASE_URL}/searchUser`,
      searchRecruiter :`${API_GATEWAY_BASE_URL}/searchRecruiter`,
-     getReportPost: `${API_GATEWAY_BASE_URL}/fetchRepostPost`
+     getReportPost: `${API_GATEWAY_BASE_URL}/fetchRepostPost`,
+     getUserReports: `${API_GATEWAY_BASE_URL}/fetchUserRepost`,
+     getAllPosts: `${API_GATEWAY_BASE_URL}/getAllPostReport`,
+     getAllJobPost: `${API_GATEWAY_BASE_URL}/getAllJobPostRepost`,
+     getBlockedUser: `${API_GATEWAY_BASE_URL}/getBlockedUser`,
+     getBlockedRecruiter:`${API_GATEWAY_BASE_URL}/getBlockedRecruiter`,
+     clearReportPost: `${API_GATEWAY_BASE_URL}/clearReportPost`
+
+
 
     }

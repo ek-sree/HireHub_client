@@ -78,6 +78,29 @@ const UserManagement: React.FC = () => {
     }
   };
 
+const handleClearReport= async(postId:string)=>{
+  try {
+    console.log("log",postId);
+    
+    const response = await adminAxios.put(`${adminEndpoints.clearReportPost}?postId=${postId}`,{},{
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type":"application/json"
+      },
+    })
+    console.log("Response data",response.data);
+    if(response.data.success){
+      setReportData((prev)=> prev.filter((post)=>post._id !== postId));
+      toast.success("Cleared all reports from the post");
+    }else{
+      toast.error("Error occured clearing reports,try later !!..")
+    }
+  } catch (error) {
+    console.error("Error clearing reported post", error);
+    toast.error("An error occurred while clearing the post reported");
+  }
+}
+
   useEffect(() => {
     fetchReportedPost(currentPage);
   }, [currentPage, token, sortOrder]);
@@ -175,9 +198,17 @@ const UserManagement: React.FC = () => {
                                 onClick={() =>
                                   handleDeletePost(post._id, post.imageUrl)
                                 }
-                                className="bg-red-500 py-2 px-2 rounded-md font-medium text-white shadow-md"
+                                className="bg-red-500 py-2 mr-2 px-1 hover:bg-red-400 hover:font-normal rounded-md font-medium text-white shadow-md"
                               >
                                 Delete
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleClearReport(post._id)
+                                }
+                                className="bg-green-500 py-2 px-1 hover:bg-green-400 hover:font-normal rounded-md font-medium text-white shadow-md"
+                              >
+                                Clear Report
                               </button>
                             </td>
                           </tr>

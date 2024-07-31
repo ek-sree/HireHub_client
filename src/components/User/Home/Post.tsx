@@ -16,6 +16,7 @@ import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
 import { toast, Toaster } from 'sonner';
 import ReportPostModal from './ReportPostModal';
 import EditPostModal from './EditPostModal';
+import socketService from '../../../socket/socketService';
 
 const Post = () => {
   const [posts, setPosts] = useState<Posts[]>([]);
@@ -68,6 +69,12 @@ const Post = () => {
         setPosts(posts.map(post =>
           post._id === postId ? { ...post, likes: [...post.likes, { UserId: userId }], isLiked: true } : post
         ));
+        const likedPost = posts.find(post => post._id === postId);
+        socketService.emitLikeNotification({
+          userId: likedPost.UserId,
+          postId: postId,
+          likedBy: userId
+        });
       }
     } catch (error) {
       console.log("Error liking post", error);

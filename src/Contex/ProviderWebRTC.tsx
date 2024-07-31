@@ -19,31 +19,37 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     let ID ;
 
     const createPeerConnection = () => {
-        const pc = new RTCPeerConnection({
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' },
-          ],
-        });
-      
-        pc.ontrack = (e) => {
-          console.log("Received remote track", e.track);
-          if (e.streams && e.streams.length > 0) {
-            console.log("Setting remote stream");
-            setRemoteStream(e.streams[0]);
-          }
-        };
-      
-        pc.onicecandidate = (e) => {
-            if (e.candidate) {
-              console.log("Sending ICE candidate", e.candidate);
-              socketService.signal({ userId: guestId, type: 'candidate', candidate: e.candidate, context: 'webRTC' });
-            }
-          };
-      
-        return pc;
+      const pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
+        ],
+      });
+    
+      pc.ontrack = (e) => {
+        console.log("Received remote track", e.track);
+        if (e.streams && e.streams.length > 0) {
+          console.log("Setting remote stream");
+          setRemoteStream(e.streams[0]);
+        }
       };
+    
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          console.log("Sending ICE candidate", e.candidate);
+          socketService.signal({
+            userId: guestId,
+            type: 'candidate',
+            candidate: e.candidate,
+            context: 'webRTC'
+          });
+        }
+      };
+    
+      return pc;
+    };
+    
 
       const startCall = async (id: string) => {
         try {
@@ -132,9 +138,8 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
         socketService.onSignal(async (data) => {
           try {
-            console.log("Received signal in WebRTCProvider", data);
             const { type, candidate, answer } = data;
-      
+        
             if (peerConnection.current) {
               if (type === 'answer' && answer) {
                 console.log("Setting remote description (answer)");
@@ -145,7 +150,7 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                   await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
                 } else {
                   console.log("Storing pending ICE candidate");
-                  setPendingCandidates((prev) => [...prev, candidate]);
+                  setPendingCandidates(prev => [...prev, candidate]);
                 }
               }
             }
@@ -153,6 +158,7 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             console.error("Error handling signal", error);
           }
         });
+        
       
         return () => {
           socketService.disconnect();
