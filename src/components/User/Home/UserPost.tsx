@@ -12,48 +12,56 @@ import { useParams } from 'react-router-dom';
 
 const UserPost = () => {
     const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
     const [sameUser, setSameUser] = useState<boolean>(true);
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
   const {id} = useParams<{id?:string}>()
-  console.log("params id", id);
 
-  useEffect(()=>{
-    if(userId !== id){
-        setSameUser(false);
-    }else{
-        setSameUser(true);
+  useEffect(() => {
+    if (userId !== id) {
+      setSameUser(false);
+    } else {
+      setSameUser(true);
     }
-    getUserPosts();
+  
 
-  },[userId, id, token,sameUser])
+    if (token && (sameUser !== null)) {
+      getUserPosts();
+    }
+  }, [id, userId, token, sameUser]);
+
 
   async function getUserPosts() {
-      try {
-        const sentId = sameUser ? userId : id;
-        console.log("same same",sameUser);
-        console.log("id sent",sentId);
-        
-        
-      const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${sentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log("api data post of user", response.data);
-      
-      if (response.data.success) {
-        setPosts(response.data.data);
+  if (isLoading) return; 
+  
+  setIsLoading(true);
+  try {
+    const sentId = sameUser ?  id : userId;
+    console.log("=-=-=-=-",sentId);
+    
+    const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${sentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    } catch (error) {
-      console.log("Error occurred fetching all data", error);
+    });
+    
+    if (response.data.success) {
+      setPosts(response.data.data);
     }
+  } catch (error) {
+    console.log("Error occurred fetching all data", error);
+  } finally {
+    setIsLoading(false);
   }
+}
+  
 
   // useEffect(() => {
   //   getUserPosts();
-  // }, [token,sameUser]);
+  // }, [token,sameUser, id]);
 
   const settings = {
     dots: true,

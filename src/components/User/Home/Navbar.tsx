@@ -12,6 +12,7 @@ import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import { RootState } from '../../../redux/store/store';
 import { useDebonceSearch } from '../../../customHook/searchHook';
 import socketService from '../../../socket/socketService';
+import { incrementUnseenCount } from '../../../redux/slice/NotificationSlice';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -21,9 +22,11 @@ function Navbar() {
   const [profileImg, setProfileImg] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  
+
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
+
+  const postUser = useSelector((store: RootState) => store.Notification.postUser);
 
   const debouncedSearchQuery = useDebonceSearch(searchQuery, 500);
 
@@ -112,6 +115,14 @@ function Navbar() {
     }
   };
 
+  const unseenCount = useSelector((state: RootState) => state.Notification.unseenCount);
+
+  useEffect(() => {
+    socketService.newNotification((postUser) => {
+      dispatch(incrementUnseenCount(postUser));
+    });
+  }, [dispatch]);
+
   useEffect(() => {
     fetchSearchResults();
   }, [debouncedSearchQuery]);
@@ -119,7 +130,9 @@ function Navbar() {
   return (
     <div className={`shadow-lg flex items-center h-20 px-5 ${isSticky ? 'sticky top-0 bg-white z-50' : ''}`}>
       <div className="w-20">
-        <img src={HireHubLogo} alt="HireHub-Logo" className="max-w-full h-12 rounded-3xl w-16 md:w-auto" />
+        <NavLink to='/'>
+          <img src={HireHubLogo} alt="HireHub-Logo" className="max-w-full h-12 rounded-3xl w-16 md:w-auto" />
+        </NavLink>
       </div>
       <div className="flex items-center flex-grow justify-between md:justify-center">
         <div className="relative flex-grow max-w-md md:mx-auto">
@@ -134,14 +147,14 @@ function Navbar() {
           {searchResults && searchResults.length > 0 ? (
             <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-10">
               {searchResults.map((result, index) => (
-                <Link to={`/userprofile/${result._id}`}>
-                <div key={index} className="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
-                  <img src={result.avatar.imageUrl} alt={result.name} className="h-10 w-10 rounded-full mr-3" />
-                  <div>
-                    <div>{result.name}</div>
-                    <div className="text-sm text-gray-500">{result.profileTitle}</div>
+                <Link to={`/userprofile/${result._id}`} key={index}>
+                  <div className="p-2 cursor-pointer hover:bg-gray-100 flex items-center">
+                    <img src={result.avatar.imageUrl} alt={result.name} className="h-10 w-10 rounded-full mr-3" />
+                    <div>
+                      <div>{result.name}</div>
+                      <div className="text-sm text-gray-500">{result.profileTitle}</div>
+                    </div>
                   </div>
-                </div>
                 </Link>
               ))}
             </div>
@@ -153,9 +166,14 @@ function Navbar() {
             )
           )}
         </div>
-        <div className="ml-3 md:ml-0 flex items-center">
+        <div className="relative">
           <NavLink to='/notifications'>
-          <img src={notificationLogo} alt="notification-logo" className="h-auto rounded-3xl w-8" />
+            <img src={notificationLogo} alt="notification-logo" className="h-auto rounded-3xl w-8" />
+            {unseenCount > 0 && postUser === userId && (
+  <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs">
+    {unseenCount}
+  </span>
+)}
           </NavLink>
         </div>
       </div>

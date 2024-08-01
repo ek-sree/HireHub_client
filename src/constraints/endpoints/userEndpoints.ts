@@ -24,5 +24,6 @@ export const userEndpoints = {
     getCoverImage:`${API_GATEWAY_BASE_URL}/getCoverImage`,
     follow:`${API_GATEWAY_BASE_URL}/follow`,
     unfollow:`${API_GATEWAY_BASE_URL}/unfollow`,
-    searchUsers:`${API_GATEWAY_BASE_URL}/seachUsers`
+    searchUsers:`${API_GATEWAY_BASE_URL}/seachUsers`,
+    friendSuggestion: `${API_GATEWAY_BASE_URL}/friendSuggestion`
 }

@@ -5,7 +5,7 @@ import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { Link } from "react-router-dom";
 import CommentModal, { Comment } from "./CommentModal";
@@ -17,6 +17,7 @@ import { toast, Toaster } from 'sonner';
 import ReportPostModal from './ReportPostModal';
 import EditPostModal from './EditPostModal';
 import socketService from '../../../socket/socketService';
+import { incrementUnseenCount } from '../../../redux/slice/NotificationSlice';
 
 const Post = () => {
   const [posts, setPosts] = useState<Posts[]>([]);
@@ -33,6 +34,8 @@ const Post = () => {
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
+
+  const dispatch = useDispatch();
 
   async function getAllPosts() {
     try {
@@ -57,29 +60,40 @@ const Post = () => {
     }
   }
 
-  const handleLike = async (postId: string) => {
+  const handleLike = async (postId: string, postUser: string) => {
     try {
-      const response = await postAxios.post(`${postEndpoints.likePost}?postId=${postId}&UserId=${userId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
+      const response = await postAxios.post(
+        `${postEndpoints.likePost}?postId=${postId}&UserId=${userId}&postUser=${postUser}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      console.log("Like response:", response.data);
+  
       if (response.data.success) {
+        const likedPostUser = response.data.data.find((post: Post) => post._id === postId)?.postUser || postUser;
+        console.log("Liked post user:", likedPostUser);
+  
         setPosts(posts.map(post =>
           post._id === postId ? { ...post, likes: [...post.likes, { UserId: userId }], isLiked: true } : post
         ));
-        const likedPost = posts.find(post => post._id === postId);
+        socketService.connect();
         socketService.emitLikeNotification({
-          userId: likedPost.UserId,
+          userId: likedPostUser,
           postId: postId,
           likedBy: userId
         });
+        console.log("Like notification emitted");
+  
+        if (likedPostUser !== userId) {
+          dispatch(incrementUnseenCount(likedPostUser));
+        }
       }
     } catch (error) {
-      console.log("Error liking post", error);
+      console.error("Error liking post:", error);
     }
-  }
+  };
+  
 
   const handleUnlike = async (postId: string) => {
     try {
@@ -244,7 +258,7 @@ const Post = () => {
             <div className="flex items-center space-x-2">
               <ThumbUpRoundedIcon
                 fontSize="small"
-                onClick={() => post.isLiked ? handleUnlike(post._id) : handleLike(post._id)}
+                onClick={() => post.isLiked ? handleUnlike(post._id) : handleLike(post._id, post.UserId)}
                 className={post.isLiked ? "text-blue-500 cursor-pointer" : "text-gray-500 cursor-pointer"}
               />
               <span className="text-gray-500">{post.likes.length} Likes</span>

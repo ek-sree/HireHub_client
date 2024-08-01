@@ -80,7 +80,6 @@ const UserProfile = () => {
     }
 
     async function showCoverImg() {
-        console.log("Sending userId:", sentId);
 
         try {
             const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`, {

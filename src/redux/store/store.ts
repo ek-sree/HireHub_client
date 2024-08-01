@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import userAuthSlice from '../slice/UserSlice';
 import recruiterAuthSlice from '../slice/RecruiterSlice';
 import adminAuthSlice from '../slice/AdminSlice';
+import notificationSlice from '../slice/NotificationSlice';
 
 const persistConfiguration = {
     key: 'root',
@@ -14,7 +15,8 @@ const persistConfiguration = {
 const rootReducer = combineReducers({
     UserAuth: userAuthSlice.reducer,
     RecruiterAuth: recruiterAuthSlice.reducer, 
-    AdminAuth: adminAuthSlice.reducer
+    AdminAuth: adminAuthSlice.reducer,
+    Notification: notificationSlice.reducer
 })
 
 const persistedReducer = persistReducer(persistConfiguration, rootReducer);
