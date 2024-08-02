@@ -14,6 +14,7 @@ import { useDebonceSearch } from '../../../customHook/searchHook';
 import socketService from '../../../socket/socketService';
 import { incrementUnseenCount } from '../../../redux/slice/NotificationSlice';
 
+
 function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -25,9 +26,7 @@ function Navbar() {
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
-
   const postUser = useSelector((store: RootState) => store.Notification.postUser);
-
   const debouncedSearchQuery = useDebonceSearch(searchQuery, 500);
 
   useEffect(() => {
@@ -170,10 +169,10 @@ function Navbar() {
           <NavLink to='/notifications'>
             <img src={notificationLogo} alt="notification-logo" className="h-auto rounded-3xl w-8" />
             {unseenCount > 0 && postUser === userId && (
-  <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs">
-    {unseenCount}
-  </span>
-)}
+              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs">
+                {unseenCount}
+              </span>
+            )}
           </NavLink>
         </div>
       </div>

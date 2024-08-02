@@ -189,7 +189,7 @@ const ViewApplications = () => {
                       onClick={() => handleAccept(application._id)}
                       disabled={loading}
                     >
-                      {loading ? 'Loading...' : 'Accept'}
+                      {loading ? 'Loading...' : 'Shortlisted'}
                     </button>
                     <button
                       className={`py-1 px-3 rounded ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white'}`}

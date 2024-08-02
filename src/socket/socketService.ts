@@ -79,44 +79,7 @@ class SocketService {
     this.socket.on('newNotification', callback);
   }
 
-  // Video call methods...
-
-  signal(data: { userId: string, type: 'candidate' | 'answer', candidate?: RTCIceCandidate, answer?: RTCSessionDescriptionInit, context: string }) {
-    this.socket.emit('signal', data);
-  }
-
-  callUser({ userToCall, from, offer, fromId }: { userToCall: string, from: string, offer: RTCSessionDescriptionInit, fromId: string }) {
-    this.socket.emit('callUser', { userToCall, from, offer, fromId });
-  }
-
-  onCallAccepted(callback: (data: { userId: string, answer: RTCSessionDescriptionInit, context: string }) => void) {
-    this.socket.on('callAccepted', callback);
-  }
-
-  callEnd(guestId: string) {
-    this.socket.emit('callEnd', guestId);
-  }
-
-  onIncomingCall(callback: (data: { from: string, offer: RTCSessionDescriptionInit, fromId: string }) => void) {
-    this.socket.on('incomingCall', callback);
-  }
-
-  onSignal(callback: (data: { userId: string, type: string, candidate?: RTCIceCandidate, answer?: RTCSessionDescriptionInit }) => void) {
-    this.socket.on('signal', callback);
-  }
-
-  onCallEnded(callback: () => void) {
-    this.socket.on('callEnded', callback);
-  }
-
-  removeListener(event: string) {
-    this.socket.off(event);
-  }
-
-  setUserOnline(userId: string) {
-    console.log('Emitting userOnline for:', userId);
-    this.socket.emit('userOnline', userId);
-  }
+  
 }
 
 export default new SocketService();

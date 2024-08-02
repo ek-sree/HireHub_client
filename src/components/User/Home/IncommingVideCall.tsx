@@ -1,11 +1,20 @@
+// GlobalIncomingCallHandler.tsx
 import React, { useEffect, useState } from "react";
-import { IncommigCallProps } from "../../../interface/VideoCallInterface/VideoCallProps";
 import { useWebRTC } from "../../../Contex/ProviderWebRTC";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
-import socketService from "../../../socket/socketService";
+import io from 'socket.io-client';
 
-const IncommingCall: React.FC<IncommigCallProps> = ({ callerId, callerName, onAccept, onReject }) => {
+const socket = io('http://localhost:4000');
+
+interface IncomingCallNotificationProps {
+  callerId: string;
+  callerName: string;
+  onAccept: () => void;
+  onReject: () => void;
+}
+
+const IncomingCallNotification: React.FC<IncomingCallNotificationProps> = ({ callerId, callerName, onAccept, onReject }) => {
   return (
     <div className="fixed bottom-0 right-0 m-4 p-4 bg-white shadow-lg rounded-lg flex items-center">
       <div className="flex-1">
@@ -18,40 +27,40 @@ const IncommingCall: React.FC<IncommigCallProps> = ({ callerId, callerName, onAc
   );
 };
 
-const GlobalInCommingCallHandler: React.FC = () => {
+const GlobalIncomingCallHandler: React.FC = () => {
   const { acceptCall, endCall } = useWebRTC();
-  const [incomingCall, setIncomingCall] = useState<{ fromId: string; from: string, offer: RTCSessionDescriptionInit } | null>(null);
-
-  const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
+  const [incomingCall, setIncomingCall] = useState<{ fromId: string; from: string; offer: RTCSessionDescriptionInit } | null>(null);
+  const userId = useSelector((store: RootState) => store.UserAuth.userData?._id) || '';
 
   useEffect(() => {
-    const handleIncomingCall = (data: { from: string, offer: RTCSessionDescriptionInit, fromId: string }) => {
-      console.log("Incoming call data:", data);
+    const handleIncomingCall = (data: { fromId: string; from: string; offer: RTCSessionDescriptionInit }) => {
+      console.log('Incoming call data:', data);
       setIncomingCall(data);
     };
 
-    socketService.onIncomingCall(handleIncomingCall);
-  
+    socket.on('incomingCall', handleIncomingCall);
+
     return () => {
-      socketService.removeListener('incomingCall');
+      socket.off('incomingCall', handleIncomingCall);
     };
   }, []);
 
   const handleAccept = () => {
     if (incomingCall) {
-      acceptCall(userId || '', incomingCall.from, incomingCall.offer);
+      acceptCall(userId, incomingCall.from, incomingCall.offer);
       setIncomingCall(null);
     }
   };
 
   const handleReject = () => {
+    endCall();
     setIncomingCall(null);
-};
+  };
 
   if (!incomingCall) return null;
 
   return (
-    <IncommingCall
+    <IncomingCallNotification
       callerId={incomingCall.fromId}
       callerName={incomingCall.from}
       onAccept={handleAccept}
@@ -60,4 +69,4 @@ const GlobalInCommingCallHandler: React.FC = () => {
   );
 };
 
-export default GlobalInCommingCallHandler;
+export default GlobalIncomingCallHandler;
