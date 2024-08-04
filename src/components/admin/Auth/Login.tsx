@@ -24,13 +24,10 @@ function Login() {
 
   const onSubmit = async (values: typeof initialValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
-        console.log("Admin gonna login", values);
         
       const response = await adminAxios.post(adminEndpoints.adminlogin, values);
-      console.log("Success logging", response);
 
       if (response.data.success && response.data.isRecruiter === null) {
-        console.log("Dispatching admin login",response);
         dispatch(login({token:response.data.token, adminData:response.data.admin_data}));
         navigate('/admin/dashboard');
       } else {

@@ -15,18 +15,18 @@ const Postbar = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const token = useSelector((store:RootState)=>store.UserAuth.token);
-  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id)
+  const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
   const [progress, setProgress] = React.useState(0);
-    React.useEffect(() => {
-        const timer = setInterval(() => {
-          setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
-        }, 800);
-    
-        return () => {
-          clearInterval(timer);
-        };
-      }, []);
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+    }, 800);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   const handleAddImage = () => {
     if (fileInputRef.current) {
@@ -37,7 +37,16 @@ const Postbar = () => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+    const invalidFiles = files.filter(file => !validImageTypes.includes(file.type));
+    if (invalidFiles.length > 0) {
+      setError('Only image files (jpg, png, gif) are allowed.');
+      return;
+    }
+
     setSelectedImages((prevImages) => [...prevImages, ...files]); 
+    setError('');
   };
 
   const handleRemoveImage = (image: File) => {
@@ -56,7 +65,7 @@ const Postbar = () => {
         setError("Can't post empty data, add something");
         return;
       }
-      setLoading(true)
+      setLoading(true);
 
       const formData = new FormData();
       formData.append('text', text);
@@ -69,7 +78,7 @@ const Postbar = () => {
           Authorization: `Bearer ${token}`
         }
       });
-console.log("api data",response.data);
+      console.log("api data",response.data);
 
       if (response.data.success) {
         toast.success("Post added successfully");
@@ -108,11 +117,13 @@ console.log("api data",response.data);
             onChange={handleFileChange}
             multiple 
           />
-          {loading? <CircularProgress variant="determinate" value={progress} />:
-          <button disabled={loading} onClick={handleSubmit} className="bg-cyan-300 text-blue-700 font-semibold px-4 py-2 rounded-md hover:bg-cyan-200 hover:font-normal focus:outline-none focus:ring-2 focus:ring-blue-400">
-            Post
-          </button>
-}
+          {loading ? (
+            <CircularProgress variant="determinate" value={progress} />
+          ) : (
+            <button disabled={loading} onClick={handleSubmit} className="bg-cyan-300 text-blue-700 font-semibold px-4 py-2 rounded-md hover:bg-cyan-200 hover:font-normal focus:outline-none focus:ring-2 focus:ring-blue-400">
+              Post
+            </button>
+          )}
         </div>
         {error && <div className='text-red-600 text-sm'>{error}</div>}
         <div className="mt-4 flex flex-wrap gap-4">

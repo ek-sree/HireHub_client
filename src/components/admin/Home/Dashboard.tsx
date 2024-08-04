@@ -38,9 +38,6 @@ function Dashboard() {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    console.log("dashboard data users", response.data);
-
     if (response.data.success) {
       setUsers(response.data.data);
     }
@@ -52,7 +49,6 @@ function Dashboard() {
         Authorization: `Bearer ${token}`
       }
     })
-    console.log("Post reports api", response.data);
     if (response.data.success) {
       setPosts(response.data.data);
     }
@@ -65,7 +61,6 @@ function Dashboard() {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log("Fetch jobpost api", response.data);
       if (response.data.success) {
         setJobs(response.data.data);
       }
@@ -82,7 +77,6 @@ function Dashboard() {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log("data api blocked user", response.data);
       if (response.data.success) {
         setBlockedUser(response.data.data);
       }
@@ -99,7 +93,6 @@ function Dashboard() {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log("data api blocked recruiter", response.data);
       if (response.data.success) {
         setBlockedRecruiter(response.data.data);
       }

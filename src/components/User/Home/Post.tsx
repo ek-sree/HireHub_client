@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Slider from 'react-slick';
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
@@ -18,10 +18,15 @@ import ReportPostModal from './ReportPostModal';
 import EditPostModal from './EditPostModal';
 import socketService from '../../../socket/socketService';
 import { incrementUnseenCount } from '../../../redux/slice/NotificationSlice';
+import Shimmer from './Shimmer';
+
+
 
 const Post = () => {
   const [posts, setPosts] = useState<Posts[]>([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string>('');
   const [selectedUserId, setSelectedUserId] = useState<string>('');
@@ -36,8 +41,21 @@ const Post = () => {
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
   const dispatch = useDispatch();
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastPostElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
   async function getAllPosts() {
+    if (!hasMore) return;
+    setLoading(true);
     try {
       const response = await postAxios.get(`${postEndpoints.getPosts}?page=${page}`, {
         headers: {
@@ -47,16 +65,32 @@ const Post = () => {
       console.log("response post", response.data);
 
       if (response.data.success) {
-        setPosts(prev => [
-          ...prev, 
-          ...response.data.data.map((post: Posts) => ({
-            ...post,
-            isLiked: post.likes.some((like: any) => like.UserId === userId)
-          }))
-        ]);
+        const newPosts = response.data.data.map((post: Posts) => ({
+          ...post,
+          isLiked: post.likes.some((like: any) => like.UserId === userId),
+          imagesLoaded: false
+        }));
+        setPosts(prev => [...prev, ...newPosts]);
+        setHasMore(newPosts.length > 0);
+        
+        newPosts.forEach((post: Posts) => {
+          post.imageUrl.forEach((url: string) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+              setPosts(prevPosts => 
+                prevPosts.map(p => 
+                  p._id === post._id ? { ...p, imagesLoaded: true } : p
+                )
+              );
+            };
+          });
+        });
       }
     } catch (error) {
       console.log("Error occurred fetching all data", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -93,7 +127,6 @@ const Post = () => {
       console.error("Error liking post:", error);
     }
   };
-  
 
   const handleUnlike = async (postId: string) => {
     try {
@@ -130,12 +163,6 @@ const Post = () => {
         }))
       } : post
     ));
-  }
-
-  const handleScroll = () => {
-    if (window.innerHeight + document.documentElement.scrollTop + 1 >= document.documentElement.scrollHeight) {
-      setPage(prev => prev + 1);
-    }
   }
 
   const toggleDropdown = (postId: string) => {
@@ -191,11 +218,6 @@ const Post = () => {
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [page]);
-
-  useEffect(() => {
     if (token) {
       getAllPosts();
     }
@@ -209,15 +231,31 @@ const Post = () => {
     slidesToScroll: 1
   };
 
+  if (loading && posts.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto mt-10">
+        {[...Array(3)].map((_, index) => (
+          <Shimmer key={index} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto mt-10">
       <Toaster position="top-center" expand={false} richColors />
       {posts.map((post, index) => (
-        <div key={`${post._id}-${index}`} className="bg-white rounded-lg shadow-lg p-4 mb-10">
+        <div 
+          key={`${post._id}-${index}`} 
+          className="bg-white rounded-lg shadow-lg p-4 mb-10"
+          ref={index === posts.length - 1 ? lastPostElementRef : null}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              {post.user && post.user.avatar && (
+              {post.user && post.user.avatar ? (
                 <img src={post.user.avatar.imageUrl} alt="user" className="rounded-full w-11 h-11 border-4 border-gray-100" />
+              ) : (
+                <div className="rounded-full w-11 h-11 bg-gray-200"></div>
               )}
               <div className="ml-4">
                 <Link to={`/userprofile/${post.UserId}`}>
@@ -246,13 +284,17 @@ const Post = () => {
             <p>{post.description}</p>
           </div>
           <div className="post-images">
-            <Slider {...settings}>
-              {post.imageUrl.map((image, imgIndex) => (
-                <div key={imgIndex}>
-                  <img src={image} alt={`Post image ${imgIndex + 1}`} />
-                </div>
-              ))}
-            </Slider>
+            {post.imagesLoaded ? (
+              <Slider {...settings}>
+                {post.imageUrl.map((image, imgIndex) => (
+                  <div key={imgIndex}>
+                    <img src={image} alt={`Post image ${imgIndex + 1}`} />
+                  </div>
+                ))}
+              </Slider>
+            ) : (
+              <Shimmer />
+            )}
           </div>
           <div className="flex justify-between mt-10 mb-4">
             <div className="flex items-center space-x-2">
@@ -270,6 +312,7 @@ const Post = () => {
           </div>
         </div>
       ))}
+      {loading && <Shimmer />}
       {isModalOpen && (
         <CommentModal
           isOpen={isModalOpen}
