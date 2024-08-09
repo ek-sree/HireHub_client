@@ -43,11 +43,7 @@ useEffect(()=>{
     async function userInfo(){
         const sentId = sameUser ? userId : id;
      try {
-        const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${sentId}`,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        })
+        const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${sentId}`)
         console.log("info api",response);
         
         if(response.data.success){

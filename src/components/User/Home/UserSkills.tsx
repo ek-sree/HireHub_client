@@ -17,7 +17,6 @@ const UserSkills = () => {
   const [sameUser, setSameUser] = useState<boolean>(true);
 
   const { id } = useParams<{ id?: string }>();
-  const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
@@ -39,11 +38,7 @@ const UserSkills = () => {
 
   async function userSkills() {
     try {
-      const response = await userAxios.get(`${userEndpoints.userSkills}?userId=${sentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await userAxios.get(`${userEndpoints.userSkills}?userId=${sentId}`);
       if (response.data.success) {
         setSkills(response.data.skills);
       }

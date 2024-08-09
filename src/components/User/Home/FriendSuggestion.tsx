@@ -29,11 +29,7 @@ const FriendSuggestion = () => {
 
   async function getFriendSuggestion() {
     try {
-      const response = await userAxios.get(`${userEndpoints.friendSuggestion}?userId=${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await userAxios.get(`${userEndpoints.friendSuggestion}?userId=${userId}`);
       console.log("Response api from friend suggestion", response.data);
       if (response.data.success) {
         setFriends(response.data.data.map((friend: Friend) => ({...friend, isFollowing: false})));
@@ -45,11 +41,7 @@ const FriendSuggestion = () => {
 
   const handleFollow = async (id: string) => {
     try {
-      const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id });
       if (response.data.success) {
         setFriends(friends.map(friend => 
           friend.id === id ? {...friend, isFollowing: true} : friend
@@ -68,11 +60,7 @@ const FriendSuggestion = () => {
     try {
       console.log("data unfollwo",id,userId);
       
-      const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`,{}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`);
       if (response.data.success) {
         setFriends(friends.map(friend => 
           friend.id === id ? {...friend, isFollowing: false} : friend

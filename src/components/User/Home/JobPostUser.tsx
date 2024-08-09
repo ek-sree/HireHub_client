@@ -34,7 +34,6 @@ const JobPostUser: React.FC = () => {
   const [jobId, setJobId] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
 
   const [debouncedQuery] = useDebonceSearch(searchQuery, 500);
@@ -61,11 +60,7 @@ const JobPostUser: React.FC = () => {
     jobType.forEach(type => params.append('job', type));
 
     try {
-      const response = await jobpostAxios.get(`${jobpostEndpoints.getallJobs}?${params.toString()}&search=${searchQuery}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await jobpostAxios.get(`${jobpostEndpoints.getallJobs}?${params.toString()}&search=${searchQuery}`);
 
       if (response.data.success) {
         setJobs(response.data.job);

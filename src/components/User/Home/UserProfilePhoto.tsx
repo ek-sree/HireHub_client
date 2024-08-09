@@ -61,11 +61,7 @@ const UserProfile = () => {
     const sentId = sameUser ? userId : id;
     async function showImage() {
         try {
-            const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`);
 
             if (response.data.success) {
                 const imageUrl = response.data.data?.imageUrl || User; 
@@ -82,11 +78,7 @@ const UserProfile = () => {
     async function showCoverImg() {
 
         try {
-            const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`);
             if (response.data.success) {
                 const imageUrl = response.data.data?.imageUrl || HireHub; 
                 setCoverImg(imageUrl);
@@ -98,13 +90,6 @@ const UserProfile = () => {
             setCoverImg(HireHub);
         }
     }
-
-    // useEffect(() => {
-    //     if (token) {
-    //         showCoverImg();
-    //         showImage();
-    //     }
-    // }, [token,sameUser,coverImg,profileImg,id,userId]);
 
     return (
         <div className="max-w-2xl mx-auto mt-10 px-6 py-8 rounded-lg shadow-md relative">

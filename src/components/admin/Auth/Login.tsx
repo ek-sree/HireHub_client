@@ -29,6 +29,7 @@ function Login() {
 
       if (response.data.success && response.data.isRecruiter === null) {
         dispatch(login({token:response.data.token, adminData:response.data.admin_data}));
+        localStorage.setItem('adminToken',response.data.token);
         navigate('/admin/dashboard');
       } else {
         toast.error(response.data.message);

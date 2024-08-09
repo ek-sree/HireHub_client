@@ -30,11 +30,7 @@ const ShortListedOnJob = () => {
                 toast.error("Error missing some crediential login and try again later")
                 throw new Error("Error job id is missing");
             }
-            const response = await jobpostAxios.get(`${jobpostEndpoints.viewShortlistedApplication}?jobId=${jobId}`,{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            })
+            const response = await jobpostAxios.get(`${jobpostEndpoints.viewShortlistedApplication}?jobId=${jobId}`)
             console.log("api data shortlisted",response.data);
             
             if(response.data.success){

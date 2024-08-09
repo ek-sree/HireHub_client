@@ -14,7 +14,6 @@ const Postbar = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const token = useSelector((store:RootState)=>store.UserAuth.token);
   const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
 
   const [progress, setProgress] = React.useState(0);
@@ -73,11 +72,7 @@ const Postbar = () => {
         formData.append('images', image); 
       });
 
-      const response = await postAxios.post(`${postEndpoints.addPost}?userId=${userId}`, formData, {
-        headers:{
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await postAxios.post(`${postEndpoints.addPost}?userId=${userId}`, formData);
       console.log("api data",response.data);
 
       if (response.data.success) {

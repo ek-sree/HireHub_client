@@ -36,11 +36,7 @@ const SidebarProfile = () => {
 const sentId = sameUser ? userId : id
     async function userDetails() {
       try {
-        const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}`);
         if (response.data.success) {
           setName(response.data.details.name);
           setTitle(response.data.details.title);
@@ -56,11 +52,7 @@ const sentId = sameUser ? userId : id
 
     async function showImage() {
       try {
-          const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`, {
-              headers: {
-                  Authorization: `Bearer ${token}`
-              }
-          });
+          const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`);
 
           if (response.data.success && response.data.data && response.data.data.imageUrl) {
               setProfileImg(response.data.data.imageUrl);
@@ -77,11 +69,7 @@ const sentId = sameUser ? userId : id
     try {
       console.log("Sending userId:", sentId);
       
-        const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        })
+        const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`)
         if(response.data.success){
             setCoverImg(response.data.data.imageUrl);
         } 
@@ -90,12 +78,6 @@ const sentId = sameUser ? userId : id
         setCoverImg(HireHub)
     }
 }
-
-  // useEffect(()=>{
-  //   showImage();
-  //   userDetails();
-  //   showCoverImg();
-  // },[token])
 
   return (
     <div className="hidden sm:block fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">

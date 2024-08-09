@@ -24,7 +24,6 @@ const EditDetailsModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, 
   const maxTitleLength = 70;
 
 
-  const token = useSelector((store:RootState)=> store.UserAuth.token);
   const email = useSelector((store: RootState)=> store.UserAuth.userData?.email);
 
 const data = {
@@ -41,11 +40,7 @@ const data = {
         return
       }
       console.log("gonna sent",data, email);
-      const response = await userAxios.post(`${userEndpoints.editDetails}?email=${email}`, {data}, {
-        headers:{
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await userAxios.post(`${userEndpoints.editDetails}?email=${email}`, {data})
       console.log("api response", response);
       if(response.data.success){
         onSuccess(response.data.details)

@@ -40,11 +40,7 @@ const Notification: React.FC = () => {
   async function getAllNotification() {
     console.log("Notification api call");
     try {
-      const response = await postAxios.get(`${postEndpoints.notification}?userId=${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await postAxios.get(`${postEndpoints.notification}?userId=${userId}`);
       console.log("Notification data api", response.data);
       if (response.data.success) {
         setNotifications(response.data.data);
@@ -68,7 +64,6 @@ const Notification: React.FC = () => {
     getAllNotification();
 
     socketService.newNotification((newNotification: NotificationItem) => {
-      console.log("Received new notification:", newNotification);
       setNotifications(prevNotifications => [newNotification, ...prevNotifications]);
     });
 

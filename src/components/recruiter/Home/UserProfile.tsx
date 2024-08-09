@@ -25,7 +25,6 @@ const UserProfile = () => {
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
 
   const { id } = useParams<{ id?: string }>();
-  console.log("params id", id);
 
   async function userDetails() {
     try {
@@ -48,11 +47,7 @@ const UserProfile = () => {
 
   async function getUserPosts() {
     try {
-      const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${id}`);
       console.log("api data post of user", response.data);
 
       if (response.data.success) {
@@ -65,11 +60,7 @@ const UserProfile = () => {
 
   async function showImage() {
     try {
-      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${id}`);
 
       if (response.data.success) {
         const imageUrl = response.data.data?.imageUrl || UserImg;
@@ -85,11 +76,7 @@ const UserProfile = () => {
 
   async function showCoverImg() {
     try {
-      const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${id}`);
       if (response.data.success) {
         const imageUrl = response.data.data?.imageUrl || HireHub;
         setCoverImg(imageUrl);
@@ -104,11 +91,7 @@ const UserProfile = () => {
 
   async function userSkills() {
     try {
-      const response = await userAxios.get(`${userEndpoints.userSkills}?userId=${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await userAxios.get(`${userEndpoints.userSkills}?userId=${id}`);
       if (response.data.success) {
         setSkills(response.data.skills);
       }

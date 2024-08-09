@@ -28,20 +28,13 @@ const RecruiterManagement = () => {
   const [sortOrder, setSortOrder] = useState("A-Z");
 
   const [loading, setLoading] = useState(false);
-  const token = useSelector((state: RootState) => state.AdminAuth.token);
 
   const debouncedValue = useDebonceSearch(searchQuery, 500);
 
   const getAllRecruiter = async (page = 1) => {
     try {
       const response = await adminAxios.get(
-        `${adminEndpoints.getrecruiters}?page=${page}&limit=2`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        `${adminEndpoints.getrecruiters}?page=${page}&limit=2`);
       console.log("Response from API:", response);
 
       if (response.data.success === false) {
@@ -60,14 +53,7 @@ const RecruiterManagement = () => {
   const blockRecruiter = async (recruitersId: string) => {
     try {
       const response = await adminAxios.put(
-        `${adminEndpoints.blockRecruiter}/${recruitersId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        `${adminEndpoints.blockRecruiter}/${recruitersId}`);
       console.log("response of recruiter blocked data", response);
       if (response.data.success === true) {
         setRecruiters((prevRecruiter) =>
@@ -92,13 +78,7 @@ const RecruiterManagement = () => {
     try {
       setLoading(true);
       const response = await adminAxios.get(
-        `${adminEndpoints.searchRecruiter}?search=${debouncedValue}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        `${adminEndpoints.searchRecruiter}?search=${debouncedValue}`);
       setLoading(false);
       console.log("api res search recr", response);
       if (response.data.success) {
@@ -137,7 +117,7 @@ const RecruiterManagement = () => {
     } else {
       setRecruiters(defaultValue);
     }
-  }, [debouncedValue, token]);
+  }, [debouncedValue]);
 
   const getItemProps = (index: number) => ({
     variant: currentPage === index ? "filled" : "text",

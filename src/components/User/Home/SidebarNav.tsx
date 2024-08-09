@@ -50,19 +50,6 @@ const SidebarNav = () => {
         <WorkRoundedIcon />
         <span className="text-xs md:text-base text-black">Work</span>
       </NavLink>
-      {/* <NavLink
-        to="/new-post"
-        className={({ isActive }) =>
-          `md:py-3 md:px-2 flex flex-col md:flex-row items-center gap-1 md:gap-4 justify-center md:justify-start ${
-            isActive
-              ? 'text-cyan-300 md:bg-cyan-300 md:text-white md:rounded-lg'
-              : 'text-slate-400 hover:text-cyan-300'
-          }`
-        }
-      >
-        <DriveFileRenameOutlineRoundedIcon />
-        <span className="text-xs md:text-base text-black">New post</span>
-      </NavLink> */}
       <NavLink
         to="/message"
         className={({ isActive }) =>

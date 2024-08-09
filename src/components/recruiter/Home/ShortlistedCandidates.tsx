@@ -17,21 +17,15 @@ const ShortListedCandidates = () => {
   const [profileImages, setProfileImages] = useState<{ [key: string]: string }>({});
 
   const recruiterId = useSelector((store: RootState) => store.RecruiterAuth.recruiterData?._id);
-  const token = useSelector((store: RootState) => store.RecruiterAuth.token);
 
   const fetchCandidates = async () => {
     try {
       setLoading(true);
-      const response = await jobpostAxios.get(`${jobpostEndpoints.viewAcceptApplications}?recruiterId=${recruiterId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await jobpostAxios.get(`${jobpostEndpoints.viewAcceptApplications}?recruiterId=${recruiterId}`);
       console.log("All user details candidates", response.data);
 
       if (response.data.success && response.data.candidates) {
         setCandidates(response.data.candidates);
-        // Fetch profile images for each candidate
         response.data.candidates.forEach(async (candidate: Candidate) => {
           await showImage(candidate.userId);
         });
@@ -48,11 +42,7 @@ const ShortListedCandidates = () => {
 
   const showImage = async (userId: string) => {
     try {
-      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`);
       console.log("is img got?>", response.data);
 
       const imageUrl = response.data.success ? response.data.data?.imageUrl || UserImg : UserImg;

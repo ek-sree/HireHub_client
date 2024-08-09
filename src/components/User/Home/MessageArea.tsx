@@ -21,7 +21,7 @@ import StopCircleIcon from '@mui/icons-material/StopCircle';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import WaveSurfer from 'wavesurfer.js'
-import { Message , User, ChatData, MessageAreaProps, ImageData  } from "../../../interface/Message/IMessage";
+import { Message, MessageAreaProps, ImageData  } from "../../../interface/Message/IMessage";
 import { useWebRTC } from "../../../Contex/ProviderWebRTC";
 
 
@@ -57,7 +57,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
   const { startCall } = useWebRTC();
   
   const otherUserId = chat.users.find(user => user.id !== userId)?.id;
-;
+
 
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -230,11 +230,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
         return;
       }
           
-      const response = await messageAxios.get(`${messageEndpoints.getMessage}?userId=${userId}&receiverId=${receiverId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await messageAxios.get(`${messageEndpoints.getMessage}?userId=${userId}&receiverId=${receiverId}`);
       console.log("Messages fetched:", response.data);
   
       if (response.data.success) {
@@ -435,11 +431,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     images.forEach(image => {
       formData.append('images', image);
     });
-    const response = await messageAxios.post(`${messageEndpoints.sendImages}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await messageAxios.post(`${messageEndpoints.sendImages}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData);
     console.log("Image upload response:", response.data);
     
     if (response.data.success) {
@@ -456,11 +448,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
     }
     const formData = new FormData();
     formData.append('video', video);
-      const response = await messageAxios.post(`${messageEndpoints.sendVideo}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`,formData,{
-        headers:{
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await messageAxios.post(`${messageEndpoints.sendVideo}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`,formData)
       if(response.data.success){
         return response.data.data;
       }
@@ -481,11 +469,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
       }
       const formData = new FormData();
       formData.append('audio', audio);
-      const response = await messageAxios.post(`${messageEndpoints.sendAudio}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData,{
-        headers:{
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await messageAxios.post(`${messageEndpoints.sendAudio}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData)
       console.log("response",response.data);
       if(response.data.success){
         return response.data.data

@@ -21,7 +21,6 @@ const CoverPhotoModal: FC<coverPhotoModalProps> = ({isOpen, onClose, onSuccess, 
     const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState(imgUrl || hireHub);
 
-  const token = useSelector((store:RootState)=>store.UserAuth.token);
   const email = useSelector((store:RootState)=>store.UserAuth.userData?.email);
 
 
@@ -43,7 +42,6 @@ console.log("imgg",image);
     console.log("FormData content:", formdata.get("image")); 
     const response = await userAxios.post(`${userEndpoints.addCoverPhoto}?email=${email}`,formdata, {
         headers:{
-            Authorization: `Bearer ${token}`,
             "Content-Type":"multipart/form-data"
         }
     })

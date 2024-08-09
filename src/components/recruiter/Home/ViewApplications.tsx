@@ -27,7 +27,6 @@ const ViewApplications = () => {
 
   const navigate = useNavigate();
   const { jobId } = useParams();
-  const token = useSelector((store: RootState) => store.RecruiterAuth.token);
 
   const fetchApplications = async (page = 1) => {
     if (!jobId) {
@@ -36,13 +35,7 @@ const ViewApplications = () => {
     }
 
     try {
-      const response = await jobpostAxios.get(`${jobpostEndpoints.viewApplication}?jobId=${jobId}&page=${page}&limit=2`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log("dataaaaaa", response.data);
-
+      const response = await jobpostAxios.get(`${jobpostEndpoints.viewApplication}?jobId=${jobId}&page=${page}&limit=2`);
       if (response.data.success) {
         setApplications(response.data.applications || []);
         setTotalPages(Math.ceil(response.data.totalUsers / 2));
@@ -65,11 +58,7 @@ const ViewApplications = () => {
       throw new Error("Job id is missing");
     }
     try {
-      const response = await jobpostAxios.post(`${jobpostEndpoints.acceptApplication}?jobId=${jobId}&applicationId=${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await jobpostAxios.post(`${jobpostEndpoints.acceptApplication}?jobId=${jobId}&applicationId=${id}`);
 
       if (response.data.success) {
         toast.success("Accepted application");
@@ -91,11 +80,7 @@ const ViewApplications = () => {
       if (!jobId) {
         throw new Error("Job id is missing");
       }
-      const response = await jobpostAxios.post(`${jobpostEndpoints.rejectedApplication}?jobId=${jobId}&applicationId=${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await jobpostAxios.post(`${jobpostEndpoints.rejectedApplication}?jobId=${jobId}&applicationId=${id}`);
 
       if (response.data.success) {
         toast.success("Successfully rejected application");

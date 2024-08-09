@@ -43,13 +43,8 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
 
   async function fetchComments() {
     try {
-      const response = await postAxios.get(`${postEndpoints.fetchComment}?postId=${postId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await postAxios.get(`${postEndpoints.fetchComment}?postId=${postId}`);
   
-      console.log("Fetch comments response:", response.data);
   
       if (response.data.success) {
         setComments(response.data.data.map((comment: Comment, index: number) => ({
@@ -74,7 +69,6 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
         { newComment },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -116,7 +110,6 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
         content: editCommentContent
       }, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type':"application/json"
         }
       });
@@ -141,14 +134,8 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
   }
 
   const onDelete = async (commentId: string) => {
-    try {
-      console.log("commentId",commentId);
-      
-      const response = await postAxios.delete(`${postEndpoints.deleteComment}?commentId=${commentId}&postId=${postId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    try {      
+      const response = await postAxios.delete(`${postEndpoints.deleteComment}?commentId=${commentId}&postId=${postId}`);
 
       if (response.data.success) {
         toast.success("Comment deleted successfully");

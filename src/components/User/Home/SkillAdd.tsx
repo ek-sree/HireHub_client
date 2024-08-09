@@ -18,7 +18,6 @@ const SkillAdd: FC<SkillAddMOdal> = ({isOpen, onClose, onSuccess}) => {
     const [skillInput, setSkillInput] = useState('');
     const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
     const email = useSelector((store:RootState)=> store.UserAuth.userData?.email);
-    const token = useSelector((store: RootState)=>store.UserAuth.token);
 
     const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -51,11 +50,7 @@ const SkillAdd: FC<SkillAddMOdal> = ({isOpen, onClose, onSuccess}) => {
         console.log(skills);
         
         e.preventDefault();
-        const response = await userAxios.post(`${userEndpoints.userSkillsAdd}?email=${email}`,{skills}, {
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        })
+        const response = await userAxios.post(`${userEndpoints.userSkillsAdd}?email=${email}`,{skills})
         console.log("sadasd",response.data);
         
         if(response.data.success){

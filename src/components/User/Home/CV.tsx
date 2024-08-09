@@ -38,11 +38,7 @@ const Cv = () => {
 
     async function cvLoad() {
         try {
-            const response = await userAxios.get(`${userEndpoints.getCv}?email=${email}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await userAxios.get(`${userEndpoints.getCv}?email=${email}`);
             console.log("response api cv", response.data);
 
             if (response.data.success) {
@@ -79,11 +75,7 @@ const Cv = () => {
     const handleRemoveCV = async (url: string) => {
         try {
             setIsLoading(true);
-            const response = await userAxios.delete(`${userEndpoints.deleteCv}?url=${url}&email=${email}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await userAxios.delete(`${userEndpoints.deleteCv}?url=${url}&email=${email}`);
             if (response.data.success) {
                 setCVItems(allCv => allCv.filter(cv => cv.url !== url));
                 toast("CV deleted");

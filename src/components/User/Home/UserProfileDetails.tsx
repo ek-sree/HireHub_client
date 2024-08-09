@@ -53,11 +53,7 @@ const UserProfileDetails = () => {
 
     const handleFollow = async () => {
         try {
-            const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id });
             if (response.data.success) {
                 setIsFollowing(!isFollowing);
                 setFollowersCount((prevCount) => (prevCount + 1));
@@ -75,11 +71,7 @@ const UserProfileDetails = () => {
             if (!sentId) return; 
 
             try {
-                const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}&followerId=${userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}&followerId=${userId}`);
                 console.log("checkkkkkkk",response.data);
                 
                 if (response.data.success) {
@@ -99,11 +91,7 @@ const UserProfileDetails = () => {
 
         const handleUnFollow= async()=>{
             try {
-                const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`, {}, {
-                    headers:{
-                        Authorization: `Bearer ${token}`
-                    }
-                })
+                const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`)
                 console.log("unfollow res",response.data);
                 
                 if(response.data.success){
@@ -117,11 +105,7 @@ const UserProfileDetails = () => {
         }
         const handleSendMessage = async () => {
             try {
-                const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`, {}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`);
                 console.log("data for message profile", response.data);
                 
                 if (response.data.success) {
@@ -134,9 +118,6 @@ const UserProfileDetails = () => {
             }
         };
         
-    // useEffect(() => {
-    //     userDetails();
-    // }, [sameUser,token]);
 
     return (
         <div className="flex flex-col items-center text-center mt-6">

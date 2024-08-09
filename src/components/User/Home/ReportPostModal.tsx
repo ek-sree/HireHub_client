@@ -16,7 +16,6 @@ const ReportPostModal: FC<ReportPostProps> = ({ isOpen, onClose, postId }) => {
   const [selectedReason, setSelectedReason] = useState("");
   const hardcodedReasons = ["Inappropriate image", "Inappropriate content", "Sexual content"];
 
-  const token = useSelector((store:RootState)=>store.UserAuth.token);
   const UserId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
   
   const handleReasonChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -30,12 +29,7 @@ const ReportPostModal: FC<ReportPostProps> = ({ isOpen, onClose, postId }) => {
           }
           console.log("rason:-" ,selectedReason);
           
-        const respones = await postAxios.post(`${postEndpoints.reportPost}?UserId=${UserId}&postId=${postId}`, { reason: selectedReason },{
-            headers:{
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
+        const respones = await postAxios.post(`${postEndpoints.reportPost}?UserId=${UserId}&postId=${postId}`, { reason: selectedReason })
         if(respones.data.success){
             toast.success("reported successfully")
             setSelectedReason("");

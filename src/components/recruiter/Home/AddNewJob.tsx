@@ -37,11 +37,9 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
     const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
     const [experience, setExperience] = useState('');
 
-    const token = useSelector((state: RootState) => state.RecruiterAuth.token);
     const recruiterId = useSelector((state: RootState)=>state.RecruiterAuth.recruiterData?._id)
     const companyName = useSelector((state: RootState)=> state.RecruiterAuth.recruiterData?.companyName);
 
-    console.log("COmpamny name nd recr id", recruiterId, companyName);
     
 
     const [errors, setErrors] = useState({
@@ -125,11 +123,7 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
         try {
           console.log("ready to send job add data to frontend");
           
-            const response = await jobpostAxios.post(jobpostEndpoints.addjob, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await jobpostAxios.post(jobpostEndpoints.addjob, data);
             console.log("response add job", response);
             if(response.data.success){
                 addJobList(response.data.job);

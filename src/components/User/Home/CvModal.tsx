@@ -46,7 +46,6 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
             try {
                 const response = await userAxios.post(`${userEndpoints.cvUpload}?email=${email}`, formData, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data",
                     },
                 });

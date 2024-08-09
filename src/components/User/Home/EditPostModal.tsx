@@ -43,7 +43,6 @@ const EditPostModal: FC<EditModalProps> = ({ isOpen, onClose, post, onSuccess })
         { description },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }

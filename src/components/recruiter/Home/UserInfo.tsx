@@ -23,14 +23,8 @@ const UserInfo: FC<InfoModalInterface> = ({ isOpen, onClose, userId }) => {
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
 
   async function fetchUserInfo() {
-    try {
-        console.log("sisiss");
-        
-      const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    try {        
+      const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${userId}`);
       console.log("data",response.data);
       
       if (response.data.success) {

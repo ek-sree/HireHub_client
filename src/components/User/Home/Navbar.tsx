@@ -46,6 +46,7 @@ function Navbar() {
       if (response.data.success) {
         socketService.disconnect();
         dispatch(logout());
+        localStorage.removeItem('userToken');
         navigate('/');
       } else {
         toast.error('Error occurred. Please try again!!');
@@ -58,11 +59,7 @@ function Navbar() {
 
   const fetchProfileImg = async () => {
     try {
-      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`);
 
       if (response.data.success && response.data.data && response.data.data.imageUrl) {
         setProfileImg(response.data.data.imageUrl);
@@ -92,14 +89,7 @@ function Navbar() {
   const fetchSearchResults = async () => {
     if (debouncedSearchQuery && debouncedSearchQuery.length > 0) {
       try {
-        const response = await userAxios.get(`${userEndpoints.searchUsers}?searchQuery=${debouncedSearchQuery}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        console.log("search data", response.data);
-
+        const response = await userAxios.get(`${userEndpoints.searchUsers}?searchQuery=${debouncedSearchQuery}`);
         if (response.data.success) {
           setSearchResults(response.data.data);
         } else {

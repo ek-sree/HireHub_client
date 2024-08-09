@@ -28,8 +28,6 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
   const [experience, setExperience] = useState('');
   const [jobId, setJobId] = useState('');
 
-  const token = useSelector((store: RootState) => store.RecruiterAuth.token);
-
   const [errors, setErrors] = useState({
     position: '',
     place: '',
@@ -122,11 +120,7 @@ const JobpostEditModal: FC<JobpostEditModalProps> = ({ isOpen, onClose, job, onU
     };
 
     try {
-      const response = await jobpostAxios.post(`${jobpostEndpoints.editJobs}?jobId=${jobId}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await jobpostAxios.post(`${jobpostEndpoints.editJobs}?jobId=${jobId}`, data);
       if (response.data.success) {
         toast.success('Job post updated successfully.');
         onUpdateJobList(response.data.job);

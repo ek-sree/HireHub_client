@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Slider from 'react-slick';
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import ModeCommentRoundedIcon from '@mui/icons-material/ModeCommentRounded';
@@ -57,11 +57,7 @@ const Post = () => {
     if (!hasMore) return;
     setLoading(true);
     try {
-      const response = await postAxios.get(`${postEndpoints.getPosts}?page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await postAxios.get(`${postEndpoints.getPosts}?page=${page}`);
       console.log("response post", response.data);
 
       if (response.data.success) {
@@ -97,9 +93,7 @@ const Post = () => {
   const handleLike = async (postId: string, postUser: string) => {
     try {
       const response = await postAxios.post(
-        `${postEndpoints.likePost}?postId=${postId}&UserId=${userId}&postUser=${postUser}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${postEndpoints.likePost}?postId=${postId}&UserId=${userId}&postUser=${postUser}`
       );
   
       console.log("Like response:", response.data);
@@ -130,11 +124,7 @@ const Post = () => {
 
   const handleUnlike = async (postId: string) => {
     try {
-      const response = await postAxios.post(`${postEndpoints.unlikePost}?postId=${postId}&userId=${userId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await postAxios.post(`${postEndpoints.unlikePost}?postId=${postId}&userId=${userId}`);
 
       if (response.data.success) {
         setPosts(posts.map(post =>

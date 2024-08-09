@@ -20,7 +20,6 @@ const EditSkills: FC<EditSkillsModalProps> = ({isOpen, onClose, skillsValue, onS
     const [skillInput, setSkillInput] = useState('');
     const [filteredSkills, setFilteredSkills] = useState<string[]>([]);
     const email = useSelector((store:RootState)=> store.UserAuth.userData?.email);
-    const token = useSelector((store: RootState)=>store.UserAuth.token);
 
     const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -51,14 +50,8 @@ const EditSkills: FC<EditSkillsModalProps> = ({isOpen, onClose, skillsValue, onS
 
     const handleSubmit = async(e:FormEvent)=>{
         e.preventDefault()
-        try {
-            console.log("gegegege",skills);
-            
-            const response = await userAxios.post(`${userEndpoints.userSkillsEdit}?email=${email}`,skills, {
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            })
+        try {            
+            const response = await userAxios.post(`${userEndpoints.userSkillsEdit}?email=${email}`,skills)
             console.log("api resp from edit", response.data);
             
             if(response.data.success){

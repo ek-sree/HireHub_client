@@ -20,7 +20,6 @@ const ProfileModal: FC<ProfileEditModalProps> = ({ isOpen, onClose, onSuccess, i
   const [imageUrl, setImageUrl] = useState(imgUrl || user);
 
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
-  const token = useSelector((store: RootState) => store.UserAuth.token);
 
   const handleUploadImage = async () => {
     if (!image) {
@@ -30,12 +29,7 @@ const ProfileModal: FC<ProfileEditModalProps> = ({ isOpen, onClose, onSuccess, i
 
     const formData = new FormData();
     formData.append('image', image);
-    const response = await userAxios.post(`${userEndpoints.addProfilePhoto}?email=${email}`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      }
-    })
+    const response = await userAxios.post(`${userEndpoints.addProfilePhoto}?email=${email}`, formData)
     if (response.data.success) {
       console.log("success", response.data);
       onClose();

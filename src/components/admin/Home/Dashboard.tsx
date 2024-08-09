@@ -33,22 +33,14 @@ function Dashboard() {
   const token = useSelector((store: RootState) => store.AdminAuth.token);
 
   async function getAllUsers() {
-    const response = await adminAxios.get(adminEndpoints.getUserReports, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await adminAxios.get(adminEndpoints.getUserReports);
     if (response.data.success) {
       setUsers(response.data.data);
     }
   }
 
   async function getAllPosts() {
-    const response = await adminAxios.get(adminEndpoints.getAllPosts, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const response = await adminAxios.get(adminEndpoints.getAllPosts)
     if (response.data.success) {
       setPosts(response.data.data);
     }
@@ -56,11 +48,7 @@ function Dashboard() {
 
   async function getAllJobPost() {
     try {
-      const response = await adminAxios.get(adminEndpoints.getAllJobPost, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await adminAxios.get(adminEndpoints.getAllJobPost)
       if (response.data.success) {
         setJobs(response.data.data);
       }
@@ -72,11 +60,7 @@ function Dashboard() {
 
   async function getBlockedUser() {
     try {
-      const response = await adminAxios.get(adminEndpoints.getBlockedUser, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await adminAxios.get(adminEndpoints.getBlockedUser)
       if (response.data.success) {
         setBlockedUser(response.data.data);
       }
@@ -88,11 +72,7 @@ function Dashboard() {
 
   async function getBlockedRecruiter() { 
     try {
-      const response = await adminAxios.get(adminEndpoints.getBlockedRecruiter, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await adminAxios.get(adminEndpoints.getBlockedRecruiter)
       if (response.data.success) {
         setBlockedRecruiter(response.data.data);
       }

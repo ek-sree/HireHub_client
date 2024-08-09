@@ -24,11 +24,7 @@ const TitleModal: FC<TitleModalProps> = ({ isOpen, onClose, titleData }) => {
     console.log("gonna send", token, email);
 
     try {
-      const response = await userAxios.post(`${userEndpoints.addTitle}?email=${email}`, { title }, {
-        headers: {
-          Authorization: `Bearer ${token}` 
-        }
-      });
+      const response = await userAxios.post(`${userEndpoints.addTitle}?email=${email}`, { title });
       console.log("spi data", response);
       
       if (response.data.success) {

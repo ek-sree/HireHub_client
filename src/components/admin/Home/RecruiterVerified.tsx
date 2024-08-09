@@ -23,11 +23,7 @@ const RecruiterVerified = () => {
         console.log("call for verified");
 
         try {
-            const response = await adminAxios.get(adminEndpoints.getUnVerifiedRecruiter, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await adminAxios.get(adminEndpoints.getUnVerifiedRecruiter);
             console.log("Response from API:", response);
 
             if (response.data.success === false) {
@@ -43,11 +39,7 @@ const RecruiterVerified = () => {
 
     const isVerified = async (recruiterId: string) => {
         try {
-            const response = await adminAxios.put(`${adminEndpoints.verifiRecruiter}/${recruiterId}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await adminAxios.put(`${adminEndpoints.verifiRecruiter}/${recruiterId}`);
             console.log("verified recruiter", response);
             if (response.data.success) {
                 toast.success("Recruiter verified successfully");

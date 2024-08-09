@@ -29,7 +29,6 @@ const UserManagement: React.FC = () => {
   const [sortOrder, setSortOrder] = useState("A-Z");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const token = useSelector((state: RootState) => state.AdminAuth.token);
 
   const [debouncedSearchQuery] = useDebonceSearch(searchQuery, 500);
 
@@ -45,16 +44,8 @@ const UserManagement: React.FC = () => {
   const getAllUsers = async (page = 1) => {
     try {
       const response = await adminAxios.get(
-        `${adminEndpoints.getUser}?page=${page}&limit=2`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${adminEndpoints.getUser}?page=${page}&limit=2`
       );
-
-      console.log("res api", response);
-
       if (response.data.success === false) {
         toast.error(response.data.message);
       } else {
@@ -73,14 +64,7 @@ const UserManagement: React.FC = () => {
   const blockUser = async (userId: string) => {
     try {
       const response = await adminAxios.put(
-        `${adminEndpoints.blockUser}/${userId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        `${adminEndpoints.blockUser}/${userId}`);
 
       console.log("response of block user", response);
 
@@ -102,13 +86,7 @@ const UserManagement: React.FC = () => {
     try {
       setLoading(true);
       const response = await adminAxios.get(
-        `${adminEndpoints.searchUser}?search=${searchQuery}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        `${adminEndpoints.searchUser}?search=${searchQuery}`);
       setLoading(false);
 
       console.log("searched response", response);
@@ -132,7 +110,7 @@ const UserManagement: React.FC = () => {
     } else {
       setUsers(defaultUser);
     }
-  }, [debouncedSearchQuery, token, statusFilter]);
+  }, [debouncedSearchQuery, statusFilter]);
 
   useEffect(() => {
     getAllUsers(currentPage);

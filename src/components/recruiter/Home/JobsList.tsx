@@ -48,12 +48,7 @@ const JobsList = () => {
 
   const handlesoftDelete = async (id: string) => {
     try {
-      const response = await jobpostAxios.put(`${jobpostEndpoints.softDeleteJob}/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-console.log("response data", response.data);
+      const response = await jobpostAxios.put(`${jobpostEndpoints.softDeleteJob}/${id}`);
 
       if (response.data.success) {
         toast.success(response.data.message);
@@ -71,11 +66,7 @@ console.log("response data", response.data);
 
   const getJobs = async () => {
     try {
-      const response = await jobpostAxios.get(`${jobpostEndpoints.getjobs}?recruiterId=${recruiterId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await jobpostAxios.get(`${jobpostEndpoints.getjobs}?recruiterId=${recruiterId}`);
 
       console.log("list data",response.data);
 

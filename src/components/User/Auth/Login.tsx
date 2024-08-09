@@ -41,7 +41,6 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
     try {
       const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
       const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
-      console.log("trying to logging");
   
       const response = await axiosInstance.post(endpoint.login, values);
       console.log("Success logging", response);
@@ -51,10 +50,12 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
         console.log("Dispatching user login");
         socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
+        localStorage.setItem('userToken', response.data.token);
         navigate('/home');
       } else if (response.data.success && response.data.isRecruiter === true) {
         console.log("Dispatching recruiter login");
         dispatch(recruiterlogin({token:response.data.token,RecruiterData:response.data.recruiter_data}));
+        localStorage.setItem('recruiterToken',response.data.token);
         navigate('/recruiter/home');
       } else {
         toast.error(response.data.message);
@@ -77,6 +78,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
       if (response.data.success) {
         socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
+        localStorage.setItem('userToken', response.data.token);
         navigate("/home");
       } else {
         toast.error("Failed to log in with Google");

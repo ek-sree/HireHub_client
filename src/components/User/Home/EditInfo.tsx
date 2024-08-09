@@ -20,7 +20,6 @@ const EditInfo: FC<EditInfoModalProps> = ({isOpen, onClose, onSuccess, phoneValu
     const [Education, setEducation] = useState<string[]>(educationValue);
     const [error, setError] = useState('');
 
-    const token = useSelector((store:RootState)=>store.UserAuth.token);
     const email = useSelector((store:RootState)=>store.UserAuth.userData?.email);
 
 
@@ -42,11 +41,7 @@ const EditInfo: FC<EditInfoModalProps> = ({isOpen, onClose, onSuccess, phoneValu
           }
           console.log("getetttet",data);
           
-          const response = await userAxios.post(userEndpoints.userInfoEdit, {data},{
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
-          })
+          const response = await userAxios.post(userEndpoints.userInfoEdit, {data})
           console.log("response edit user info",response);
           
           if(response.data.success){

@@ -32,7 +32,6 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
   const reduxEmail = useSelector((store: RootState) => store.UserAuth.userData?.email) || '';
   const reduxPhone = useSelector((store: RootState) => store.UserAuth.userData?.phone) || '';
   const reduxName = useSelector((store: RootState) => store.UserAuth.userData?.name) || '';
-  const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState)=>store.UserAuth.userData?._id);
 
   useEffect(() => {
@@ -65,11 +64,7 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
       }
       console.log("sending apply job ",resumes);
       
-      const response = await jobpostAxios.post(`${jobpostEndpoints.applyJob}?jobId=${jobId}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await jobpostAxios.post(`${jobpostEndpoints.applyJob}?jobId=${jobId}`, data);
       if (response.data.success) {
         onSuccess();
         onClose();
@@ -81,11 +76,7 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
 
   async function cvApply() {
     try {
-      const response = await userAxios.get(`${userEndpoints.getCv}?email=${reduxEmail}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await userAxios.get(`${userEndpoints.getCv}?email=${reduxEmail}`);
       console.log("response api", response.data);
 
       if (response.data.success) {

@@ -19,18 +19,19 @@ interface User {
   isOnline?: boolean;
 }
 
+interface LastMessage {
+  chatId: string;
+  content: string;
+  createdAt: string;
+  recieverId: string;
+  senderId: string;
+  updatedAt: string;
+  _id: string;
+}
+
 interface ChatData {
   _id: string;
-  lastMessage?: {
-    chatId: string;
-    content: string;
-    createdAt: string;
-    recieverId: string;
-    senderId: string;
-    updatedAt: string;
-    unreadCount: number;
-    _id: string;
-  };
+  lastMessage: LastMessage;
   participants: string[];
   users: User[];
 }
@@ -42,27 +43,19 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState<ChatData[]>([]);
-  const [newMessageChatIds, setNewMessageChatIds] = useState<Set<string>>(
-    new Set()
-  );
+  const [newMessageChatIds, setNewMessageChatIds] = useState<Set<string>>(new Set());
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
-  const userId = useSelector(
-    (store: RootState) => store.UserAuth.userData?._id
-  );
+  const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
   const loadConversation = async () => {
     try {
       const response = await messageAxios.get(
-        `${messageEndpoints.getConvoData}?userId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${messageEndpoints.getConvoData}?userId=${userId}`
       );
 
       if (response.data.success) {
+        console.log("Data got loadConversation", response.data);
         const sortedChats = response.data.data.sort(
           (a: ChatData, b: ChatData) =>
             new Date(b.lastMessage?.createdAt || 0).getTime() -
@@ -112,7 +105,6 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
                   ...message,
                   createdAt: new Date().toISOString(),
                 },
-                unreadCount: (chat.unreadCount || 0) + 1,
               }
             : chat
         );
@@ -123,11 +115,11 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
         );
       });
 
-      // Only mark as new message if the current user is the receiver
       if (message.recieverId === userId) {
         setNewMessageChatIds((prev) => new Set(prev).add(message.chatId));
       }
     });
+
     return () => {
       socketService.disconnect();
     };
@@ -140,6 +132,10 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const isUnread = (chat: ChatData) => {
+    return chat.lastMessage && chat.lastMessage.recieverId === userId && newMessageChatIds.has(chat._id);
   };
 
   return (
@@ -168,25 +164,21 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
         ) : (
           chats.map((chat) => {
             const otherUser = getOtherUser(chat);
-            const hasNewMessage = newMessageChatIds.has(chat._id);
-            const isUnread =
-              chat.lastMessage &&
-              chat.lastMessage.recieverId === userId &&
-              chat.unreadCount > 0;
+            const unread = isUnread(chat);
+
             return (
               <div
                 key={chat._id}
                 onClick={() => {
                   onChatSelect(chat);
-                  // Remove the chat from newMessageChatIds when clicked
                   setNewMessageChatIds((prev) => {
                     const updated = new Set(prev);
-                    updated.delete(chat._id);
+                    updated.delete(chat._id); 
                     return updated;
                   });
                 }}
                 className={`flex items-center gap-4 p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition cursor-pointer ${
-                  isUnread && hasNewMessage ? "bg-green-100" : "bg-white"
+                  unread ? "bg-green-100" : "bg-white"
                 }`}
               >
                 <div className="relative">
@@ -203,6 +195,11 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{otherUser.name}</span>
+                    {unread && (
+                      <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        New
+                      </span>
+                    )}
                   </div>
                   {chat.lastMessage ? (
                     <span className="text-sm text-gray-500">
@@ -218,9 +215,6 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
                       <span className="text-xs text-gray-900 font-semibold italic pr-2">
                         {formatDate(chat.lastMessage.createdAt)}
                       </span>
-                      {isUnread && hasNewMessage && (
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      )}
                     </div>
                   )}
                 </div>

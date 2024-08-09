@@ -19,19 +19,11 @@ const UserManagement: React.FC = () => {
   const [sortOrder, setSortOrder] = useState("most-reported");
   const [reportData, setReportData] = useState<any[]>([]);
 
-  const token = useSelector((state: RootState) => state.AdminAuth.token);
-
   async function fetchReportedPost(page = 1) {
     setLoading(true);
     try {
       const response = await adminAxios.get(
-        `${adminEndpoints.getReportPost}?page=${page}&sortOrder=${sortOrder}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        `${adminEndpoints.getReportPost}?page=${page}&sortOrder=${sortOrder}`);
       console.log("data fetch areport", response.data);
 
       if (response.data.success) {
@@ -56,13 +48,7 @@ const UserManagement: React.FC = () => {
       const response = await postAxios.delete(
         `${
           postEndpoints.deletePost
-        }?postId=${postId}&imageUrl=${encodeURIComponent(imageUrlString)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        }?postId=${postId}&imageUrl=${encodeURIComponent(imageUrlString)}`);
 
       console.log(response.data.data);
 
@@ -84,7 +70,6 @@ const handleClearReport= async(postId:string)=>{
     
     const response = await adminAxios.put(`${adminEndpoints.clearReportPost}?postId=${postId}`,{},{
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type":"application/json"
       },
     })
@@ -103,7 +88,7 @@ const handleClearReport= async(postId:string)=>{
 
   useEffect(() => {
     fetchReportedPost(currentPage);
-  }, [currentPage, token, sortOrder]);
+  }, [currentPage, sortOrder]);
 
   const next = () => {
     if (currentPage === totalPages) return;

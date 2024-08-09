@@ -40,13 +40,8 @@ const UserPost = () => {
   setIsLoading(true);
   try {
     const sentId = sameUser ?  id : userId;
-    console.log("=-=-=-=-",sentId);
     
-    const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${sentId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${sentId}`);
     
     if (response.data.success) {
       setPosts(response.data.data);
@@ -58,10 +53,6 @@ const UserPost = () => {
   }
 }
   
-
-  // useEffect(() => {
-  //   getUserPosts();
-  // }, [token,sameUser, id]);
 
   const settings = {
     dots: true,

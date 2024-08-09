@@ -19,7 +19,6 @@ const DeletePostModal: React.FC<DeletePostModalProps> = ({ isOpen, onClose, post
     const [loading, setLoading] = useState<boolean>(false);
     const [progress, setProgress] = React.useState(0);
 
-    const token = useSelector((store:RootState)=>store.UserAuth.token);
 
     React.useEffect(() => {
         const timer = setInterval(() => {
@@ -33,11 +32,7 @@ const DeletePostModal: React.FC<DeletePostModalProps> = ({ isOpen, onClose, post
 
     const handleConfirmDelete=async()=>{
         setLoading(true)
-        const response = await postAxios.delete(`${postEndpoints.deletePost}?postId=${postId}&imageUrl=${imageUrl}`, {
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        })
+        const response = await postAxios.delete(`${postEndpoints.deletePost}?postId=${postId}&imageUrl=${imageUrl}`)
         console.log("delete post api",response.data);
         
         if(response.data.success){

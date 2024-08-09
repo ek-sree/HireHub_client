@@ -19,6 +19,7 @@ function Navbar() {
     const response = await recruiterAxios.post(recruiterEndpoints.logout);
     if(response.data.success) {
       dispatch(logout());
+      localStorage.removeItem('recruiterToken')
       navigate('/');
     } else {
       toast("Something happened, please try again later");
