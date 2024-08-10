@@ -81,17 +81,17 @@ const FriendSuggestion = () => {
 
   return (
     <div className="hidden sm:block fixed top-32 right-10 w-60 h-auto rounded-lg shadow-2xl py-6 px-2 z-50 bg-white">
-      <div className="text-center font-semibold mb-4">Friend Suggestions</div>
+      <div className="text-center font-semibold mb-4 underline">Friend Suggestions</div>
       {friends.map(friend => (
         <div key={friend.id} className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <img
               src={friend.avatar.imageUrl || UserPic}
               alt={friend.name}
-              className="w-12 h-12 rounded-full mr-3"
+              className="w-11 h-11 rounded-full mr-3 shadow-xl border-2"
             />
             <NavLink to={`/userprofile/${friend.id}`}>
-              <span className="font-semibold cursor-pointer">{friend.name}</span>
+              <span className="font-normal font-serif text-slate-500 cursor-pointer hover:text-blue-400">{friend.name}</span>
             </NavLink>
           </div>
           <IconButton onClick={() => friend.isFollowing ? handleUnfollow(friend.id) : handleFollow(friend.id)}>

@@ -8,6 +8,8 @@ import SidebarNav from "./SidebarNav";
 import SkillAdd from "./SkillAdd";
 import EditSkills from "./EditSkills";
 import { RootState } from "../../../redux/store/store";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const UserSkills = () => {
   const [skills, setSkills] = useState<string[]>([]);
@@ -110,7 +112,7 @@ const UserSkills = () => {
           ) : (
             skills.length > 3 && (
               <div onClick={toggleShowAllSkills} className="mt-5 py-2 text-center w-full bg-slate-300 rounded-xl text-white font-semibold hover:bg-slate-400 cursor-pointer">
-                {showAllSkills ? "Show Less 🔼" : "Show More 🔽"}
+                {showAllSkills ? <span>Show Less <ExpandLessIcon/></span>  : <span>Show More <ExpandMoreIcon/></span>}
               </div>
             )
           )}

@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import InfoModal from './InfoModal';
-import {  useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { messageAxios } from '../../../constraints/axios/messageAxios';
 import { messageEndpoints } from '../../../constraints/endpoints/messageEndpoints';
 
@@ -29,15 +29,14 @@ const UserProfileDetails = () => {
 
     const navigate = useNavigate();
 
-    useEffect(()=>{
-        if(userId !== id){
+    useEffect(() => {
+        if (userId !== id) {
             setSameUser(false);
-        }else{
+        } else {
             setSameUser(true);
         }
         userDetails();
-
-      },[token,sameUser,id])
+    }, [token, sameUser, id]);
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -54,6 +53,8 @@ const UserProfileDetails = () => {
     const handleFollow = async () => {
         try {
             const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id });
+            console.log("follow data", response.data);
+
             if (response.data.success) {
                 setIsFollowing(!isFollowing);
                 setFollowersCount((prevCount) => (prevCount + 1));
@@ -65,59 +66,68 @@ const UserProfileDetails = () => {
         }
     };
 
-    const sentId = sameUser ? userId : id;
+    const handleUnFollow = async () => {
+        try {
+            const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`);
+            console.log("unfollow res", response.data);
 
-        const userDetails = async () => {
-            if (!sentId) return; 
-
-            try {
-                const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}&followerId=${userId}`);
-                console.log("checkkkkkkk",response.data);
-                
-                if (response.data.success) {
-                    setName(response.data.details.name);
-                    setTitle(response.data.details.title);
-                    setFollowersCount(response.data.details.followers || 0);
-                    setFollowingCount(response.data.details.following || 0);
-                    setIsFollowing(response.data.details.isFollowing || false);
-                }
-                if (response.status === 403) {
-                    toast.error("Token expired, login again");
-                }
-            } catch (error) {
-                toast.error("Error occurred, please log in after some time.");
+            if (response.data.success) {
+                setIsFollowing(!isFollowing);
+                setFollowersCount((prevCount) => prevCount - 1);
             }
-        };
-
-        const handleUnFollow= async()=>{
-            try {
-                const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`)
-                console.log("unfollow res",response.data);
-                
-                if(response.data.success){
-                    setIsFollowing(!isFollowing);
-                    setFollowersCount((prevCount)=>prevCount-1);
-                }
-            } catch (error) {
-                console.log("Error occured while unfollowing",);
-                
-            }
+        } catch (error) {
+            console.log("Error occurred while unfollowing", error);
         }
-        const handleSendMessage = async () => {
-            try {
-                const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`);
-                console.log("data for message profile", response.data);
-                
-                if (response.data.success) {
-                    const chatId = response.data.data._id;
-                    console.log("Chat ID from server:", chatId);
-                    navigate(`/message/?chatId=${chatId}&recieverId=${id}`);
-                }
-            } catch (error) {
-                console.log("Error occurred while navigating message area", error);
+    };
+
+    const handleSendMessage = async () => {
+        try {
+            const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`);
+
+            if (response.data.success) {
+                const chatId = response.data.data._id;
+                console.log("Chat ID from server:", chatId);
+                navigate(`/message/?chatId=${chatId}&recieverId=${id}`);
             }
-        };
-        
+        } catch (error) {
+            console.log("Error occurred while navigating message area", error);
+        }
+    };
+
+    const sentId = sameUser ? userId : id;
+    const userDetails = async () => {
+        if (!sentId) return;
+    
+        try {
+            const response = await userAxios.get(`${userEndpoints.viewDetails}?userId=${sentId}&followerId=${userId}`);
+    
+            if (response.data.success) {
+                const details = response.data.details; 
+                
+                setName(details.name);
+                setTitle(details.title);
+                setFollowersCount(details.followers.length || 0);
+                setFollowingCount(details.following.length || 0);
+                setIsFollowing(details.isFollowing);
+            }
+    
+            if (response.status === 403) {
+                toast.error("Token expired, login again");
+            }
+        } catch (error) {
+            toast.error("Error occurred, please log in after some time.");
+        }
+    };
+
+
+    const handleFollowerOpen=(id:string)=>{
+
+    }
+
+    const handleFollowingOpen=(id:string)=>[
+
+    ]
+    
 
     return (
         <div className="flex flex-col items-center text-center mt-6">
@@ -142,35 +152,35 @@ const UserProfileDetails = () => {
                 )}
             </div>
             <div className="flex items-center gap-4 mb-4">
-                <span className="font-medium text-lg">{followersCount.length} Followers</span>
-                <span className="font-medium text-lg">{followingCount.length} Following</span>
+                <span onClick={()=>handleFollowerOpen(sentId)} className="font-semibold text-lg hover:text-slate-600 cursor-pointer hover:font-normal">{followersCount} Followers</span>
+                <span onClick={()=>handleFollowingOpen(sentId)} className="font-semibold text-lg hover:text-slate-600 cursor-pointer hover:font-normal">{followingCount} Following</span>
             </div>
             {!sameUser && (
                 <div className="flex w-full gap-2">
-                {isFollowing?(
-                    <>
-                    <button
-                    onClick={handleUnFollow}
-                    className={"flex-1 px-4 py-2 rounded-lg  text-black border-4 hover:bg-slate-200 font-medium"}
-                >
-                    Unfollow
-                </button>
-                <button
-               onClick={handleSendMessage}
-                className={"flex-1 px-4 py-2 rounded-lg  text-black bg-slate-300 hover:bg-slate-200 font-medium"}
-            >
-                Message
-            </button>
-            </>):(
-                <button
-                    onClick={handleFollow}
-                    className={"px-4 py-2 rounded-lg w-full bg-cyan-400 text-white"}
-                >
-                    Follow
-                </button>
-                
-)}
-                </div> 
+                    {isFollowing ? (
+                        <>
+                            <button
+                                onClick={handleUnFollow}
+                                className={"flex-1 px-4 py-2 rounded-lg text-black border-4 hover:bg-slate-200 font-medium"}
+                            >
+                                Unfollow
+                            </button>
+                            <button
+                                onClick={handleSendMessage}
+                                className={"flex-1 px-4 py-2 rounded-lg text-black bg-slate-300 hover:bg-slate-200 font-medium"}
+                            >
+                                Message
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={handleFollow}
+                            className={"px-4 py-2 rounded-lg w-full bg-cyan-400 text-white"}
+                        >
+                            Follow
+                        </button>
+                    )}
+                </div>
             )}
             <div
                 onClick={handleOpenInfoModal}

@@ -126,7 +126,7 @@ const Postbar = () => {
             <div key={index} className="relative">
               <img src={URL.createObjectURL(image)} alt={`Selected ${index}`} className="w-24 h-24 object-cover rounded-md" />
               <button
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 focus:outline-none"
+                className="absolute bottom-20 font-medium left-20 bg-slate-500 text-white rounded-full px-2 hover:bg-red-600 hover:font-bold  border-2 focus:outline-none"
                 onClick={() => handleRemoveImage(image)}
               >
                 x

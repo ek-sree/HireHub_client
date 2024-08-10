@@ -92,7 +92,7 @@ const sentId = sameUser ? userId : id
         <div className="text-xs sm:text-sm text-gray-600">{title}</div>
       </div>
       <div className="absolute mt-16 sm:mt-20 bottom-0 left-1/2 transform -translate-x-1/2 w-full px-4">
-        <Link to='/userprofile/:id'>
+        <Link to={`/userprofile/${userId}`}>
           <button className="w-full text-slate-400 rounded-md text-xs sm:text-sm font-semibold shadow-lg border-2 border-slate-500 hover:bg-slate-200 hover:font-bold">View Profile</button>
         </Link>
       </div>
