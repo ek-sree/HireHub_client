@@ -74,10 +74,6 @@ useEffect(()=>{
         setPlace(data.place)
     }
 
-    // useEffect(()=>{
-    //     userInfo();
-    // },[sameUser])
-
   if (!isOpen) return null;
 
   return (

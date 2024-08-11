@@ -11,17 +11,21 @@ import InfoModal from './InfoModal';
 import { useNavigate, useParams } from 'react-router-dom';
 import { messageAxios } from '../../../constraints/axios/messageAxios';
 import { messageEndpoints } from '../../../constraints/endpoints/messageEndpoints';
+import FollowerModal from './FollowerModal';
 
 const UserProfileDetails = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isTitleModalOpen, setTitleModalOpen] = useState(false);
-    const [isInfoModalOpen, setIsInfoModal] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isTitleModalOpen, setTitleModalOpen] = useState<boolean>(false);
+    const [isInfoModalOpen, setIsInfoModal] = useState<boolean>(false);
     const [title, setTitle] = useState('');
     const [name, setName] = useState('');
-    const [followersCount, setFollowersCount] = useState(0);
-    const [followingCount, setFollowingCount] = useState(0);
-    const [isFollowing, setIsFollowing] = useState(false);
+    const [followersCount, setFollowersCount] = useState<number>(0);
+    const [followingCount, setFollowingCount] = useState<number>(0);
+    const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const [sameUser, setSameUser] = useState<boolean>(true);
+    const [isOpenFollowers, setIsOpenFollowers] = useState<boolean>(false);
+    const [idToSend, setIdToSend] = useState<string>('');
+    
 
     const { id } = useParams<{ id?: string }>();
     const token = useSelector((store: RootState) => store.UserAuth.token);
@@ -121,7 +125,8 @@ const UserProfileDetails = () => {
 
 
     const handleFollowerOpen=(id:string)=>{
-
+        setIsOpenFollowers(true);
+        setIdToSend(id);
     }
 
     const handleFollowingOpen=(id:string)=>[
@@ -208,6 +213,13 @@ const UserProfileDetails = () => {
                 <InfoModal
                     isOpen={isInfoModalOpen}
                     onClose={handleCloseInfoModal}
+                />
+            )}
+            {isOpenFollowers&&(
+                <FollowerModal
+                isOpen={isOpenFollowers}
+                id={idToSend}
+                onClose={()=>setIsOpenFollowers(false)}
                 />
             )}
         </div>
