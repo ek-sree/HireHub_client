@@ -26,5 +26,7 @@ export const userEndpoints = {
     unfollow:`${API_GATEWAY_BASE_URL}/unfollow`,
     searchUsers:`${API_GATEWAY_BASE_URL}/seachUsers`,
     friendSuggestion: `${API_GATEWAY_BASE_URL}/friendSuggestion`,
-    followersList:`${API_GATEWAY_BASE_URL}/followersList`
+    followersList:`${API_GATEWAY_BASE_URL}/followersList`,
+    removeFollower:`${API_GATEWAY_BASE_URL}/removeFollower`,
+    followingList:`${API_GATEWAY_BASE_URL}/followingList`
 }

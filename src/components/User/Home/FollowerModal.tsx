@@ -4,26 +4,30 @@ import { userAxios } from '../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
+import { NavLink } from 'react-router-dom';
 
 interface Follower {
   id: string;
   name: string;
-  avatar: string;
+  avatar: {
+    imageUrl: string;
+  };
 }
 
 interface FollowersProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess:()=>void;
   id:string;
-  followers: Follower[] | undefined;
 }
 
-const FollowerModal: FC<FollowersProps> = ({ isOpen, onClose, id }) => {
+const FollowerModal: FC<FollowersProps> = ({ isOpen, onClose, id ,onSuccess}) => {
 
     const [followers, setFollowers] = useState<Follower[]>([]);
     const [isFollow, setIsFollow] = useState<boolean>(true);
 
     const userId = useSelector((store:RootState)=>store.UserAuth.userData?._id);
+    const sameUser = userId==id;
 
     async function getFollowers(){
         try {
@@ -38,34 +42,20 @@ const FollowerModal: FC<FollowersProps> = ({ isOpen, onClose, id }) => {
         }
     }
 
-    const handleFollow = async (id: string) => {
-        try {
-          const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id });
-          if (response.data.success) {
-          setIsFollow(!isFollow);
-            toast.success("Successfully followed user.");
-          } else {
-            toast.error("Unable to follow user.");
-          }
-        } catch (error) {
-          console.error("Error occurred while following user:", error);
-          toast.error("Error occurred while following user.");
-        }
-      };
-
-    const handleUnfollow = async (id: string) => {
+    const handleRemoveFollower = async (id: string) => {
         try {
           console.log("data unfollwo",id,userId);
-          const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`);
+          const response = await userAxios.put(`${userEndpoints.removeFollower}?userId=${userId}&id=${id}`);
           if (response.data.success) {
           setIsFollow(!isFollow)
+          onSuccess();
             toast.success("Successfully removed user.");
           } else {
-            toast.error("Unable to unfollow user.");
+            toast.error("Unable to remove user.");
           }
         } catch (error) {
-          console.error("Error occurred while unfollowing user:", error);
-          toast.error("Error occurred while unfollowing user.");
+          console.error("Error occurred while removing user:", error);
+          toast.error("Error occurred while removing user.");
         }
       };
     
@@ -95,10 +85,10 @@ const FollowerModal: FC<FollowersProps> = ({ isOpen, onClose, id }) => {
                   alt={follower.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
-                <span className="font-medium">{follower.name}</span>
+                  <NavLink to={`/userprofile/${follower.id}`} onClick={onClose}><span className="font-medium hover:text-slate-400">{follower.name}</span></NavLink>
               </div>
               <button>
-                {isFollow?<span onClick={()=>handleUnfollow(follower.id)} className="text-red-500 hover:text-red-700">Remove</span>: <span onClick={()=>handleFollow(follower.id)} className='text-cyan-500 hover:text-cyan-700'>Add</span> }
+                {isFollow && sameUser?<span onClick={()=>handleRemoveFollower(follower.id)} className="text-red-500 hover:text-red-700">Remove</span>: "" }
               </button>
             </div>
           ))}

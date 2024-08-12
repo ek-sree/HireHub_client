@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { messageAxios } from '../../../constraints/axios/messageAxios';
 import { messageEndpoints } from '../../../constraints/endpoints/messageEndpoints';
 import FollowerModal from './FollowerModal';
+import FollowingModal from './FollowingModal';
 
 const UserProfileDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -25,7 +26,7 @@ const UserProfileDetails = () => {
     const [sameUser, setSameUser] = useState<boolean>(true);
     const [isOpenFollowers, setIsOpenFollowers] = useState<boolean>(false);
     const [idToSend, setIdToSend] = useState<string>('');
-    
+    const [isOpenFollowing, setIsopenFollowing] = useState<boolean>(false);
 
     const { id } = useParams<{ id?: string }>();
     const token = useSelector((store: RootState) => store.UserAuth.token);
@@ -41,6 +42,10 @@ const UserProfileDetails = () => {
         }
         userDetails();
     }, [token, sameUser, id]);
+
+    const handleRemoveSuccess = () => {
+        userDetails(); 
+    };
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -129,9 +134,10 @@ const UserProfileDetails = () => {
         setIdToSend(id);
     }
 
-    const handleFollowingOpen=(id:string)=>[
-
-    ]
+    const handleFollowingOpen=(id:string)=>{
+        setIsopenFollowing(true);
+        setIdToSend(id)
+    }
     
 
     return (
@@ -219,7 +225,16 @@ const UserProfileDetails = () => {
                 <FollowerModal
                 isOpen={isOpenFollowers}
                 id={idToSend}
+                onSuccess={handleRemoveSuccess}
                 onClose={()=>setIsOpenFollowers(false)}
+                />
+            )}
+            {isOpenFollowing&&(
+                <FollowingModal
+                isOpen={isOpenFollowing}
+                id={idToSend}
+                onSuccess={handleRemoveSuccess}
+                onClose={()=>setIsopenFollowing(false)}
                 />
             )}
         </div>
