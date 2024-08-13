@@ -13,10 +13,20 @@ export const postAxios = axios.create({
 
 postAxios.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('userToken')
+        let token = localStorage.getItem('userToken');
+        
+        if (!token) {
+            token = localStorage.getItem('recruiterToken');
+        }
+        
+        if (!token) {
+            token = localStorage.getItem('adminToken');
+        }
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
     },
     (error) => {

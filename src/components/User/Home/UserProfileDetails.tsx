@@ -92,6 +92,7 @@ const UserProfileDetails = () => {
     const handleSendMessage = async () => {
         try {
             const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`);
+console.log("message button click",response.data);
 
             if (response.data.success) {
                 const chatId = response.data.data._id;

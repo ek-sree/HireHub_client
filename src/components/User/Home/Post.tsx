@@ -58,7 +58,7 @@ const Post = () => {
     setLoading(true);
     try {
       const response = await postAxios.get(`${postEndpoints.getPosts}?page=${page}`);
-      console.log("response post", response.data);
+      console.log("response posts", response.data);
 
       if (response.data.success) {
         const newPosts = response.data.data.map((post: Posts) => ({
@@ -105,13 +105,14 @@ const Post = () => {
         setPosts(posts.map(post =>
           post._id === postId ? { ...post, likes: [...post.likes, { UserId: userId }], isLiked: true } : post
         ));
-        socketService.connect();
-        socketService.emitLikeNotification({
-          userId: likedPostUser,
-          postId: postId,
-          likedBy: userId
-        });
-        console.log("Like notification emitted");
+        if(likedPostUser !== userId){
+          socketService.connect();
+          socketService.emitLikeNotification({
+            userId: likedPostUser,
+            postId: postId,
+            likedBy: userId
+          });
+        }
   
         if (likedPostUser !== userId) {
           dispatch(incrementUnseenCount(likedPostUser));

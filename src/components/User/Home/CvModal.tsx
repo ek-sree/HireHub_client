@@ -5,18 +5,18 @@ import { userAxios } from "../../../constraints/axios/userAxios";
 import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
 import CircularProgress from '@mui/material/CircularProgress';
 
-
 interface CvModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess:()=>void;
+    onSuccess: () => void;
 }
 
 const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
-    const [progress, setProgress] = React.useState(0);
+    const [progress, setProgress] = useState(0);
+
     React.useEffect(() => {
         const timer = setInterval(() => {
           setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
@@ -28,7 +28,7 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
       }, []);
 
     const token = useSelector((store: RootState) => store.UserAuth.token);
-    const email = useSelector((store: RootState)=>store.UserAuth.userData?.email);
+    const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -51,15 +51,15 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
                 });
 
                 if (response.data.success) {
-                    setLoading(false)
-                    onSuccess()
+                    setLoading(false);
+                    onSuccess();
                     onClose();
                 } else {
-                    setLoading(false)
+                    setLoading(false);
                     console.error("CV upload failed:", response.data.message);
                 }
             } catch (error) {
-                setLoading(false)
+                setLoading(false);
                 console.error("Error uploading CV:", error);
             }
         }
@@ -102,15 +102,17 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
                     >
                         Cancel
                     </button>
-                    {loading? <CircularProgress variant="determinate" value={progress} />
-                    :<button
-                        onClick={handleSend}
-                        className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ${selectedFile ? "" : "opacity-50 cursor-not-allowed"}`}
-                        disabled={!selectedFile}
-                    >
-                        Send
-                    </button>
-}
+                    {loading ? (
+                        <CircularProgress variant="determinate" value={progress} />
+                    ) : (
+                        <button
+                            onClick={handleSend}
+                            className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ${selectedFile ? "" : "opacity-50 cursor-not-allowed"}`}
+                            disabled={!selectedFile}
+                        >
+                            Send
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
