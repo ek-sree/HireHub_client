@@ -57,9 +57,9 @@ const ShortListedCandidates = () => {
     window.open(resumeUrl, '_blank');
   };
 
-  const handleSendMessage = (candidateId: string) => {
-    console.log(`Send message to candidate with id: ${candidateId}`);
-  };
+  // const handleSendMessage = (candidateId: string) => {
+  //   console.log(`Send message to candidate with id: ${candidateId}`);
+  // };
 
   useEffect(() => {
     fetchCandidates();
@@ -97,7 +97,7 @@ const ShortListedCandidates = () => {
                       View CV
                     </a>
                   </div>
-                  <div className="text-sm text-blue-500 hover:underline cursor-pointer">
+                  {/* <div className="text-sm text-blue-500 hover:underline cursor-pointer">
                     <a
                       href="#"
                       onClick={(e) => {
@@ -107,7 +107,7 @@ const ShortListedCandidates = () => {
                     >
                       Send Message
                     </a>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div> 

@@ -6,15 +6,14 @@ import { postEndpoints } from '../../../constraints/endpoints/postEndpoints';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { useEffect, useState } from 'react';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { userAxios } from '../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import UserInfo from './UserInfo';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { messageAxios } from '../../../constraints/axios/messageAxios';
-import { messageEndpoints } from '../../../constraints/endpoints/messageEndpoints';
+
 
 const UserProfile = () => {
   const [title, setTitle] = useState('');
@@ -27,11 +26,9 @@ const UserProfile = () => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [userId, setUserId] = useState('');
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
-  const recruiterId = useSelector((store:RootState)=>store.RecruiterAuth.recruiterData?._id);
 
   const { id } = useParams<{ id?: string }>();
 
-  const navigate = useNavigate();
 
 
   async function userDetails() {
@@ -110,20 +107,20 @@ const UserProfile = () => {
 
 
 
-  const handleSendMessage = async () => {
-    try {
-        const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${recruiterId}&recieverId=${id}`);
-console.log("dataaaaaaa212",response.data);
+//   const handleSendMessage = async () => {
+//     try {
+//         const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${recruiterId}&recieverId=${id}`);
+// console.log("dataaaaaaa212",response.data);
 
-        if (response.data.success) {
-            const chatId = response.data.data._id;
-            console.log("Chat ID from server:", chatId);
-            navigate(`/message/?chatId=${chatId}&recieverId=${id}`);
-        }
-    } catch (error) {
-        console.log("Error occurred while navigating message area", error);
-    }
-};
+//         if (response.data.success) {
+//             const chatId = response.data.data._id;
+//             console.log("Chat ID from server:", chatId);
+//             navigate(`/recruiter/message/?chatId=${chatId}&recieverId=${id}`);
+//         }
+//     } catch (error) {
+//         console.log("Error occurred while navigating message area", error);
+//     }
+// };
 
 
 
@@ -185,9 +182,9 @@ console.log("dataaaaaaa212",response.data);
         <div onClick={() => handleInfoModal(id)} className="text-blue-600 italic mb-3 cursor-pointer">
           more details *
         </div>
-        <div onClick={handleSendMessage} className="border-2 border-blue-500 w-1/4 flex text-center justify-center py-2 rounded-lg hover:bg-blue-100 font-semibold text-lg cursor-pointer shadow-md transition duration-300">
+        {/* <div onClick={handleSendMessage} className="border-2 border-blue-500 w-1/4 flex text-center justify-center py-2 rounded-lg hover:bg-blue-100 font-semibold text-lg cursor-pointer shadow-md transition duration-300">
           Message
-        </div>
+        </div> */}
 
         <div className="max-w-2xl w-full mx-auto mb-8 bg-white mt-10 p-4 rounded-lg shadow-lg">
           <div className="text-center font-semibold font-sans mb-4">User Skills</div>

@@ -16,24 +16,30 @@ interface IncomingCallNotificationProps {
 
 const IncomingCallNotification: React.FC<IncomingCallNotificationProps> = ({ callerId, callerName, onAccept, onReject }) => {
   return (
-    <div className="fixed bottom-0 right-0 m-4 p-4 bg-white shadow-lg rounded-lg flex items-center">
-      <div className="flex-1">
-        <h4 className="font-bold">{callerName}</h4>
+    <div className="fixed bottom-4 right-4 left-4 md:left-auto md:w-80 bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="p-4">
+        <h4 className="font-bold text-lg">{callerName}</h4>
         <p className="text-sm text-gray-500">Incoming video call...</p>
       </div>
-      <button onClick={onAccept} className="bg-green-500 text-white px-4 py-2 rounded mr-2">Accept</button>
-      <button onClick={onReject} className="bg-red-500 text-white px-4 py-2 rounded">Reject</button>
+      <div className="flex">
+        <button onClick={onAccept} className="flex-1 bg-green-500 text-white py-3 font-semibold hover:bg-green-600 transition-colors">
+          Accept
+        </button>
+        <button onClick={onReject} className="flex-1 bg-red-500 text-white py-3 font-semibold hover:bg-red-600 transition-colors">
+          Reject
+        </button>
+      </div>
     </div>
   );
 };
 
 const GlobalIncomingCallHandler: React.FC = () => {
   const { acceptCall, endCall } = useWebRTC();
-  const [incomingCall, setIncomingCall] = useState<{ fromId: string; from: string; offer: RTCSessionDescriptionInit } | null>(null);
+  const [incomingCall, setIncomingCall] = useState<{ from: string; callerName: string; offer: RTCSessionDescriptionInit } | null>(null);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id) || '';
 
   useEffect(() => {
-    const handleIncomingCall = (data: { fromId: string; from: string; offer: RTCSessionDescriptionInit }) => {
+    const handleIncomingCall = (data: { from: string; callerName: string; offer: RTCSessionDescriptionInit }) => {
       console.log('Incoming call data:', data);
       setIncomingCall(data);
     };
@@ -61,8 +67,8 @@ const GlobalIncomingCallHandler: React.FC = () => {
 
   return (
     <IncomingCallNotification
-      callerId={incomingCall.fromId}
-      callerName={incomingCall.from}
+      callerId={incomingCall.from}
+      callerName={incomingCall.callerName}
       onAccept={handleAccept}
       onReject={handleReject}
     />

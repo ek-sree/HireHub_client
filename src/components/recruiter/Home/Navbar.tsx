@@ -60,15 +60,15 @@ function Navbar() {
           Candidates
         </NavLink>
       </div>
-      <div className='mr-9 cursor-pointer' onClick={handleLogout}>Logout</div>
-      <div className='flex items-center'>
+      <div className='mr-9 cursor-pointer bg-slate-400 rounded-lg p-1 shadow-2xl font-medium text-white hover:scale-110 ease-in-out hover:font-semibold' onClick={handleLogout}>Logout</div>
+      {/* <div className='flex items-center'>
         <img
           src={notificationLogo}
           alt="notification-logo"
           className="max-w-full h-auto rounded-3xl w-8 mr-8"
         />
         <Avatar src="/broken-image.jpg" className='mr-5'/>
-      </div>
+      </div> */}
     </div>
   );
 }

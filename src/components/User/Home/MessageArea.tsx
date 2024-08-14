@@ -23,10 +23,11 @@ import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import WaveSurfer from 'wavesurfer.js'
 import { Message, MessageAreaProps, ImageData  } from "../../../interface/Message/IMessage";
 import { useWebRTC } from "../../../Contex/ProviderWebRTC";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 
 
-const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
+const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
   const [data, setData] = useState<ImageData | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -518,7 +519,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
         setSelectedVideo(null);
         setShowEmojiPicker(false);
         
-        // Clear recorded audio and close voice toggle
+        // here i am clearing recorded audio and close voice toggle
         if (recordedAudio) {
           setRecordedAudio(null);
           setRenderedAudio(null);
@@ -639,48 +640,55 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
 
  
 
-  function formatTime(currentPlayBackTime: number): React.ReactNode {
-    throw new Error("Function not implemented.");
-  }
+  // function formatTime(currentPlayBackTime: number): React.ReactNode {
+  //   throw new Error("Function not implemented.");
+  // }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       <Toaster position="top-center" expand={false} richColors />
-      <div className="flex items-center justify-between p-4 border-b border-gray-300">
-        <div className="flex items-center gap-4">
-          <Avatar src={chat.users.find(user => user.id !== userId)?.avatar.imageUrl} />
+      <div className="flex items-center justify-between p-2 sm:p-4 border-b border-gray-300">
+        <div className="flex items-center gap-2 sm:gap-4">
+          {onBack && (
+            <span className="block sm:hidden cursor-pointer" onClick={onBack}>
+              <ArrowBackIosIcon />
+            </span>
+          )}       
+          <Avatar src={chat.users.find(user => user.id !== userId)?.avatar?.imageUrl} />
           <div>
-            <h2 className="text-lg font-semibold">{chat.users.find(user => user.id !== userId)?.name || 'Username'}</h2>
-            <div className={`text-sm ${isOtherUserOnline ? 'text-green-500' : 'text-red-500'}`}>
+            <h2 className="text-base sm:text-lg font-semibold">
+              {chat.users.find(user => user.id !== userId)?.name || 'Username'}
+            </h2>
+            <div className={`text-xs sm:text-sm ${isOtherUserOnline ? 'text-green-500' : 'text-red-500'}`}>
               {isOtherUserOnline ? 'Online' : 'Offline'}
             </div>
           </div>
         </div>
         <IconButton onClick={() => otherUserId && startCall(otherUserId)}>         
-           <VideocamIcon />
+          <VideocamIcon />
         </IconButton>
       </div>
 
       <div
-        className="flex-1 p-4 overflow-y-auto"
+        className="flex-1 p-2 sm:p-4 overflow-y-auto"
         style={{
           backgroundImage: `url(${messageWallpaper})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           {renderMessages()}
         </div>
       </div>
 
-      <div className="p-4 border-t border-gray-300">
+      <div className="p-2 sm:p-4 border-t border-gray-300">
         {selectedImages.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2 mb-2">
             {selectedImages.map((img, index) => (
               <div key={index} className="relative">
-                <img src={URL.createObjectURL(img)} alt={`Selected ${index}`} className="w-16 h-16 object-cover rounded" />
-                <button onClick={() => removeSelectedImage(index)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
+                <img src={URL.createObjectURL(img)} alt={`Selected ${index}`} className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded" />
+                <button onClick={() => removeSelectedImage(index)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 sm:p-1">
                   <CloseIcon fontSize="small" />
                 </button>
               </div>
@@ -689,22 +697,22 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
         )}
         
         {selectedVideo && (
-  <div className="relative mt-2">
-    <video controls className="w-64 h-36 object-cover rounded">
-    <source src={URL.createObjectURL(selectedVideo)} type={selectedVideo.type} />
-      Your browser does not support the video tag.
-    </video>
-    <button onClick={removeSelectedVideo} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
-      <CloseIcon fontSize="small" />
-    </button>
-  </div>
-)}
-        <div className="relative flex items-center gap-2">
+          <div className="relative mt-2">
+            <video controls className="w-48 h-27 sm:w-64 sm:h-36 object-cover rounded">
+              <source src={URL.createObjectURL(selectedVideo)} type={selectedVideo.type} />
+              Your browser does not support the video tag.
+            </video>
+            <button onClick={removeSelectedVideo} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 sm:p-1">
+              <CloseIcon fontSize="small" />
+            </button>
+          </div>
+        )}
+        <div className="relative flex items-center gap-1 sm:gap-2">
           <IconButton onClick={handleEmojiPickerToggle}>
             <InsertEmoticonIcon />
           </IconButton>
-          {showEmojiPicker && !handleVoiceToogle &&(
-            <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-10">
+          {showEmojiPicker && !handleVoiceToogle && (
+            <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-10 scale-75 sm:scale-100 origin-bottom-left">
               <EmojiPicker
                 onEmojiClick={addEmoji}
                 theme={theme}
@@ -717,82 +725,81 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat }) => {
               </div>
             </div>
           )}
-        {!handleVoiceToogle ? (
-          <input
-            type="text"
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
-          />
-        ) : (
-          <div className="voice-recording-controls">
-            <IconButton onClick={handleDeleteVoice}>
-              <DeleteIcon />
-            </IconButton>
-            <span className="border-2 rounded-lg p-2 drop-shadow-xl">Recording : {recordingDuriation} .s</span>
-          </div>
-        )}
-          {!handleVoiceToogle&&(
+          {!handleVoiceToogle ? (
+            <input
+              type="text"
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1 p-1 sm:p-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
+            />
+          ) : (
+            <div className="voice-recording-controls flex items-center gap-1 sm:gap-2">
+              <IconButton onClick={handleDeleteVoice}>
+                <DeleteIcon />
+              </IconButton>
+              <span className="border-2 rounded-lg p-1 sm:p-2 text-xs sm:text-sm drop-shadow-xl">Recording : {recordingDuriation} .s</span>
+            </div>
+          )}
+          {!handleVoiceToogle && (
             <>
-            <IconButton onClick={() => fileInputRef.current?.click()}>
-            <ImageIcon />
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              style={{ display: 'none' }} 
-              onChange={handleFileChange}
-              multiple
-              accept="image/*"
-            />
-          </IconButton>
-          <IconButton onClick={() => videoInputRef.current?.click()}>
-            <TheatersIcon />
-            <input 
-              type="file"
-              ref={videoInputRef}
-              style={{ display: 'none' }}
-              onChange={handleVideoFileChange}
-              accept="video/*"
-            />
-          </IconButton></>
+              <IconButton onClick={() => fileInputRef.current?.click()}>
+                <ImageIcon />
+                <input 
+                  type="file" 
+                  ref={fileInputRef}
+                  style={{ display: 'none' }} 
+                  onChange={handleFileChange}
+                  multiple
+                  accept="image/*"
+                />
+              </IconButton>
+              <IconButton onClick={() => videoInputRef.current?.click()}>
+                <TheatersIcon />
+                <input 
+                  type="file"
+                  ref={videoInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleVideoFileChange}
+                  accept="video/*"
+                />
+              </IconButton>
+            </>
           )}
           {messageInput.trim() || selectedImages.length > 0 || selectedVideo ? (
-  <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
-    {loading ? <CircularProgress variant="determinate" value={progress} /> : <SendIcon />}
-  </IconButton>
-) : (!handleVoiceToogle ? (
-  <IconButton onClick={handleVoiceStart}>
-    <KeyboardVoiceIcon />
-  </IconButton>
-) : (
-  <>
-    {!recordedAudio ? (
-      <IconButton onClick={handleStopRecording}>
-        <StopCircleIcon />
-      </IconButton>
-    ) : (
-      <>
-        <IconButton onClick={isPlaying ? handlePauseAudio : handlePlayAudio}>
-          {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
-        </IconButton>
-        <div className="w-60" ref={waveFormRef} hidden={handleVoiceToogle} />{
-  recordedAudio && isPlaying &&(
-    <span>{formatTimes(currentPlayBackTime)}</span>
-  )
-}{
-  recordedAudio && !isPlaying &&(
-    <span>{formatTimes(totalDuriation)}</span>
-  )
-}
-<audio ref={audioRef} hidden/>
-        <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
-          {loading ? <CircularProgress variant="determinate" value={progress} /> : <SendIcon />}
-        </IconButton>
-      </>
-    )}
-  </>
-))}
+            <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
+              {loading ? <CircularProgress size={24} variant="determinate" value={progress} /> : <SendIcon />}
+            </IconButton>
+          ) : (!handleVoiceToogle ? (
+            <IconButton onClick={handleVoiceStart}>
+              <KeyboardVoiceIcon />
+            </IconButton>
+          ) : (
+            <>
+              {!recordedAudio ? (
+                <IconButton onClick={handleStopRecording}>
+                  <StopCircleIcon />
+                </IconButton>
+              ) : (
+                <>
+                  <IconButton onClick={isPlaying ? handlePauseAudio : handlePlayAudio}>
+                    {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
+                  </IconButton>
+                  <div className="w-24 sm:w-60" ref={waveFormRef} hidden={handleVoiceToogle} />
+                  {recordedAudio && isPlaying && (
+                    <span className="text-xs sm:text-sm">{formatTimes(currentPlayBackTime)}</span>
+                  )}
+                  {recordedAudio && !isPlaying && (
+                    <span className="text-xs sm:text-sm">{formatTimes(totalDuriation)}</span>
+                  )}
+                  <audio ref={audioRef} hidden/>
+                  <IconButton color="primary" onClick={handleSendMessage} disabled={loading}>
+                    {loading ? <CircularProgress size={24} variant="determinate" value={progress} /> : <SendIcon />}
+                  </IconButton>
+                </>
+              )}
+            </>
+          ))}
         </div>
       </div>
     </div>

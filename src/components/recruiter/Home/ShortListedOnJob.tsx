@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { toast, Toaster } from "sonner";
 import { jobpostAxios } from "../../../constraints/axios/jobpostAxios";
 import { jobpostEndpoints } from "../../../constraints/endpoints/jobpost.Endpoints";
@@ -9,12 +9,19 @@ import { Candidate } from "../../../interface/JobInterfaces/IJobInterface";
 import user from '../../../assets/images/user.png'
 import { Button } from "@material-tailwind/react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { userAxios } from "../../../constraints/axios/userAxios";
+import { userEndpoints } from "../../../constraints/endpoints/userEndpoints";
+import UserImg from '../../../assets/images/user.png';
+
+
 
 
 const ShortListedOnJob = () => {
     const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [profileImages, setProfileImages] = useState<{ [key: string]: string }>({});
+
 
     const token = useSelector((store:RootState)=>store.RecruiterAuth.token);
 
@@ -35,6 +42,9 @@ const ShortListedOnJob = () => {
             
             if(response.data.success){
                 setCandidates(response.data.Candidates);
+                response.data.Candidates.forEach(async (candidate: Candidate) => {
+                  await showImage(candidate.userId);
+                });
             }else{
                 setError("No data found");
             }
@@ -46,12 +56,25 @@ const ShortListedOnJob = () => {
         }
     }
 
-    const handleSendMessage = (id:string)=>{
-        //need to implemet message logic here ...
-    }
 
-    const handleViewCV=(id:string)=>{
-        //same need to implemet view cv logic here....
+    const showImage = async (userId: string) => {
+      try {
+        const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`);
+        console.log("is img got?>", response.data);
+  
+        const imageUrl = response.data.success ? response.data.data?.imageUrl || UserImg : UserImg;
+        setProfileImages(prev => ({ ...prev, [userId]: imageUrl }));
+      } catch (error) {
+        console.error("Error fetching profile image:", error);
+        setProfileImages(prev => ({ ...prev, [userId]: UserImg }));
+      }
+    };
+
+    // const handleSendMessage = (id:string)=>{
+    // }
+
+    const handleViewCV=(resumeUrl:string)=>{
+      window.open(resumeUrl, '_blank');
     }
 
     const handleBack=()=>{
@@ -76,11 +99,11 @@ const ShortListedOnJob = () => {
         <div className="text-center text-gray-500">{error}</div>
       ) : candidates.length > 0 ? (
         candidates.map(candidate => (
-          <div key={candidate.id} className="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer">
+          <div key={candidate._id} className="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center">
               <img
-                src={candidate.profilePhoto || user}
-                alt="profile"
+                  src={profileImages[candidate.userId] || user}
+                  alt="profile"
                 className="w-12 h-12 rounded-full"
               />
               <div className="ml-4">
@@ -98,7 +121,7 @@ const ShortListedOnJob = () => {
                     View CV
                   </a>
                 </div>
-                <div className="text-sm text-blue-500 hover:underline cursor-pointer">
+                {/* <div className="text-sm text-blue-500 hover:underline cursor-pointer">
                   <a
                     href="#"
                     onClick={(e) => {
@@ -108,11 +131,13 @@ const ShortListedOnJob = () => {
                   >
                     Send Message
                   </a>
-                </div>
+                </div> */}
               </div>
             </div>
             <div> 
-              <div className='text-sm text-blue-500 hover:underline cursor-pointer'>View Profile</div>
+            <NavLink to={`/recruiter/userprofile/${candidate.userId}`}>
+                  <div className='text-sm text-blue-500 hover:underline cursor-pointer'>View Profile</div>
+                </NavLink>
             </div>
           </div>
         ))

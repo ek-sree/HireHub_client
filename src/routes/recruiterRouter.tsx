@@ -10,6 +10,7 @@ import ShortListedCandidatesPages from '../pages/recruiter/ShortListedCandidates
 import ShortListedOnJobPage from '../pages/recruiter/ShortListedOnJobPage'
 import UserProfilePage from '../pages/recruiter/UserProfilePage'
 import MessageRecruiter from '../pages/recruiter/MessageRecruiter'
+import AwaitedCandidatesPage from '../pages/recruiter/AwaitedCandidatesPage'
 
 
 const RecruiterRouter = () => {
@@ -27,6 +28,7 @@ const RecruiterRouter = () => {
             <Route path='/allCandidates' element={<ShortListedCandidatesPages/>}/>
             <Route path='/userprofile/:id' element={<UserProfilePage/>}/>
             <Route path='/message' element={<MessageRecruiter/>}/>
+            <Route path='/awaitedCandidate/:jobId' element={<AwaitedCandidatesPage/>}/>
         </Route>
     </Routes>
   )

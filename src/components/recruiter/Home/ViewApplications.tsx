@@ -5,8 +5,7 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useParams } from "react-router-dom";
 import { jobpostAxios } from "../../../constraints/axios/jobpostAxios";
 import { jobpostEndpoints } from "../../../constraints/endpoints/jobpost.Endpoints";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
+import ReactLoading from 'react-loading';
 
 interface Application {
   _id: string;
@@ -52,6 +51,28 @@ const ViewApplications = () => {
     fetchApplications(currentPage);
   }, [jobId, currentPage, fetchTrigger]);
 
+  const handleAwait = async (id:string)=>{
+    try {
+      setLoading(true);
+      if(!jobId){
+        throw new Error("Job id is missing");
+      }
+      const response = await jobpostAxios.post(`${jobpostEndpoints.awaitApplication}?jobId=${jobId}&applicationId=${id}`);
+      console.log("response awaittt",response.data);
+      if(response.data.success){
+        toast.success("Application moved to await")
+        setFetchTrigger(!fetchTrigger);
+      }else{
+        toast.error("Application missing or cant await right now !")
+      }
+    } catch (error) {
+      console.error("Error accepting application:", error);
+      toast.error("Failed to accept application");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleAccept = async (id: string) => {
     setLoading(true);
     if (!jobId) {
@@ -61,10 +82,10 @@ const ViewApplications = () => {
       const response = await jobpostAxios.post(`${jobpostEndpoints.acceptApplication}?jobId=${jobId}&applicationId=${id}`);
 
       if (response.data.success) {
-        toast.success("Accepted application");
+        toast.success("Accepted application, accepted mail send to this candidate");
         setFetchTrigger(!fetchTrigger);
       } else {
-        toast.error("Application is missing or can't be accepted right now!");
+        toast.error("This User not found or can't be accepted right now!");
       }
     } catch (error) {
       console.error("Error accepting application:", error);
@@ -83,7 +104,7 @@ const ViewApplications = () => {
       const response = await jobpostAxios.post(`${jobpostEndpoints.rejectedApplication}?jobId=${jobId}&applicationId=${id}`);
 
       if (response.data.success) {
-        toast.success("Successfully rejected application");
+        toast.success("Successfully rejected application, rejection mail send to this candidates");
         setFetchTrigger(!fetchTrigger);
       } else {
         toast.error("Failed to reject application");
@@ -169,20 +190,29 @@ const ViewApplications = () => {
                     </a>
                   </td>
                   <td className="py-3 px-6 text-left">
+                    {loading?(<ReactLoading type={"bubbles"} color={"#000000"} height={'20%'} width={'20%'} />):(<>
                     <button
-                      className={`py-1 px-3 rounded mr-2 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 text-white'}`}
+                      className='py-2 px-3 rounded mr-2 bg-slate-100 text-black border-2 font-serif hover:bg-slate-200 hover:font-normal'
+                      onClick={() => handleAwait(application._id)}
+                      disabled={loading}
+                    >
+                     Await
+                    </button>
+                    <button
+                      className='py-2 px-3 rounded mr-2 bg-slate-100 text-black border-2 font-serif hover:bg-slate-200'
                       onClick={() => handleAccept(application._id)}
                       disabled={loading}
                     >
-                      {loading ? 'Loading...' : 'Shortlisted'}
+                     Shortlisted
                     </button>
                     <button
-                      className={`py-1 px-3 rounded ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 text-white'}`}
+                      className='py-2 px-3 rounded bg-slate-100 text-black font-serif border-2 hover:bg-slate-200 hover:font-medium'
                       onClick={() => handleReject(application._id)}
                       disabled={loading}
                     >
-                      {loading ? 'Loading...' : 'Reject'}
+                     Reject
                     </button>
+                      </>)}
                   </td>
                 </tr>
               ))

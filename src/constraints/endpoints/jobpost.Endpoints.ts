@@ -7,9 +7,11 @@ export const jobpostEndpoints = {
     editJobs: `${API_GATEWAY_BASE_URL}/editjobs`,
     applyJob: `${API_GATEWAY_BASE_URL}/applyjob`,
     viewApplication: `${API_GATEWAY_BASE_URL}/viewApplications`,
+    awaitApplication: `${API_GATEWAY_BASE_URL}/awaitApplication`,
     acceptApplication: `${API_GATEWAY_BASE_URL}/acceptApplication`,
     rejectedApplication: `${API_GATEWAY_BASE_URL}/rejectApplication`,
     viewAcceptApplications:`${API_GATEWAY_BASE_URL}/acceptedApplications`,
     viewShortlistedApplication:`${API_GATEWAY_BASE_URL}/shortlistedApplication`,
-    softDeleteJob:`${API_GATEWAY_BASE_URL}/softdeleteJob`
+    softDeleteJob:`${API_GATEWAY_BASE_URL}/softdeleteJob`,
+    viewAwaitApplication: `${API_GATEWAY_BASE_URL}/viewAwaitApplication`
 }

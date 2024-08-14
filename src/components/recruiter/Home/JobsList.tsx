@@ -101,7 +101,6 @@ const JobsList = () => {
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden divide-y divide-gray-200">
             <thead className="bg-gray-200">
               <tr className="text-gray-600 text-sm">
-                <th className="py-3 px-6 text-left">Company Name</th>
                 <th className="py-3 px-6 text-left">Position</th>
                 <th className="py-3 px-6 text-left">Location</th>
                 <th className="py-3 px-6 text-left">Employment Type</th>
@@ -110,15 +109,15 @@ const JobsList = () => {
                 <th className="py-3 px-6 text-left">Experience</th>
                 <th className="py-3 px-6 text-left">Created Date</th> 
                 <th className="py-3 px-6 text-center">Total Applications</th>
-                <th className="py-3 px-6 text-center">Actions</th>
+                <th className="py-3 px-6 text-center">View All Applications</th>
                 <th className="py-3 px-6 text-center">View Shortlisted Candidates</th>
-                <th className="py-3 px-6 text-center">Delete</th> 
+                <th className="py-3 px-6 text-center">View Awaited Candidates</th>
+                <th className="py-3 px-6 text-center">Edit / Hide Job</th> 
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {jobs.map((job, index) => (
                 <tr key={job._id} className="text-gray-600 text-sm">
-                  <td className="py-4 px-6">{job.companyName}</td>
                   <td className="py-4 px-6">{job.position}</td>
                   <td className="py-4 px-6 flex items-center">
                     <LocationOnRoundedIcon fontSize="small" />
@@ -131,29 +130,37 @@ const JobsList = () => {
                   <td className="py-4 px-6">{job.created_at ? new Date(job.created_at).toLocaleDateString() : 'N/A'}</td> 
                   <td className="py-4 px-6 text-center">{applicationCount[index]}</td>
                   <td className="py-4 px-6 text-center flex">
-                    <button
-                      onClick={() => handleEditClick(job)}
-                      className="text-sm text-blue-500 hover:underline cursor-pointer mr-4 bg-orange-100 px-1 rounded"
-                    >
-                      Edit
-                    </button>
+              
                     <Link to={`/recruiter/viewapplication/${job._id}`}>
-                      <button className="text-sm text-blue-500 hover:underline cursor-pointer bg-green-100 rounded">
+                      <button className="text-sm text-slate-600 hover:shadow-xl shadow-lg font-serif cursor-pointer hover:bg-slate-100  rounded">
                         View Application
                       </button>
                     </Link>
                   </td>
                   <td className="py-4 px-6 text-center">
                     <Link to={`/recruiter/shortlistedOnJob/${job._id}`}>
-                      <button className="text-sm text-blue-500 hover:underline cursor-pointer">
-                        Shortlisted Candidates
+                      <button className="text-sm text-black font-serif shadow-lg p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                        View
                       </button>
                     </Link>
                   </td>
                   <td className="py-4 px-6 text-center">
+                    <Link to={`/recruiter/awaitedCandidate/${job._id}`}>
+                      <button className="text-sm text-black font-serif shadow-lg p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                        View
+                      </button>
+                    </Link>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                  <button
+                      onClick={() => handleEditClick(job)}
+                      className="text-sm text-blue-500 hover:underline cursor-pointer mt-2 bg-orange-100 px-3 rounded"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => handlesoftDelete(job._id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 mt-3"
                     >
                       {job.isBlocked ? (
                         <CheckCircleIcon className="h-5 w-5 text-green-500" />

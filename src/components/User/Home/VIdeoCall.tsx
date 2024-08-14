@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { MdVideocamOff, MdVideocam, MdMicOff, MdMic, MdCallEnd } from "react-icons/md";
 
 interface VideoCallProps {
   localStream: MediaStream | null;
@@ -40,12 +41,41 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, onEndC
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-90 flex flex-col items-center justify-center">
-      <video ref={localVideoRef} autoPlay muted className="absolute bottom-5 right-5 w-1/4 border-2 border-white" />
-      <video ref={remoteVideoRef} autoPlay className="w-full h-full object-cover" />
-      <div className="absolute bottom-10 flex space-x-4">
-        <button onClick={handleToggleCamera} className="bg-blue-500 text-white px-4 py-2 rounded">{isCameraOff ? "Turn Camera On" : "Turn Camera Off"}</button>
-        <button onClick={handleToggleMic} className="bg-blue-500 text-white px-4 py-2 rounded">{isMicOff ? "Turn Mic On" : "Turn Mic Off"}</button>
-        <button onClick={onEndCall} className="bg-red-500 text-white px-4 py-2 rounded">End Call</button>
+      {/* Remote video (full screen) */}
+      <video 
+        ref={remoteVideoRef} 
+        autoPlay 
+        className="w-full h-full object-cover"
+      />
+      
+      {/* Local video (picture-in-picture) */}
+      <video 
+        ref={localVideoRef} 
+        autoPlay 
+        muted 
+        className="absolute top-2 right-2 w-1/3 sm:w-1/4 md:w-1/5 border-2 border-white rounded-lg z-10"
+      />
+      
+      {/* Control buttons */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-4">
+        <button 
+          onClick={handleToggleCamera} 
+          className="bg-blue-500 text-white p-2 sm:p-3 rounded-full"
+        >
+          {isCameraOff ? <MdVideocamOff size={24} /> : <MdVideocam size={24} />}
+        </button>
+        <button 
+          onClick={handleToggleMic} 
+          className="bg-blue-500 text-white p-2 sm:p-3 rounded-full"
+        >
+          {isMicOff ? <MdMicOff size={24} /> : <MdMic size={24} />}
+        </button>
+        <button 
+          onClick={onEndCall} 
+          className="bg-red-500 text-white p-2 sm:p-3 rounded-full"
+        >
+          <MdCallEnd size={24} />
+        </button>
       </div>
     </div>
   );

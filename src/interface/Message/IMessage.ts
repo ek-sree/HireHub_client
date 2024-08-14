@@ -42,6 +42,7 @@ export  interface ChatData {
 
   export interface MessageAreaProps {
     chat: ChatData;
+    onBack?: () => void;
   }
 
   export interface ImageData {
