@@ -5,8 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { postAxios } from "../../../constraints/axios/postAxios";
 import { postEndpoints } from "../../../constraints/endpoints/postEndpoints";
 import { toast } from 'sonner';
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
 
 interface EditModalProps {
@@ -20,7 +18,6 @@ const EditPostModal: FC<EditModalProps> = ({ isOpen, onClose, post, onSuccess })
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const token = useSelector((store: RootState) => store.UserAuth.token);
 
   useEffect(() => {
     if (post) {

@@ -50,9 +50,7 @@ const SkillAdd: FC<SkillAddMOdal> = ({isOpen, onClose, onSuccess}) => {
         console.log(skills);
         
         e.preventDefault();
-        const response = await userAxios.post(`${userEndpoints.userSkillsAdd}?email=${email}`,{skills})
-        console.log("sadasd",response.data);
-        
+        const response = await userAxios.post(`${userEndpoints.userSkillsAdd}?email=${email}`,{skills})        
         if(response.data.success){
             onSuccess(response.data.result)
             onClose();

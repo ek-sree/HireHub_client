@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import { userAxios } from '../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
@@ -32,7 +32,6 @@ const FollowerModal: FC<FollowersProps> = ({ isOpen, onClose, id ,onSuccess}) =>
     async function getFollowers(){
         try {
             const response = await userAxios.get(`${userEndpoints.followersList}?userId=${id}`);
-            console.log("response of followers list", response.data);
             if(response.data.success){
                 setFollowers(response.data.data);
             }
@@ -44,7 +43,6 @@ const FollowerModal: FC<FollowersProps> = ({ isOpen, onClose, id ,onSuccess}) =>
 
     const handleRemoveFollower = async (id: string) => {
         try {
-          console.log("data unfollwo",id,userId);
           const response = await userAxios.put(`${userEndpoints.removeFollower}?userId=${userId}&id=${id}`);
           if (response.data.success) {
           setIsFollow(!isFollow)

@@ -15,6 +15,16 @@ import socketService from '../../../socket/socketService';
 import { incrementUnseenCount } from '../../../redux/slice/NotificationSlice';
 
 
+interface SearchResult {
+  _id: string;
+  name: string;
+  profileTitle: string;
+  avatar: {
+    imageUrl: string;
+  };
+}
+
+
 function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,7 +32,7 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [profileImg, setProfileImg] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);

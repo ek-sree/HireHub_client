@@ -14,7 +14,7 @@ interface IncomingCallNotificationProps {
   onReject: () => void;
 }
 
-const IncomingCallNotification: React.FC<IncomingCallNotificationProps> = ({ callerId, callerName, onAccept, onReject }) => {
+const IncomingCallNotification: React.FC<IncomingCallNotificationProps> = ({ callerName, onAccept, onReject }) => {
   return (
     <div className="fixed bottom-4 right-4 left-4 md:left-auto md:w-80 bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="p-4">
@@ -40,7 +40,7 @@ const GlobalIncomingCallHandler: React.FC = () => {
 
   useEffect(() => {
     const handleIncomingCall = (data: { from: string; callerName: string; offer: RTCSessionDescriptionInit }) => {
-      console.log('Incoming call data:', data);
+      // console.log('Incoming call data:', data);
       setIncomingCall(data);
     };
 

@@ -57,14 +57,9 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
 
   const onSubmit = async (values: SignupFormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
-      console.log("hello", values);
-
       const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
-      const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
-      console.log("checking axios and endpoint", axiosInstance, endpoint);
-      
+      const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;      
       const response = await axiosInstance.post(endpoint.register, values);
-      console.log("data sent?");
       if (response.data.success) {
         navigate('/otp');
       } else {
@@ -84,11 +79,8 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
 
   const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
     const { credential } = credentialResponse;
-    console.log('Google Credential', credential);
     try {
       const response = await userAxios.post("/google-login", { credential });
-      console.log('Google Login Response', response);
-
       if (response.data.success) {
         socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));

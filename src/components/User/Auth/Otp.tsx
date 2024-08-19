@@ -32,6 +32,7 @@ const Otp = () => {
 
   const [countdown, setCountdown] = useState(30);
   const [showResendButton, setShowResendButton] = useState(false);
+console.log(showResendButton);
 
   const [recruiter, setRecruiter] = useState<string | undefined>(undefined);
 
@@ -45,13 +46,10 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
       otp: Array(6).fill(""),
     },
     validate,
-    onSubmit: async (values) => {
-      console.log("Otp is sending");
-      
+    onSubmit: async (values) => {      
         try {
             const otp = values.otp.join("")
             const response = await axiosInstance.post(endpoint.otp,{otp})
-            console.log("Send successfully", response);
             if(response.data.success && response.data.isRecruiter==false){
               dispatch(userLogin({token:response.data.token, UserData:response.data.user_data}));
               navigate('/home');
@@ -105,9 +103,6 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
 
   useEffect(()=>{
     const recruiterStatus = Cookies.get('isRecruiter');
-console.log("Checking recruiterstatus", recruiterStatus);
-console.log(typeof recruiterStatus);
-
 setRecruiter(recruiterStatus)
   },[])
 

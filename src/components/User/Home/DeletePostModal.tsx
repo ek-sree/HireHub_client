@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { postAxios } from '../../../constraints/axios/postAxios';
 import { postEndpoints } from '../../../constraints/endpoints/postEndpoints';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/store/store';
-import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
 import { CircularProgress } from '@mui/material';
 
 interface DeletePostModalProps {
@@ -11,7 +8,7 @@ interface DeletePostModalProps {
   onClose: () => void;
   postId:string;
   imageUrl:string;
-  onSuccess: (deletedPostId: Posts[]) => void;
+  onSuccess: (deletedPostId: string) => void;
 }
 
 const DeletePostModal: React.FC<DeletePostModalProps> = ({ isOpen, onClose, postId, imageUrl, onSuccess }) => {
@@ -32,9 +29,7 @@ const DeletePostModal: React.FC<DeletePostModalProps> = ({ isOpen, onClose, post
 
     const handleConfirmDelete=async()=>{
         setLoading(true)
-        const response = await postAxios.delete(`${postEndpoints.deletePost}?postId=${postId}&imageUrl=${imageUrl}`)
-        console.log("delete post api",response.data);
-        
+        const response = await postAxios.delete(`${postEndpoints.deletePost}?postId=${postId}&imageUrl=${imageUrl}`)        
         if(response.data.success){
             setLoading(false);
             onSuccess(response.data.data);

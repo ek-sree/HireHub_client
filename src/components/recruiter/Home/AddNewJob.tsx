@@ -120,11 +120,8 @@ const AddNewJob: FC<NewJobAddModalProps> = ({ isNewJobModal, onClose, addJobList
             recruiterId
         };
 
-        try {
-          console.log("ready to send job add data to frontend");
-          
+        try {          
             const response = await jobpostAxios.post(jobpostEndpoints.addjob, data);
-            console.log("response add job", response);
             if(response.data.success){
                 addJobList(response.data.job);
                 toast.success("Job posted successfully.");

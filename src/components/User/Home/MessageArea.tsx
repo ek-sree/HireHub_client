@@ -12,7 +12,7 @@ import { messageAxios } from "../../../constraints/axios/messageAxios";
 import { messageEndpoints } from "../../../constraints/endpoints/messageEndpoints";
 import socketService from "../../../socket/socketService";
 import messageWallpaper from '../../../assets/images/WhatsApp-Chat-theme-iPhone-stock-744.webp';
-import EmojiPicker from 'emoji-picker-react';
+import EmojiPicker, { Theme } from 'emoji-picker-react';
 import { toast, Toaster } from "sonner";
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
 import TheatersIcon from '@mui/icons-material/Theaters';
@@ -20,7 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
-import WaveSurfer from 'wavesurfer.js'
+import WaveSurfer from 'wavesurfer.js';
 import { Message, MessageAreaProps, ImageData  } from "../../../interface/Message/IMessage";
 import { useWebRTC } from "../../../Contex/ProviderWebRTC";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -31,8 +31,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
   const [data, setData] = useState<ImageData | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [theme, setTheme] = useState('light');
-  const [skinTone, setSkinTone] = useState('light');
+  const [theme, setTheme] = useState<Theme>(Theme.LIGHT);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
@@ -46,18 +45,19 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
   const [progress, setProgress] = React.useState(0);
   const [handleVoiceToogle, setHandleVoiceToogle] = useState<boolean>(false);
   const [recordingDuriation, setRecordingDuriation] = useState(0);
-  const [waveform, setWaveform] = useState(null);
+  const [waveform, setWaveform] = useState<WaveSurfer | null>(null);
   const [currentPlayBackTime, setCurrentPlayBackTime] = useState(0);
   const [totalDuriation, setTotalDuriation] = useState(0);
-  const [recordedAudio, setRecordedAudio] = useState(null);
+  const [recordedAudio, setRecordedAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [renderedAudio, setRenderedAudio] = useState(null);
+  const [renderedAudio, setRenderedAudio] = useState<Blob | null>(null);
   const [forTest, setForTest] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
 
   const { startCall } = useWebRTC();
   
   const otherUserId = chat.users.find(user => user.id !== userId)?.id;
+console.log(forTest);
 
 
 
@@ -102,6 +102,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
         waveform?.load(audioURL);
       }
       mediaRecorder.start();
+  console.log("Started recording audio");
     }).catch(error => {
       console.log("Error recording", error);
     });
@@ -149,11 +150,11 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
       waveform.destroy();
       setWaveform(null);
     }
+
+    URL.revokeObjectURL(recordedAudio?.src ?? '');
   
-    URL.revokeObjectURL(recordedAudio?.src);
-  
-    if (mediaRecorderRef.current && mediaRecorderRef.current.stream) {
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    if (mediaRecorderRef.current && (mediaRecorderRef.current as any).stream)  {
+      (mediaRecorderRef.current as any).stream?.getTracks().forEach((track: MediaStreamTrack) => track.stop());
     }
   };
   
@@ -172,6 +173,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
   
       mediaRecorderRef.current.addEventListener("stop", () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
+        console.log("Audio blob created:", audioBlob);
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         setRecordedAudio(audio);
@@ -231,9 +233,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
         return;
       }
           
-      const response = await messageAxios.get(`${messageEndpoints.getMessage}?userId=${userId}&receiverId=${receiverId}`);
-      console.log("Messages fetched:", response.data);
-  
+      const response = await messageAxios.get(`${messageEndpoints.getMessage}?userId=${userId}&receiverId=${receiverId}`);  
       if (response.data.success) {
         setData(response.data.data);
       } else {
@@ -255,7 +255,6 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
         cursorColor: "#7ae3c3",
         barWidth: 2,
         height: 30,
-        responsive: true
       });
       setWaveform(wavesurfer);
 
@@ -309,14 +308,12 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
   
   useEffect(() => {
     if (chat._id) {
-      console.log("Setting up socket for chatId:", chat._id);
       socketService.connect();
       socketService.joinConversation(chat._id);
 
       // const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
 
       socketService.onNewMessage((message) => {
-        console.log("Received new message in real-time:", message);
         setData(prevData => {
           const newMessage: Message = {
             _id: message._id || Date.now().toString(),
@@ -352,7 +349,6 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
         setShowEmojiPicker(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -373,6 +369,10 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
     if (date === yesterday) return 'Yesterday';
 
     return new Date(date).toLocaleDateString();
+  };
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => prevTheme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
   };
 
   const handleEmojiPickerToggle = (event: React.MouseEvent) => {
@@ -401,9 +401,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
     }
   
     const file = files[0];
-    console.log("Selected video file:", file);
     const videoElement = document.createElement('video');
-    
     videoElement.preload = 'metadata';
     videoElement.src = URL.createObjectURL(file);
     
@@ -420,7 +418,6 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
 
   const removeSelectedVideo = () => {
     setSelectedVideo(null);
-    console.log("Video removed");
   };
 
   const uploadImages = async (images: File[]) => {
@@ -432,9 +429,7 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
     images.forEach(image => {
       formData.append('images', image);
     });
-    const response = await messageAxios.post(`${messageEndpoints.sendImages}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData);
-    console.log("Image upload response:", response.data);
-    
+    const response = await messageAxios.post(`${messageEndpoints.sendImages}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData);    
     if (response.data.success) {
       return response.data.data;
     }
@@ -459,28 +454,29 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
       toast.error("Cant send video right now")
     }
   }
-
-  const uploadAudio = async(audio:string)=>{
-    try {
-      console.log("Audio here for send",audio);
-      
+  const uploadAudio = async (audio: Blob) => {
+    try {      
       const receiverId = chat.lastMessage?.receiverId || chat.users.find(user => user.id !== userId)?.id;
-      if(!audio){
+      if (!audio) {
         return;
       }
       const formData = new FormData();
-      formData.append('audio', audio);
-      const response = await messageAxios.post(`${messageEndpoints.sendAudio}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData)
-      console.log("response",response.data);
-      if(response.data.success){
-        return response.data.data
+      formData.append('audio', audio, 'audio.mp3');
+      
+      const response = await messageAxios.post(`${messageEndpoints.sendAudio}?chatId=${chat._id}&senderId=${userId}&receiverId=${receiverId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });      
+      if (response.data.success) {
+        return response.data.data;
       }
       return '';
     } catch (error) {
-      console.log("Error uploading audio",error);
-      toast.error("Error cant send audio right now")
+      console.log("Error uploading audio", error);
+      toast.error("Error can't send audio right now");
     }
-  }
+  };
 
   const handleSendMessage = async () => {
     try {
@@ -498,11 +494,8 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
           videoUrls = await uploadVideo(selectedVideo);
         }
         if (recordedAudio) {
-          recordUrl = await uploadAudio(renderedAudio);
-        }
-  
-        console.log("Attempting to send message:", { chatId: chat._id, userId, receiverId, messageInput, images: imageUrls, videoUrls, recordUrl });
-        
+          recordUrl = renderedAudio ? await uploadAudio(renderedAudio) : '';
+        }        
         socketService.sendMessage({
           chatId: chat._id,
           senderId: userId,
@@ -610,9 +603,8 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
                   cursorColor: "#7ae3c3",
                   barWidth: 2,
                   height: 30,
-                  responsive: true
                 });
-                wavesurfer.load(message.recordUrl);
+                wavesurfer.load(message.recordUrl ?? '');
               }
             }} />
             {message.recordDuration && (
@@ -714,15 +706,14 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
           {showEmojiPicker && !handleVoiceToogle && (
             <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-10 scale-75 sm:scale-100 origin-bottom-left">
               <EmojiPicker
-                onEmojiClick={addEmoji}
-                theme={theme}
-                skinTone={skinTone}
-              />
-              <div onClick={() => setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light')} className="flex gap-2 mt-2 border-2 border-slate-500 w-16 rounded-xl shadow-xl hover:bg-slate-300 cursor-pointer">
-                <button className="pl-3 font-medium">
-                  {theme === 'light' ? 'Dark' : 'Light'}
-                </button>
-              </div>
+  onEmojiClick={addEmoji}
+  theme={theme}
+/>
+             <div onClick={toggleTheme} className="flex gap-2 mt-2 border-2 border-slate-500 w-16 rounded-xl shadow-xl hover:bg-slate-300 cursor-pointer">
+  <button className="pl-3 font-medium">
+    {theme === Theme.LIGHT ? 'Dark' : 'Light'}
+  </button>
+</div>
             </div>
           )}
           {!handleVoiceToogle ? (

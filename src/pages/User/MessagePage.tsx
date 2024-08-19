@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from "react";
 import MessageArea from "../../components/User/Home/MessageArea";
 import MessageList from "../../components/User/Home/MessageList";
+import { ChatData } from "../../interface/Message/IMessage";
 
-interface User {
-  id: string;
-  name: string;
-  avatar: {
-    imageUrl: string;
-    originalname: string;
-  };
-}
 
-interface ChatData {
-  _id: string;
-  lastMessage?: {
-    chatId: string;
-    content: string;
-    createdAt: string;
-    receiverId: string;
-    senderId: string;
-    updatedAt: string;
-    _id: string;
-  } | null;
-  participants: string[];
-  users: User[];
-}
+// interface User {
+//   id: string;
+//   name: string;
+//   avatar: {
+//     imageUrl: string;
+//     originalname: string;
+//   };
+// }
+
+// interface ChatData {
+//   _id: string;
+//   lastMessage?: {
+//     chatId: string;
+//     content: string;
+//     createdAt: string;
+//     receiverId: string;
+//     senderId: string;
+//     updatedAt: string;
+//     _id: string;
+//   } | null;
+//   participants: string[];
+//   users: User[];
+// }
 
 const MessagePage: React.FC = () => {
   const [selectedChat, setSelectedChat] = useState<ChatData | null>(null);

@@ -15,7 +15,6 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
     incrementUnseenCount: (state, action: PayloadAction<string>) => {
-        console.log("notification slice data", action.payload);
         if (typeof action.payload === 'string') {
           state.postUser = action.payload;
           state.unseenCount += 1;

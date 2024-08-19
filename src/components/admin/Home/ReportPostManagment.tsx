@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { Toaster, toast } from "sonner";
 import Sidebar from "./SideBar";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { LinearProgress, Stack } from "@mui/material";
@@ -24,8 +22,6 @@ const UserManagement: React.FC = () => {
     try {
       const response = await adminAxios.get(
         `${adminEndpoints.getReportPost}?page=${page}&sortOrder=${sortOrder}`);
-      console.log("data fetch areport", response.data);
-
       if (response.data.success) {
         setReportData(response.data.data);
         setTotalPages(Math.ceil(response.data.totalPosts / 2));
@@ -40,8 +36,6 @@ const UserManagement: React.FC = () => {
   }
 
   const handleDeletePost = async (postId: string, imageUrls: string[]) => {
-    console.log("delete post repo", postId, imageUrls);
-
     try {
       const imageUrlString = imageUrls.join(",");
 
@@ -49,9 +43,6 @@ const UserManagement: React.FC = () => {
         `${
           postEndpoints.deletePost
         }?postId=${postId}&imageUrl=${encodeURIComponent(imageUrlString)}`);
-
-      console.log(response.data.data);
-
       if (response.data.success) {
         setReportData((prev) => prev.filter((post) => post._id !== postId));
         toast.success("Post deleted successfully");
@@ -65,15 +56,12 @@ const UserManagement: React.FC = () => {
   };
 
 const handleClearReport= async(postId:string)=>{
-  try {
-    console.log("log",postId);
-    
+  try {    
     const response = await adminAxios.put(`${adminEndpoints.clearReportPost}?postId=${postId}`,{},{
       headers: {
         "Content-Type":"application/json"
       },
     })
-    console.log("Response data",response.data);
     if(response.data.success){
       setReportData((prev)=> prev.filter((post)=>post._id !== postId));
       toast.success("Cleared all reports from the post");

@@ -9,9 +9,10 @@ import { postEndpoints } from '../../../constraints/endpoints/postEndpoints';
 import Slider from 'react-slick';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
 
 const UserPost = () => {
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState<Posts[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [sameUser, setSameUser] = useState<boolean>(true);

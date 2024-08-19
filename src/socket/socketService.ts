@@ -9,11 +9,9 @@ class SocketService {
     this.socket = io(SOCKET_URL, { autoConnect: false });
 
     this.socket.on('connect', () => {
-      console.log('Socket connected:', this.socket.id);
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
       if (reason === 'io server disconnect') {
         this.socket.connect();
       }
@@ -62,11 +60,8 @@ class SocketService {
 
   emitLikeNotification(data: { userId: string, postId: string, likedBy: string }) {
     if (this.socket.connected) {
-      console.log('Emitting like notification:', data);
-      this.socket.emit('likeNotification', data, (response) => {
+      this.socket.emit('likeNotification', data, (response:any) => {
         if (response.success) {
-          console.log('Like notification processed successfully');
-        } else {
           console.error('Error processing like notification:', response.error);
         }
       });

@@ -4,8 +4,6 @@ import { Toaster, toast } from "sonner";
 import Sidebar from "./SideBar";
 import { adminAxios } from "../../../constraints/axios/adminAxios";
 import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { LinearProgress, Stack } from "@mui/material";
@@ -65,9 +63,6 @@ const UserManagement: React.FC = () => {
     try {
       const response = await adminAxios.put(
         `${adminEndpoints.blockUser}/${userId}`);
-
-      console.log("response of block user", response);
-
       if (response.data.success === true) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
@@ -88,9 +83,6 @@ const UserManagement: React.FC = () => {
       const response = await adminAxios.get(
         `${adminEndpoints.searchUser}?search=${searchQuery}`);
       setLoading(false);
-
-      console.log("searched response", response);
-
       if (response.data.success) {
         const searchedUsers = response.data.users;
         const filteredUsers = filterUsers(searchedUsers, statusFilter);

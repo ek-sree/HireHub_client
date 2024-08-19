@@ -38,12 +38,8 @@ const EditInfo: FC<EditInfoModalProps> = ({isOpen, onClose, onSuccess, phoneValu
         if (!/^\d{10}$/.test(phone)) {
             setError("Enter a valid phone number.");
             return;
-          }
-          console.log("getetttet",data);
-          
-          const response = await userAxios.post(userEndpoints.userInfoEdit, {data})
-          console.log("response edit user info",response);
-          
+          }          
+          const response = await userAxios.post(userEndpoints.userInfoEdit, {data})          
           if(response.data.success){
             onSuccess(response.data.data);
             onClose();

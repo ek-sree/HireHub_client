@@ -58,7 +58,6 @@ const ViewApplications = () => {
         throw new Error("Job id is missing");
       }
       const response = await jobpostAxios.post(`${jobpostEndpoints.awaitApplication}?jobId=${jobId}&applicationId=${id}`);
-      console.log("response awaittt",response.data);
       if(response.data.success){
         toast.success("Application moved to await")
         setFetchTrigger(!fetchTrigger);

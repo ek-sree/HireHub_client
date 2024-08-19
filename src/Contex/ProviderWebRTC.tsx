@@ -29,12 +29,9 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (currentUser) {
       socket.emit('userConnected', currentUser);
-      console.log(`User ${currentUser} connected`);
-
       return () => {
         socket.emit('userDisconnected', currentUser);
         socket.disconnect();
-        console.log(`User ${currentUser} disconnected`);
       };
     }
   }, [currentUser]);
@@ -93,7 +90,6 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
       const pc = createPeerConnection();
       isInitiator.current = false;
-      console.log("Setting isInitiator to false for user:", currentUser);
   
       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
   
@@ -131,7 +127,6 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Emit callEnded signal
       socket.emit('callEnded', guestId);
 
-      // Update state
       setInCall(false);
       isInitiator.current = false;
       setGuestId('');
@@ -166,8 +161,7 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
 
     const handleCallEndedSignal = () => {
-      console.log('Received callEndedSignal');
-      if (inCall) { // Prevent triggering if already not in call
+      if (inCall) {
         endCall();
       }
     };

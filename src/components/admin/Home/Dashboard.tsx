@@ -116,7 +116,7 @@ function Dashboard() {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'top' as const, 
       },
       title: {
         display: true,
@@ -124,6 +124,7 @@ function Dashboard() {
       },
     },
   };
+  
 
   return (
     <div className="pl-72">

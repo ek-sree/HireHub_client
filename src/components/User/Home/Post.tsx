@@ -12,7 +12,7 @@ import CommentModal, { Comment } from "./CommentModal";
 import { postAxios } from "../../../constraints/axios/postAxios";
 import { postEndpoints } from "../../../constraints/endpoints/postEndpoints";
 import DeletePostModal from './DeletePostModal';
-import { Posts } from '../../../interface/JobInterfaces/IJobInterface';
+import { Posts  } from '../../../interface/JobInterfaces/IJobInterface';
 import { toast, Toaster } from 'sonner';
 import ReportPostModal from './ReportPostModal';
 import EditPostModal from './EditPostModal';
@@ -58,8 +58,6 @@ const Post = () => {
     setLoading(true);
     try {
       const response = await postAxios.get(`${postEndpoints.getPosts}?page=${page}`);
-      console.log("response posts", response.data);
-
       if (response.data.success) {
         const newPosts = response.data.data.map((post: Posts) => ({
           ...post,
@@ -94,23 +92,23 @@ const Post = () => {
     try {
       const response = await postAxios.post(
         `${postEndpoints.likePost}?postId=${postId}&UserId=${userId}&postUser=${postUser}`
-      );
-  
-      console.log("Like response:", response.data);
-  
+      );  
       if (response.data.success) {
-        const likedPostUser = response.data.data.find((post: Post) => post._id === postId)?.postUser || postUser;
-        console.log("Liked post user:", likedPostUser);
+        const likedPostUser = response.data.data.find((post: Posts) => post._id === postId)?.UserId || postUser;
   
-        setPosts(posts.map(post =>
-          post._id === postId ? { ...post, likes: [...post.likes, { UserId: userId }], isLiked: true } : post
+        setPosts(prevPosts => prevPosts.map(post =>
+          post._id === postId ? {
+            ...post,
+            likes: [...post.likes, { UserId: userId! }], 
+            isLiked: true
+          } : post
         ));
         if(likedPostUser !== userId){
           socketService.connect();
           socketService.emitLikeNotification({
             userId: likedPostUser,
             postId: postId,
-            likedBy: userId
+            likedBy: userId!
           });
         }
   

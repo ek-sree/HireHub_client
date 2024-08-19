@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useEffect, useState } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Toaster, toast } from "sonner";
 import { RootState } from "../../../redux/store/store";
@@ -64,9 +64,7 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
         email,
         phone,
         resumes:resumeIds
-      }
-      console.log("sending apply job ",resumes);
-      
+      }      
       const response = await jobpostAxios.post(`${jobpostEndpoints.applyJob}?jobId=${jobId}`, data);
       if (response.data.success) {
         onSuccess();
@@ -80,8 +78,6 @@ const JobApplyModal: FC<JobApplyModalProps> = ({ isOpen, onClose, onSuccess, job
   async function cvApply() {
     try {
       const response = await userAxios.get(`${userEndpoints.getCv}?email=${reduxEmail}`);
-      console.log("response api", response.data);
-
       if (response.data.success) {
         const fetchedCVItems = response.data.cv.map((item: { url: string; filename: string }, index: number) => ({
           id: index + 1,

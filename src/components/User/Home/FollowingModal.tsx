@@ -31,7 +31,6 @@ const FollowingModal: FC<FollowingProps> = ({ onClose, isOpen, id, onSuccess }) 
   async function getFollowers() {
     try {
       const response = await userAxios.get(`${userEndpoints.followingList}?userId=${id}`);
-      console.log("response of followers list", response.data);
       if (response.data.success) {
         setFollowings(response.data.data);
       }
@@ -44,8 +43,6 @@ const FollowingModal: FC<FollowingProps> = ({ onClose, isOpen, id, onSuccess }) 
   const handleFollow = async (id: string) => {
     try {
       const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id });
-      console.log("follow data", response.data);
-
       if (response.data.success) {
         setFollowings(prevFollowings =>
           prevFollowings.map(following =>
@@ -65,8 +62,6 @@ const FollowingModal: FC<FollowingProps> = ({ onClose, isOpen, id, onSuccess }) 
   const handleUnFollow = async (id: string) => {
     try {
       const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`);
-      console.log("unfollow res", response.data);
-
       if (response.data.success) {
         setFollowings(prevFollowings =>
           prevFollowings.map(following =>

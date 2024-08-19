@@ -22,8 +22,6 @@ const ShortListedCandidates = () => {
     try {
       setLoading(true);
       const response = await jobpostAxios.get(`${jobpostEndpoints.viewAcceptApplications}?recruiterId=${recruiterId}`);
-      console.log("All user details candidates", response.data);
-
       if (response.data.success && response.data.candidates) {
         setCandidates(response.data.candidates);
         response.data.candidates.forEach(async (candidate: Candidate) => {
@@ -43,8 +41,6 @@ const ShortListedCandidates = () => {
   const showImage = async (userId: string) => {
     try {
       const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`);
-      console.log("is img got?>", response.data);
-
       const imageUrl = response.data.success ? response.data.data?.imageUrl || UserImg : UserImg;
       setProfileImages(prev => ({ ...prev, [userId]: imageUrl }));
     } catch (error) {
@@ -57,9 +53,6 @@ const ShortListedCandidates = () => {
     window.open(resumeUrl, '_blank');
   };
 
-  // const handleSendMessage = (candidateId: string) => {
-  //   console.log(`Send message to candidate with id: ${candidateId}`);
-  // };
 
   useEffect(() => {
     fetchCandidates();

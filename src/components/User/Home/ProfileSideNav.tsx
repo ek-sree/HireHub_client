@@ -6,6 +6,12 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 
+interface NavItemProps {
+  to: string;
+  icon: JSX.Element;
+  label: string;
+}
+
 const ProfileSideNav = () => {
   const [sameUser, setSameUser] = useState(true);
 
@@ -28,7 +34,7 @@ const ProfileSideNav = () => {
     { to: `/userprofile/user-post/${sentId}`, icon: <WorkRoundedIcon />, label: 'Posts' },
   ];
 
-  const NavItem = ({ to, icon, label }) => (
+  const NavItem = ({ to, icon, label }: NavItemProps) => (
     <NavLink
       to={to}
       className={({ isActive }) =>

@@ -29,8 +29,6 @@ const CoverPhotoModal: FC<coverPhotoModalProps> = ({isOpen, onClose, onSuccess, 
         setImage(e.target.files[0]);
     }
   }
-console.log("imgg",image);
-
 
   const handleUploadImage=async()=>{
     if(!image){
@@ -39,13 +37,11 @@ console.log("imgg",image);
     }
     const formdata = new FormData();
     formdata.append("image",image);
-    console.log("FormData content:", formdata.get("image")); 
     const response = await userAxios.post(`${userEndpoints.addCoverPhoto}?email=${email}`,formdata, {
         headers:{
             "Content-Type":"multipart/form-data"
         }
     })
-
     if(response.data.success){
         onSuccess(response.data.data.imageUrl);
         onClose()

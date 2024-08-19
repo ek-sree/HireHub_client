@@ -26,9 +26,7 @@ const ReportPostModal: FC<ReportPostProps> = ({ isOpen, onClose, postId }) => {
         if (!selectedReason) {
             toast.error("Please select a reason before sending.");
             return;
-          }
-          console.log("rason:-" ,selectedReason);
-          
+          }          
         const respones = await postAxios.post(`${postEndpoints.reportPost}?UserId=${UserId}&postId=${postId}`, { reason: selectedReason })
         if(respones.data.success){
             toast.success("reported successfully")

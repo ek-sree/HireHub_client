@@ -11,8 +11,10 @@ import { format } from 'date-fns';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 export interface Comment {
+  id: string;
+  isEdited: boolean;
   _id: string;
-  UserId:string;
+  UserId: string;
   user: {
     avatar: {
       imageUrl: string;
@@ -44,8 +46,6 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
   async function fetchComments() {
     try {
       const response = await postAxios.get(`${postEndpoints.fetchComment}?postId=${postId}`);
-  
-  
       if (response.data.success) {
         setComments(response.data.data.map((comment: Comment, index: number) => ({
           ...comment,
@@ -72,10 +72,7 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
             'Content-Type': 'application/json'
           }
         }
-      );
-  
-      console.log("send comment data", response.data);
-  
+      );  
       if (response.data.success) {
         toast.success("You commented on this post");
         const newCommentData = {
@@ -93,7 +90,6 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
   };
 
   const handleEditComment=(commentId:string, content:string)=>{
-    console.log("toogle edit");
       setEditToogle(!editToogle);
       setEditCommentId(commentId);
       setEditCommentContent(content);
@@ -112,9 +108,7 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
         headers: {
           'Content-Type':"application/json"
         }
-      });
-      console.log("edit comment data",response.data);
-      
+      });      
       if (response.data.success) {
         const updatedComments = comments.map(comment =>
           comment._id === editCommentId ? { ...comment, content: editCommentContent } : comment
@@ -136,7 +130,6 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
   const onDelete = async (commentId: string) => {
     try {      
       const response = await postAxios.delete(`${postEndpoints.deleteComment}?commentId=${commentId}&postId=${postId}`);
-
       if (response.data.success) {
         toast.success("Comment deleted successfully");
         setComments(comments.filter(comment => comment._id !== commentId));
@@ -161,10 +154,10 @@ const CommentModal: FC<CommentModalProps> = ({ isOpen, onClose, postId }) => {
             <p className='flex items-center justify-center'>No comments added yet</p>
           ) : (
             comments.map((comment, index) => (
-              <div key={`${comment.id}-${index}`} className="comment flex items-start mb-2">
+              <div key={`${comment._id}-${index}`} className="comment flex items-start mb-2">
                 <Avatar src={comment.user.avatar.imageUrl} className="mr-2" />
                 <div className="flex-1">
-                  <div className="font-semibold">{comment.user.name} <span className="text-sm text-gray-500">{format(new Date(comment.createdAt), 'Pp')} <span className='text-slate-400 italic font-thin pl-3 underline'>{comment.isEdited==true? "edited": ""}</span></span></div>
+                  <div className="font-semibold">{comment.user.name} <span className="text-sm text-gray-500">{format(new Date(comment.createdAt), 'Pp')} <span className='text-slate-400 italic font-thin pl-3 underline'>{comment?.isEdited==true? "edited": ""}</span></span></div>
                   {editCommentId === comment._id && editToogle ? (
                     <div className='flex flex-grow'>
                       <TextField

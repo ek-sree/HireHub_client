@@ -10,36 +10,36 @@ export interface Message {
     chatId: string;
     createdAt: string;
     updatedAt: string;
+    recordDuration?: number;
     __v: number;
   }
   
-
+  export interface LastMessage {
+    chatId: string;
+    content: string;
+    createdAt: string;
+    receiverId: string;  
+    senderId: string;
+    updatedAt: string;
+    _id: string;
+  }
   export interface User {
+    isOnline: any;
     id: string;
     name: string;
-    isOnline:boolean;
     avatar: {
       imageUrl: string;
       originalname: string;
     };
   }
+  
 
-
-export  interface ChatData {
+  export interface ChatData {
     _id: string;
-    lastMessage?: {
-      chatId: string;
-      content: string;
-      createdAt: string;
-      receiverId: string;
-      senderId: string;
-      updatedAt: string;
-      _id: string;
-    };
+    lastMessage?: LastMessage | null; 
     participants: string[];
     users: User[];
   }
-
   export interface MessageAreaProps {
     chat: ChatData;
     onBack?: () => void;

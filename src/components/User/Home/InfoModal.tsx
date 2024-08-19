@@ -43,9 +43,7 @@ useEffect(()=>{
     async function userInfo(){
         const sentId = sameUser ? userId : id;
      try {
-        const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${sentId}`)
-        console.log("info api",response);
-        
+        const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${sentId}`)        
         if(response.data.success){
             setEmail(response.data.info.email);
             setPhone(response.data.info.phone);

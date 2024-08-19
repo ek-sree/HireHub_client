@@ -4,8 +4,6 @@ import Navbar from "./Navbar";
 import Sidebar from "./SideBar";
 import { adminAxios } from "../../../constraints/axios/adminAxios";
 import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useDebonceSearch } from "../../../customHook/searchHook";
@@ -35,8 +33,6 @@ const RecruiterManagement = () => {
     try {
       const response = await adminAxios.get(
         `${adminEndpoints.getrecruiters}?page=${page}&limit=2`);
-      console.log("Response from API:", response);
-
       if (response.data.success === false) {
         toast.error(response.data.message);
       } else {
@@ -54,7 +50,6 @@ const RecruiterManagement = () => {
     try {
       const response = await adminAxios.put(
         `${adminEndpoints.blockRecruiter}/${recruitersId}`);
-      console.log("response of recruiter blocked data", response);
       if (response.data.success === true) {
         setRecruiters((prevRecruiter) =>
           prevRecruiter.map((recruiter) =>
@@ -80,7 +75,6 @@ const RecruiterManagement = () => {
       const response = await adminAxios.get(
         `${adminEndpoints.searchRecruiter}?search=${debouncedValue}`);
       setLoading(false);
-      console.log("api res search recr", response);
       if (response.data.success) {
         setRecruiters(response.data.recruiter);
         return;

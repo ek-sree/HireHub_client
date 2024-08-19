@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-// import googleLogo from '../../../assets/images/google.png';
 import HireHub from '../../../assets/images/HireHub.png';
 import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup'; 
@@ -42,18 +41,13 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
       const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
       const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;
   
-      const response = await axiosInstance.post(endpoint.login, values);
-      console.log("Success logging", response);
-  console.log("LOgin dataaaa",response.data);
-  
+      const response = await axiosInstance.post(endpoint.login, values);  
       if (response.data.success && response.data.isRecruiter === false) {
-        console.log("Dispatching user login");
         socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
         localStorage.setItem('userToken', response.data.token);
         navigate('/home');
       } else if (response.data.success && response.data.isRecruiter === true) {
-        console.log("Dispatching recruiter login");
         dispatch(recruiterlogin({token:response.data.token,RecruiterData:response.data.recruiter_data}));
         localStorage.setItem('recruiterToken',response.data.token);
         navigate('/recruiter/home');
@@ -70,11 +64,8 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
 
   const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
     const { credential } = credentialResponse;
-    console.log('Google Credential', credential);
     try {
       const response = await userAxios.post("/google-login", { credential });
-      console.log('Google Login Response', response);
-
       if (response.data.success) {
         socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
@@ -103,7 +94,7 @@ return (
     <div className="flex justify-center items-center">
       <div className="mb-16 shadow-xl rounded-lg w-full max-w-sm p-4 ">
         <div className="flex items-center justify-center mt-2 text-center text-xl ">
-          Welcome.. Login as a&nbsp;<b><u>{alignment === 'recruiter' ? 'Recruiter' : 'User'}</u></b>
+          Welcome..man Login as a&nbsp;<b><u>{alignment === 'recruiter' ? 'Recruiter' : 'User'}</u></b>
         </div>
         <div className="pt-2 flex justify-center">
           <ToggleButtonGroup

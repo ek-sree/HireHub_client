@@ -38,10 +38,8 @@ const Notification: React.FC = () => {
   const dispatch = useDispatch();
 
   async function getAllNotification() {
-    console.log("Notification api call");
     try {
       const response = await postAxios.get(`${postEndpoints.notification}?userId=${userId}`);
-      console.log("Notification data api", response.data);
       if (response.data.success) {
         setNotifications(response.data.data);
       }else{
@@ -60,7 +58,7 @@ const Notification: React.FC = () => {
 
   useEffect(() => {
     socketService.connect();
-    socketService.joinRoom(userId); 
+    socketService.joinRoom(userId||''); 
     getAllNotification();
 
     socketService.newNotification((newNotification: NotificationItem) => {

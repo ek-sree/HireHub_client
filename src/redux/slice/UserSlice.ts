@@ -25,7 +25,6 @@ const userAuthSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action: PayloadAction<{token:string, UserData:UserData}>) => {
-            console.log("Redux User Slice: ", action.payload);
             state.isAuthenticated = true;
             state.token=action.payload.token;
             state.userData = action.payload.UserData;

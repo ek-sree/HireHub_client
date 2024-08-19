@@ -31,7 +31,6 @@ const ProfileModal: FC<ProfileEditModalProps> = ({ isOpen, onClose, onSuccess, i
     formData.append('image', image);
     const response = await userAxios.post(`${userEndpoints.addProfilePhoto}?email=${email}`, formData)
     if (response.data.success) {
-      console.log("success", response.data);
       onClose();
       onSuccess(response.data.data.imageUrl);
     }

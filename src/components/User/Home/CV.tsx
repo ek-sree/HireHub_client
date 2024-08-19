@@ -39,8 +39,6 @@ const Cv = () => {
     async function cvLoad() {
         try {
             const response = await userAxios.get(`${userEndpoints.getCv}?email=${email}`);
-            console.log("response api cv", response.data);
-
             if (response.data.success) {
                 const fetchedCVItems = response.data.cv.map((item: { url: string, filename: string }) => ({
                     title: item.filename || 'Unknown CV',

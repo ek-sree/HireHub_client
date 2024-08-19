@@ -53,7 +53,6 @@ const sentId = sameUser ? userId : id
     async function showImage() {
       try {
           const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${sentId}`);
-
           if (response.data.success && response.data.data && response.data.data.imageUrl) {
               setProfileImg(response.data.data.imageUrl);
           } else {
@@ -66,9 +65,7 @@ const sentId = sameUser ? userId : id
   }
 
   async function showCoverImg(){
-    try {
-      console.log("Sending userId:", sentId);
-      
+    try {      
         const response = await userAxios.get(`${userEndpoints.getCoverImage}?userId=${sentId}`)
         if(response.data.success){
             setCoverImg(response.data.data.imageUrl);

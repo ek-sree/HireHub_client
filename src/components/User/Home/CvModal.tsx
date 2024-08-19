@@ -27,7 +27,6 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
         };
       }, []);
 
-    const token = useSelector((store: RootState) => store.UserAuth.token);
     const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +41,6 @@ const CvModal: FC<CvModalProps> = ({ isOpen, onClose, onSuccess }) => {
         if (selectedFile) {
             const formData = new FormData();
             formData.set("cv", selectedFile); 
-
             try {
                 const response = await userAxios.post(`${userEndpoints.cvUpload}?email=${email}`, formData, {
                     headers: {

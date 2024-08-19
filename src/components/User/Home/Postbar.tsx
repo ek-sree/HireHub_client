@@ -73,8 +73,6 @@ const Postbar = () => {
       });
 
       const response = await postAxios.post(`${postEndpoints.addPost}?userId=${userId}`, formData);
-      console.log("api data",response.data);
-
       if (response.data.success) {
         toast.success("Post added successfully");
         setText('');

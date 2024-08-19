@@ -3,8 +3,6 @@ import { Toaster, toast } from 'sonner';
 import { Job } from '../../../interface/JobInterfaces/IJobInterface';
 import { jobpostAxios } from '../../../constraints/axios/jobpostAxios';
 import { jobpostEndpoints } from '../../../constraints/endpoints/jobpost.Endpoints';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/store/store';
 
 interface JobpostEditModalProps {
   isOpen: boolean;

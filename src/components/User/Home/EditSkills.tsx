@@ -51,9 +51,7 @@ const EditSkills: FC<EditSkillsModalProps> = ({isOpen, onClose, skillsValue, onS
     const handleSubmit = async(e:FormEvent)=>{
         e.preventDefault()
         try {            
-            const response = await userAxios.post(`${userEndpoints.userSkillsEdit}?email=${email}`,skills)
-            console.log("api resp from edit", response.data);
-            
+            const response = await userAxios.post(`${userEndpoints.userSkillsEdit}?email=${email}`,skills)            
             if(response.data.success){
                 onSuccess(response.data.data)
                 onClose()

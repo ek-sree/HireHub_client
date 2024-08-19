@@ -14,6 +14,11 @@ import UserInfo from './UserInfo';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+interface Post {
+  created_at: string;
+  description: string;
+  imageUrl: string[];
+}
 
 const UserProfile = () => {
   const [title, setTitle] = useState('');
@@ -21,15 +26,13 @@ const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [profileImg, setProfileImg] = useState<string>(UserImg);
   const [coverImg, setCoverImg] = useState<string>(HireHub);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [userId, setUserId] = useState('');
   const token = useSelector((store: RootState) => store.RecruiterAuth.token);
 
   const { id } = useParams<{ id?: string }>();
-
-
 
   async function userDetails() {
     try {
@@ -53,8 +56,6 @@ const UserProfile = () => {
   async function getUserPosts() {
     try {
       const response = await postAxios.get(`${postEndpoints.userPosts}?userId=${id}`);
-      console.log("api data post of user", response.data);
-
       if (response.data.success) {
         setPosts(response.data.data);
       }
@@ -104,26 +105,6 @@ const UserProfile = () => {
       console.error("Error fetching user skills:", error);
     }
   }
-
-
-
-//   const handleSendMessage = async () => {
-//     try {
-//         const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${recruiterId}&recieverId=${id}`);
-// console.log("dataaaaaaa212",response.data);
-
-//         if (response.data.success) {
-//             const chatId = response.data.data._id;
-//             console.log("Chat ID from server:", chatId);
-//             navigate(`/recruiter/message/?chatId=${chatId}&recieverId=${id}`);
-//         }
-//     } catch (error) {
-//         console.log("Error occurred while navigating message area", error);
-//     }
-// };
-
-
-
 
   const toggleShowAllSkills = () => {
     setShowAllSkills(prevShowSkills => !prevShowSkills);
@@ -179,12 +160,9 @@ const UserProfile = () => {
           <h1 className="text-2xl font-bold">{name}</h1>
           <p className="text-gray-600">{title}</p>
         </div>
-        <div onClick={() => handleInfoModal(id)} className="text-blue-600 italic mb-3 cursor-pointer">
+        <div onClick={() => id && handleInfoModal(id)} className="text-blue-600 italic mb-3 cursor-pointer">
           more details *
         </div>
-        {/* <div onClick={handleSendMessage} className="border-2 border-blue-500 w-1/4 flex text-center justify-center py-2 rounded-lg hover:bg-blue-100 font-semibold text-lg cursor-pointer shadow-md transition duration-300">
-          Message
-        </div> */}
 
         <div className="max-w-2xl w-full mx-auto mb-8 bg-white mt-10 p-4 rounded-lg shadow-lg">
           <div className="text-center font-semibold font-sans mb-4">User Skills</div>
@@ -210,18 +188,12 @@ const UserProfile = () => {
 
         <div className="max-w-2xl w-full mx-auto mt-10">
           {posts.map((post, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-lg p-4 mb-10">
-              <div className="flex items-center mb-4">
-                <div className="ml-4">
-                  <div className="text-gray-500 text-sm">{new Date(post.created_at).toLocaleString()}</div>
-                </div>
-              </div>
-              <div className="mb-4">
-                <p>{post.description}</p>
-              </div>
-              <div className="post-images">
+            <div key={index} className="bg-white rounded-lg shadow-lg p-6 mb-4">
+              <p className="text-sm text-gray-600">{new Date(post.created_at).toLocaleString()}</p>
+              <p className="mt-4 text-lg font-semibold">{post.description}</p>
+              <div className="mt-4">
                 <Slider {...settings}>
-                  {post.imageUrl.map((image, imgIndex) => (
+                  {post.imageUrl.map((image: string, imgIndex: number) => (
                     <div key={imgIndex}>
                       <img src={image} alt={`Post image ${imgIndex + 1}`} />
                     </div>
@@ -231,17 +203,17 @@ const UserProfile = () => {
             </div>
           ))}
         </div>
-      </div>
 
-      {isModalOpen && (
-        <UserInfo
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          userId={userId}
-        />
-      )}
+        {isModalOpen && (
+          <UserInfo
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            userId={userId}
+          />
+        )}
+      </div>
     </div>
   );
-};
+}
 
 export default UserProfile;

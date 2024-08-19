@@ -22,7 +22,6 @@ const adminAuthSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action: PayloadAction<{token:string, adminData:AdminData}>) => {
-            console.log("Redux Admin Slice: ", action.payload);
             state.isAuthenticated = true;
             state.token = action.payload.token;
             state.adminData = action.payload.adminData;

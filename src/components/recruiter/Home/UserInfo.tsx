@@ -24,9 +24,7 @@ const UserInfo: FC<InfoModalInterface> = ({ isOpen, onClose, userId }) => {
 
   async function fetchUserInfo() {
     try {        
-      const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${userId}`);
-      console.log("data",response.data);
-      
+      const response = await userAxios.get(`${userEndpoints.userInfo}?userId=${userId}`);      
       if (response.data.success) {
         setEmail(response.data.info.email);
         setPhone(response.data.info.phone);

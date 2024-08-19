@@ -67,9 +67,6 @@ const JobsList = () => {
   const getJobs = async () => {
     try {
       const response = await jobpostAxios.get(`${jobpostEndpoints.getjobs}?recruiterId=${recruiterId}`);
-
-      console.log("list data",response.data);
-
       const jobsData: Job[] = response.data.job;
       const applicationCounts = jobsData.map(job =>
         job.applications?.filter(application => application.status === "pending").length || 0

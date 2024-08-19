@@ -16,17 +16,12 @@ const TitleModal: FC<TitleModalProps> = ({ isOpen, onClose, titleData }) => {
   const [error, setError] = useState('');
   const maxLength = 70;
 
-  const token = useSelector((store: RootState) => store.UserAuth.token);
   const email = useSelector((store: RootState) => store.UserAuth.userData?.email);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault(); 
-    console.log("gonna send", token, email);
-
     try {
-      const response = await userAxios.post(`${userEndpoints.addTitle}?email=${email}`, { title });
-      console.log("spi data", response);
-      
+      const response = await userAxios.post(`${userEndpoints.addTitle}?email=${email}`, { title });      
       if (response.data.success) {
         titleData(response.data.result);
         onClose();

@@ -27,7 +27,6 @@ const recruiterAuthSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action: PayloadAction<{token:string,RecruiterData:RecruiterData}>) => {
-            console.log("Redux recruiter Slice: ", action.payload);
             state.isAuthenticated = true;
             state.token = action.payload.token;
             state.recruiterData = action.payload.RecruiterData;

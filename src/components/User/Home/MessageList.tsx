@@ -8,33 +8,34 @@ import { toast } from "sonner";
 import { messageAxios } from "../../../constraints/axios/messageAxios";
 import socketService from "../../../socket/socketService";
 import { messageEndpoints } from "../../../constraints/endpoints/messageEndpoints";
+import { ChatData } from "../../../interface/Message/IMessage";
 
-interface User {
-  id: string;
-  name: string;
-  avatar: {
-    imageUrl: string;
-    originalname: string;
-  };
-  isOnline?: boolean;
-}
+// interface User {
+//   id: string;
+//   name: string;
+//   avatar: {
+//     imageUrl: string;
+//     originalname: string;
+//   };
+//   isOnline?: boolean;
+// }
 
-interface LastMessage {
-  chatId: string;
-  content: string;
-  createdAt: string;
-  recieverId: string;
-  senderId: string;
-  updatedAt: string;
-  _id: string;
-}
+// interface LastMessage {
+//   chatId: string;
+//   content: string;
+//   createdAt: string;
+//   recieverId: string;
+//   senderId: string;
+//   updatedAt: string;
+//   _id: string;
+// }
 
-interface ChatData {
-  _id: string;
-  lastMessage: LastMessage;
-  participants: string[];
-  users: User[];
-}
+// interface ChatData {
+//   _id: string;
+//   lastMessage: LastMessage;
+//   participants: string[];
+//   users: User[];
+// }
 
 interface MessageListProps {
   onChatSelect: (chat: ChatData) => void;
@@ -55,7 +56,6 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
       );
 
       if (response.data.success) {
-        console.log("Data got loadConversation", response.data);
         const sortedChats = response.data.data.sort(
           (a: ChatData, b: ChatData) =>
             new Date(b.lastMessage?.createdAt || 0).getTime() -
@@ -115,7 +115,7 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
         );
       });
 
-      if (message.recieverId === userId) {
+      if (message.receiverId === userId) {
         setNewMessageChatIds((prev) => new Set(prev).add(message.chatId));
       }
     });
@@ -135,7 +135,7 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
   };
 
   const isUnread = (chat: ChatData) => {
-    return chat.lastMessage && chat.lastMessage.recieverId === userId && newMessageChatIds.has(chat._id);
+    return chat.lastMessage && chat.lastMessage.receiverId === userId && newMessageChatIds.has(chat._id);
   };
 
   return (

@@ -62,8 +62,6 @@ const UserProfileDetails = () => {
     const handleFollow = async () => {
         try {
             const response = await userAxios.post(`${userEndpoints.follow}?userId=${userId}`, { id });
-            console.log("follow data", response.data);
-
             if (response.data.success) {
                 setIsFollowing(!isFollowing);
                 setFollowersCount((prevCount) => (prevCount + 1));
@@ -78,8 +76,6 @@ const UserProfileDetails = () => {
     const handleUnFollow = async () => {
         try {
             const response = await userAxios.post(`${userEndpoints.unfollow}?userId=${userId}&id=${id}`);
-            console.log("unfollow res", response.data);
-
             if (response.data.success) {
                 setIsFollowing(!isFollowing);
                 setFollowersCount((prevCount) => prevCount - 1);
@@ -92,8 +88,6 @@ const UserProfileDetails = () => {
     const handleSendMessage = async () => {
         try {
             const response = await messageAxios.post(`${messageEndpoints.createChatId}?userId=${userId}&recieverId=${id}`);
-console.log("message button click",response.data);
-
             if (response.data.success) {
                 const chatId = response.data.data._id;
                 console.log("Chat ID from server:", chatId);
@@ -104,7 +98,7 @@ console.log("message button click",response.data);
         }
     };
 
-    const sentId = sameUser ? userId : id;
+    const sentId = sameUser ? userId : (id || '');
     const userDetails = async () => {
         if (!sentId) return;
     
@@ -164,8 +158,8 @@ console.log("message button click",response.data);
                 )}
             </div>
             <div className="flex items-center gap-4 mb-4">
-                <span onClick={()=>handleFollowerOpen(sentId)} className="font-semibold text-lg hover:text-slate-600 cursor-pointer hover:font-normal">{followersCount} Followers</span>
-                <span onClick={()=>handleFollowingOpen(sentId)} className="font-semibold text-lg hover:text-slate-600 cursor-pointer hover:font-normal">{followingCount} Following</span>
+                <span onClick={()=>handleFollowerOpen(sentId || '')} className="font-semibold text-lg hover:text-slate-600 cursor-pointer hover:font-normal">{followersCount} Followers</span>
+                <span onClick={()=>handleFollowingOpen(sentId || '')} className="font-semibold text-lg hover:text-slate-600 cursor-pointer hover:font-normal">{followingCount} Following</span>
             </div>
             {!sameUser && (
                 <div className="flex w-full gap-2">

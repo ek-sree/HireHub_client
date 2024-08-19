@@ -1,3 +1,5 @@
+import { Comment } from "../../components/User/Home/CommentModal";
+
 export interface Job {
   _id: string;
   position: string;
@@ -16,7 +18,7 @@ export interface Job {
 
 
 export interface Candidate {
-  id: string;
+  _id: string;
   userId: string;
   name: string;
   profilePhoto: string;
@@ -41,4 +43,5 @@ export interface Posts {
   likes: { UserId: string }[]; 
   comments: Comment[]; 
   isLiked: boolean; 
+  imagesLoaded?: boolean;
 }

@@ -20,12 +20,8 @@ const RecruiterVerified = () => {
     const token = useSelector((state: RootState) => state.AdminAuth.token);
 
     const getVerifiedRecruiter = useCallback(async () => {
-        console.log("call for verified");
-
         try {
             const response = await adminAxios.get(adminEndpoints.getUnVerifiedRecruiter);
-            console.log("Response from API:", response);
-
             if (response.data.success === false) {
                 toast.error(response.data.message);
             } else {
@@ -40,7 +36,6 @@ const RecruiterVerified = () => {
     const isVerified = async (recruiterId: string) => {
         try {
             const response = await adminAxios.put(`${adminEndpoints.verifiRecruiter}/${recruiterId}`);
-            console.log("verified recruiter", response);
             if (response.data.success) {
                 toast.success("Recruiter verified successfully");
                 setVerificationChange(!verificationChange);

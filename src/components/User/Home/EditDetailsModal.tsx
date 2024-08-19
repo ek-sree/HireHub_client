@@ -39,9 +39,7 @@ const data = {
         setError("name must be needed");
         return
       }
-      console.log("gonna sent",data, email);
       const response = await userAxios.post(`${userEndpoints.editDetails}?email=${email}`, {data})
-      console.log("api response", response);
       if(response.data.success){
         onSuccess(response.data.details)
         onClose()

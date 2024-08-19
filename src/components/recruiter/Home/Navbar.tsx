@@ -1,6 +1,4 @@
-import { Avatar } from '@mui/material';
 import HireHubLogo from '../../../assets/images/HireHub.png';
-import notificationLogo from '../../../assets/images/notificationLogo.jpg';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/slice/RecruiterSlice';

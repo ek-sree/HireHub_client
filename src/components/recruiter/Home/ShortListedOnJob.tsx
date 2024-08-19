@@ -29,17 +29,13 @@ const ShortListedOnJob = () => {
     const {jobId} = useParams();
 
     async function fetchShortlisted(){
-        try {
-            console.log("jobiddd",jobId);
-            
+        try {            
             setLoading(true);
             if(!jobId){
                 toast.error("Error missing some crediential login and try again later")
                 throw new Error("Error job id is missing");
             }
-            const response = await jobpostAxios.get(`${jobpostEndpoints.viewShortlistedApplication}?jobId=${jobId}`)
-            console.log("api data shortlisted",response.data);
-            
+            const response = await jobpostAxios.get(`${jobpostEndpoints.viewShortlistedApplication}?jobId=${jobId}`)            
             if(response.data.success){
                 setCandidates(response.data.Candidates);
                 response.data.Candidates.forEach(async (candidate: Candidate) => {
@@ -59,9 +55,7 @@ const ShortListedOnJob = () => {
 
     const showImage = async (userId: string) => {
       try {
-        const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`);
-        console.log("is img got?>", response.data);
-  
+        const response = await userAxios.get(`${userEndpoints.getProfileImages}?userId=${userId}`);  
         const imageUrl = response.data.success ? response.data.data?.imageUrl || UserImg : UserImg;
         setProfileImages(prev => ({ ...prev, [userId]: imageUrl }));
       } catch (error) {
@@ -69,9 +63,6 @@ const ShortListedOnJob = () => {
         setProfileImages(prev => ({ ...prev, [userId]: UserImg }));
       }
     };
-
-    // const handleSendMessage = (id:string)=>{
-    // }
 
     const handleViewCV=(resumeUrl:string)=>{
       window.open(resumeUrl, '_blank');
