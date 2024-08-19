@@ -108,7 +108,7 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
   };
 
   const isUnread = (chat: ChatData) => {
-    return chat.lastMessage && chat.lastMessage.recieverId === userId && !chat.lastMessage.read;
+    return chat.lastMessage && chat.lastMessage.receiverId === userId && !chat.lastMessage.read;
   };
 
   return (

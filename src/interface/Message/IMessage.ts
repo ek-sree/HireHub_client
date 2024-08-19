@@ -15,6 +15,7 @@ export interface Message {
   }
   
   export interface LastMessage {
+    read: any;
     chatId: string;
     content: string;
     createdAt: string;
