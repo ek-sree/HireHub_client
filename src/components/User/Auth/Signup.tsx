@@ -108,6 +108,12 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
           <div className="flex items-center justify-center mt-2 text-center text-xl">
             Welcome.. Sign up as a&nbsp;<b>{alignment === 'recruiter' ? 'Recruiter' : 'User'}</b>
           </div>
+
+          <div className='text-slate-500 font-light mt-2 text-center'>
+          {alignment === 'recruiter' && (
+            <p>OTP will be sent to the company email, so make sure it is correct.</p>
+          )}
+          </div>
           <div className="pt-2 flex justify-center">
             <ToggleButtonGroup
               color="primary"

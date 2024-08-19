@@ -94,7 +94,7 @@ return (
     <div className="flex justify-center items-center">
       <div className="mb-16 shadow-xl rounded-lg w-full max-w-sm p-4 ">
         <div className="flex items-center justify-center mt-2 text-center text-xl ">
-          Welcome..man Login as a&nbsp;<b><u>{alignment === 'recruiter' ? 'Recruiter' : 'User'}</u></b>
+          Welcome.. Login as a&nbsp;<b><u>{alignment === 'recruiter' ? 'Recruiter' : 'User'}</u></b>
         </div>
         <div className="pt-2 flex justify-center">
           <ToggleButtonGroup
