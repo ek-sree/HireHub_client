@@ -51,13 +51,12 @@ const MessageArea: React.FC<MessageAreaProps> = ({ chat, onBack }) => {
   const [recordedAudio, setRecordedAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [renderedAudio, setRenderedAudio] = useState<Blob | null>(null);
-  const [forTest, setForTest] = useState(false);
+  const [, setForTest] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
 
   const { startCall } = useWebRTC();
   
   const otherUserId = chat.users.find(user => user.id !== userId)?.id;
-console.log(forTest);
 
 
 
@@ -102,7 +101,6 @@ console.log(forTest);
         waveform?.load(audioURL);
       }
       mediaRecorder.start();
-  console.log("Started recording audio");
     }).catch(error => {
       console.log("Error recording", error);
     });
@@ -173,7 +171,6 @@ console.log(forTest);
   
       mediaRecorderRef.current.addEventListener("stop", () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
-        console.log("Audio blob created:", audioBlob);
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         setRecordedAudio(audio);

@@ -44,7 +44,6 @@ const MessagePage: React.FC = () => {
   }, []);
 
   const handleChatSelect = (chat: ChatData) => {
-    console.log('Selected chat:', chat);
     setSelectedChat(chat);
   };
 

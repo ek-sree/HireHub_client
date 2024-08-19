@@ -10,33 +10,6 @@ import socketService from "../../../socket/socketService";
 import { messageEndpoints } from "../../../constraints/endpoints/messageEndpoints";
 import { ChatData } from "../../../interface/Message/IMessage";
 
-// interface User {
-//   id: string;
-//   name: string;
-//   avatar: {
-//     imageUrl: string;
-//     originalname: string;
-//   };
-//   isOnline?: boolean;
-// }
-
-// interface LastMessage {
-//   chatId: string;
-//   content: string;
-//   createdAt: string;
-//   recieverId: string;
-//   senderId: string;
-//   updatedAt: string;
-//   _id: string;
-// }
-
-// interface ChatData {
-//   _id: string;
-//   lastMessage: LastMessage;
-//   participants: string[];
-//   users: User[];
-// }
-
 interface MessageListProps {
   onChatSelect: (chat: ChatData) => void;
 }
@@ -44,7 +17,7 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
   const [search, setSearch] = useState("");
   const [chats, setChats] = useState<ChatData[]>([]);
-  const [newMessageChatIds, setNewMessageChatIds] = useState<Set<string>>(new Set());
+  const [, setNewMessageChatIds] = useState<Set<string>>(new Set());
 
   const token = useSelector((store: RootState) => store.UserAuth.token);
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
@@ -135,7 +108,7 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
   };
 
   const isUnread = (chat: ChatData) => {
-    return chat.lastMessage && chat.lastMessage.receiverId === userId && newMessageChatIds.has(chat._id);
+    return chat.lastMessage && chat.lastMessage.recieverId === userId && !chat.lastMessage.read;
   };
 
   return (
@@ -191,6 +164,9 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
                       otherUser.isOnline ? "bg-green-500" : "bg-gray-500"
                     }`}
                   ></span>
+                  {unread && (
+                    <span className="absolute top-0 left-0 block h-2 w-2 rounded-full bg-green-500"></span>
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-center">

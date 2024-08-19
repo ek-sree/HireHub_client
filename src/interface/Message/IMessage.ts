@@ -35,6 +35,7 @@ export interface Message {
   
 
   export interface ChatData {
+    read: boolean;
     _id: string;
     lastMessage?: LastMessage | null; 
     participants: string[];
