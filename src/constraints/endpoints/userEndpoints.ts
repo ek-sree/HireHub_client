@@ -1,4 +1,4 @@
-export const API_GATEWAY_BASE_URL = 'https://hirehubbackend.online/';
+export const API_GATEWAY_BASE_URL = 'https://hirehubbackend.online';
 
 
 export const userEndpoints = {

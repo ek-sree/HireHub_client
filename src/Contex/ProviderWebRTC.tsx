@@ -3,7 +3,7 @@ import { RootState } from "../redux/store/store";
 import { useSelector } from "react-redux";
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:4000', { withCredentials: true });
+const socket = io('https://hirehubbackend.online', { withCredentials: true });
 
 interface WebRTCContextProps {
   localStream: MediaStream | null;
