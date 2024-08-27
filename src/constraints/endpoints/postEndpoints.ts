@@ -1,4 +1,4 @@
-export const API_GATEWAY_BASE_URL = 'http://localhost:4000/post';
+export const API_GATEWAY_BASE_URL = 'https://hirehubbackend.online/post';
 
 export const postEndpoints ={
     addPost: `${API_GATEWAY_BASE_URL}/addPost`,

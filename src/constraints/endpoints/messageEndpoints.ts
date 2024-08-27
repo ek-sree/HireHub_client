@@ -1,4 +1,4 @@
-export const API_GATEWAY_BASE_URL = 'http://localhost:4000/message';
+export const API_GATEWAY_BASE_URL = 'https://hirehubbackend.online/message';
 
 export const messageEndpoints ={
     getConvoData: `${API_GATEWAY_BASE_URL}/getconvodata`,
