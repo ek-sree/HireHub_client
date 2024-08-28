@@ -84,6 +84,7 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
       if (response.data.success) {
         socketService.connect();
         dispatch(userlogin({token:response.data.token, UserData:response.data.user_data}));
+        localStorage.setItem('userToken', response.data.token);
         navigate("/home");
       } else {
         toast.error("Failed to log in with Google");
@@ -210,11 +211,6 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
                     {isSubmitting ? 'Submitting...' : 'Signup'}
                   </button>
                 </div>
-                {isSubmitting && (
-                  <div className="flex justify-center">
-                    <span>Loading...</span>
-                  </div>
-                )}
                 {alignment === 'user' && (
                   <>
                     <div className="flex justify-center">

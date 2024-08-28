@@ -79,7 +79,7 @@ const UserSkills = () => {
     <div>
       <ProfileSideNav />
       <SidebarNav />
-      <div className="max-w-2xl w-full mx-auto mb-8 bg-white mt-10 p-4 rounded-lg shadow-lg">
+      <div className="max-w-2xl w-full mx-auto mb-20 bg-white mt-10 p-4 rounded-lg shadow-lg">
         <div className="text-center font-semibold font-sans mb-4">User Skills</div>
         <div className="space-y-4">
           {skills.length > 0 && sameUser && (

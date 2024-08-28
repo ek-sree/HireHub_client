@@ -20,8 +20,6 @@ import socketService from '../../../socket/socketService';
 import { incrementUnseenCount } from '../../../redux/slice/NotificationSlice';
 import Shimmer from './Shimmer';
 
-
-
 const Post = () => {
   const [posts, setPosts] = useState<Posts[]>([]);
   const [loading, setLoading] = useState(true);
@@ -226,6 +224,15 @@ const Post = () => {
         {[...Array(3)].map((_, index) => (
           <Shimmer key={index} />
         ))}
+      </div>
+    );
+  }
+
+  if (!loading && posts.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto mt-10 text-center">
+        <h2 className="text-2xl font-bold text-gray-700">No one has posted yet</h2>
+        <p className="mt-2 text-gray-500">Be the first to share something!</p>
       </div>
     );
   }

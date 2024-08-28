@@ -13,8 +13,8 @@ import { useParams } from 'react-router-dom';
 const UserProfile = () => {
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isCoverImgModal, setIsCoverImageModal] = useState(false);
-    const [profileImg, setProfileImg] = useState<string>(User);
-    const [coverImg, setCoverImg] = useState<string>(HireHub);
+    const [profileImg, setProfileImg] = useState<string>('');
+    const [coverImg, setCoverImg] = useState<string>('');
     const [sameUser, setSameUser] = useState<boolean>(true);
 
     const {id} = useParams<{id?:string}>();
@@ -96,7 +96,7 @@ const UserProfile = () => {
             <div className="relative h-32 rounded-md overflow-hidden shadow-2xl">
                 <img 
                     onClick={sameUser ? handleCoverImgOpenModal : undefined} 
-                    src={coverImg|| HireHub} 
+                    src={coverImg} 
                     alt="Cover photo" 
                     className="w-full h-full object-cover rounded-lg" 
                 />
@@ -105,7 +105,7 @@ const UserProfile = () => {
                 
                 <img
                     onClick={sameUser? handleProfileOpenModal : undefined}
-                    src={profileImg || User} 
+                    src={profileImg} 
                     className="w-full h-full rounded-full"
                 />
             </div>

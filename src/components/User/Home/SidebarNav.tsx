@@ -10,7 +10,7 @@ const SidebarNav = () => {
   const userId = useSelector((store: RootState) => store.UserAuth.userData?._id);
 
   return (
-    <div className="fixed md:top-96 md:left-0 md:w-72 md:h-auto bottom-0 left-0 right-0 md:ml-10 rounded-lg shadow-2xl md:py-6 md:px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20 flex md:flex-col justify-around md:justify-start">
+    <div className="fixed md:top-96 md:left-0 md:w-72 md:h-60 bottom-0 left-0 right-0 md:ml-10 rounded-lg shadow-shadowAll md:py-6 md:px-2 z-50 bg-white backdrop-filter backdrop-blur-3xl bg-opacity-20 flex md:flex-col justify-around md:justify-start">
       <NavLink
         to="/home"
         className={({ isActive }) =>

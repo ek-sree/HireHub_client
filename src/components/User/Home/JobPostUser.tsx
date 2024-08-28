@@ -96,7 +96,7 @@ const JobPostUser: React.FC = () => {
     <div className="max-w-full px-4 md:max-w-[960px] mx-auto mt-10 mb-10 relative">
       <Toaster position="top-center" expand={false} richColors />
       
-      <div className="md:fixed md:right-10 md:top-20 rounded-xl p-4 mb-6 md:mb-0 shadow-xl bg-white">
+      <div className="md:fixed md:right-10 md:top-40 rounded-xl p-4 mb-6 md:mb-0 shadow-shadowAll bg-white">
         <div className="mb-2 font-bold">Filter</div>
         
         <div className="mb-2 font-semibold text-[15px]">Employment type:</div>
@@ -135,7 +135,7 @@ const JobPostUser: React.FC = () => {
           type="text"
           value={searchQuery}
           onChange={(e) => {setSearchQuery(e.target.value); setLoading(true)}}
-          className="mt-5 shadow-lg rounded-md px-3 py-1 w-full"
+          className="mt-5 shadow-shadowAll rounded-md px-3 py-1 w-full"
           placeholder="Search by place"
         />
       </div>
@@ -154,7 +154,7 @@ const JobPostUser: React.FC = () => {
             {jobs.map(job => (
               <div
                 key={job._id}
-                className="w-full md:w-[600px] font-bold text-xl rounded-lg p-4 shadow-xl mb-4"
+                className="w-full md:w-[600px] font-bold text-xl rounded-lg p-4 shadow-md mb-4"
               >
                 <div className="flex items-center">
                   <img

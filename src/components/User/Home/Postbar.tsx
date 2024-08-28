@@ -89,7 +89,7 @@ const Postbar = () => {
   return (
     <div className="max-w-2xl mx-auto">
        <Toaster position="top-center" expand={false} richColors />
-      <div className="bg-slate-100 mt-6 p-4 rounded-lg shadow-lg">
+      <div className="bg-slate-100 mt-6 p-4 rounded-lg shadow-shadowAll">
         <textarea
           value={text}
           onChange={handleText}

@@ -52,9 +52,11 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
             const response = await axiosInstance.post(endpoint.otp,{otp})
             if(response.data.success && response.data.isRecruiter==false){
               dispatch(userLogin({token:response.data.token, UserData:response.data.user_data}));
+              localStorage.setItem('userToken', response.data.token);
               navigate('/home');
             }else if(response.data.success && response.data.isRecruiter==true){
               dispatch(recruiterLogin({token:response.data.token,RecruiterData:response.data.recruiter_data}));
+              localStorage.setItem('recruiterToken',response.data.token);
               navigate('/recruiter/home')
             }else{
               toast.error('Entered otp is incorrect.')

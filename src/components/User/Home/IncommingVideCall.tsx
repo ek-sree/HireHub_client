@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:4000');
+const socket = io('https://hirehubbackend.online');
 
 interface IncomingCallNotificationProps {
   callerId: string;

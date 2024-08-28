@@ -29,7 +29,7 @@ const ProfileSideNav = () => {
   const sentId = sameUser ? userId : id;
 
   const navItems = [
-    { to: `/userprofile/user-skills/${sentId}`, icon: <HomeRoundedIcon />, label: 'Skills' },
+    { to: `/userprofile/user-skills/${sentId}`, icon: <HomeRoundedIcon className=''/>, label: 'Skills' },
     ...(sameUser ? [{ to: `/userprofile/user-resume/${sentId}`, icon: <GroupRoundedIcon />, label: 'CV' }] : []),
     { to: `/userprofile/user-post/${sentId}`, icon: <WorkRoundedIcon />, label: 'Posts' },
   ];
@@ -38,7 +38,7 @@ const ProfileSideNav = () => {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `flex mb-3 items-center justify-center p-2 ${
+        `flex mb-3 items-center space-x-3 justify-start md:ml-12 p-2 ${
           isActive
             ? 'text-white bg-cyan-300 rounded-lg'
             : 'text-slate-400 hover:text-cyan-300'

@@ -34,11 +34,11 @@ function Navbar() {
         />
       </div>
       <div className='flex items-center flex-grow justify-center'>
-        <input
+        {/* <input
           type="text"
           className='border bg-slate-100 border-slate-400 rounded-lg py-1 px-16'
           placeholder="Search"
-        />
+        /> */}
         <NavLink
           to='/recruiter/home'
           className={({ isActive }) =>

@@ -77,7 +77,7 @@ const sentId = sameUser ? userId : id
 }
 
   return (
-    <div className="hidden sm:block fixed top-24 left-0 w-64 sm:w-72 h-52 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">
+    <div className="hidden sm:block fixed top-24 left-0 w-64 sm:w-72 h-56 ml-4 sm:ml-10 rounded-lg border-4 shadow-2xl z-50 mt-4">
       <div className="bg-white rounded-md relative shadow-xl hover:shadow-2xl">
         <img src={coverImg} alt="Cover photo" className="w-full h-16 object-cover rounded-lg hover:border-2" />
         <div className="rounded-full bg-slate-300 w-12 h-12 sm:w-16 sm:h-16 absolute left-1/2 transform -translate-x-1/2 -bottom-6 sm:-bottom-8 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden hover:shadow-2xl hover:border-2">
@@ -88,9 +88,9 @@ const sentId = sameUser ? userId : id
         <div className="text-sm sm:text-base font-semibold">{name}</div>
         <div className="text-xs sm:text-sm text-gray-600">{title}</div>
       </div>
-      <div className="absolute mt-16 sm:mt-20 bottom-0 left-1/2 transform -translate-x-1/2 w-full px-4">
+      <div className="absolute sm:mt-20 bottom-0 left-1/2 transform -translate-x-1/2 w-full px-">
         <Link to={`/userprofile/${userId}`}>
-          <button className="w-full text-slate-400 rounded-md text-xs sm:text-sm font-semibold shadow-lg border-2 border-slate-500 hover:bg-slate-200 hover:font-bold">View Profile</button>
+          <button className="w-full text-slate-400 rounded-md text-xs sm:text-sm font-semibold shadow-lg border-2 border-slate-500 hover:bg-slate-200 hover:font-bold p-1">View Profile</button>
         </Link>
       </div>
     </div>

@@ -1,4 +1,5 @@
 export const API_GATEWAY_BASE_URL = 'https://hirehubbackend.online';
+// export const API_GATEWAY_BASE_URL = 'http://localhost:4000';
 
 
 export const userEndpoints = {

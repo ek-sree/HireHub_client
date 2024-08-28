@@ -127,13 +127,13 @@ function Navbar() {
   }, [debouncedSearchQuery]);
 
   return (
-    <div className={`shadow-lg flex items-center h-20 px-5 ${isSticky ? 'sticky top-0 bg-white z-50' : ''}`}>
+    <div className={`shadow-lg flex space-x-3 items-center h-20 px-5 ${isSticky ? 'sticky top-0 bg-white z-50' : ''}`}>
       <div className="w-20">
         <NavLink to='/'>
-          <img src={HireHubLogo} alt="HireHub-Logo" className="max-w-full h-12 rounded-3xl w-16 md:w-auto" />
+          <img src={HireHubLogo} alt="HireHub-Logo" className="max-w-full h-10 rounded-3xl w-10 md:w-auto" />
         </NavLink>
       </div>
-      <div className="flex items-center flex-grow justify-between md:justify-center">
+      <div className="flex space-x-3 items-center flex-grow justify-between md:justify-center">
         <div className="relative flex-grow max-w-md md:mx-auto">
           <SearchTwoToneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <input

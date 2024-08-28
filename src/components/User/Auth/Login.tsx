@@ -143,11 +143,6 @@ return (
                   {isSubmitting ? 'Submitting...' : 'Login'}
                 </button>
               </div>
-              {isSubmitting && (
-                <div className="flex justify-center">
-                  <span>Loading...</span>
-                </div>
-              )}
               {alignment === 'user' && (
                 <>
                   <div className="flex justify-center">

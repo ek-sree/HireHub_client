@@ -116,7 +116,7 @@ const JobsList = () => {
               {jobs.map((job, index) => (
                 <tr key={job._id} className="text-gray-600 text-sm">
                   <td className="py-4 px-6">{job.position}</td>
-                  <td className="py-4 px-6 flex items-center">
+                  <td className="py-10 px-6 flex items-center">
                     <LocationOnRoundedIcon fontSize="small" />
                     <span className="ml-1">{job.place}</span>
                   </td>
@@ -129,21 +129,21 @@ const JobsList = () => {
                   <td className="py-4 px-6 text-center flex">
               
                     <Link to={`/recruiter/viewapplication/${job._id}`}>
-                      <button className="text-sm text-slate-600 hover:shadow-xl shadow-lg font-serif cursor-pointer hover:bg-slate-100  rounded">
-                        View Application
+                      <button className="text-sm text-black font-serif shadow-shadowAll p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                        View
                       </button>
                     </Link>
                   </td>
-                  <td className="py-4 px-6 text-center">
+                  <td className="text-center">
                     <Link to={`/recruiter/shortlistedOnJob/${job._id}`}>
-                      <button className="text-sm text-black font-serif shadow-lg p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                      <button className="text-sm text-black font-serif shadow-shadowAll p-2 rounded-md hover:bg-slate-100 cursor-pointer">
                         View
                       </button>
                     </Link>
                   </td>
                   <td className="py-4 px-6 text-center">
                     <Link to={`/recruiter/awaitedCandidate/${job._id}`}>
-                      <button className="text-sm text-black font-serif shadow-lg p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                      <button className="text-sm text-black font-serif shadow-shadowAll p-2 rounded-md hover:bg-slate-100 cursor-pointer">
                         View
                       </button>
                     </Link>
