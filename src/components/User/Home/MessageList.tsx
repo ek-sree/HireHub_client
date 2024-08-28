@@ -116,7 +116,7 @@ const MessageList: React.FC<MessageListProps> = ({ onChatSelect }) => {
       <h2 className="text-xl font-semibold mb-4">Message Lists</h2>
       <div className="p-4">
         <NavLink
-          to="/"
+          to="/home"
           className="font-semibold hover:bg-slate-200 py-2 px-2 rounded-xl"
         >
           <ArrowBackIcon /> Back
