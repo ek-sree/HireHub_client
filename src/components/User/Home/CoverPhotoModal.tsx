@@ -79,9 +79,9 @@ const CoverPhotoModal: FC<coverPhotoModalProps> = ({isOpen, onClose, onSuccess, 
           </label>
         </div>
         <div>
-          <button className="mt-4 text-black px-2 py- rounded-full font-medium border-2 border-slate-500 bg-slate-300 hover:bg-slate-400-600 mr-3">
+          {/* <button className="mt-4 text-black px-2 py- rounded-full font-medium border-2 border-slate-500 bg-slate-300 hover:bg-slate-400-600 mr-3">
             Delete
-          </button>
+          </button> */}
           <button onClick={handleUploadImage} className="mt-4 bg-cyan-300 px-2 py-1 rounded-full font-medium text-white hover:bg-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50 transition-transform transform hover:scale-105 active:scale-95 duration-300 ease-in-out">
             Save
           </button>
