@@ -76,7 +76,7 @@ const Notification: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto mt-4 px-4">
-        <NavLink to='/'>
+        <NavLink to='/home'>
           <button className="flex items-center text-blue-500 mb-4 hover:bg-slate-300 rounded-xl px-1">
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back
