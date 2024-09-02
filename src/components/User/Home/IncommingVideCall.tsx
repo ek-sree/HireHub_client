@@ -41,7 +41,9 @@ const GlobalIncomingCallHandler: React.FC = () => {
   useEffect(() => {
     const handleIncomingCall = (data: { from: string; callerName: string; offer: RTCSessionDescriptionInit }) => {
       console.log('Incoming call data:', data);
-      setIncomingCall(data);
+      if(data.from==userId){
+        setIncomingCall(data);
+      }
     };
 
     socket.on('incomingCall', handleIncomingCall);
