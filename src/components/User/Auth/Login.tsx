@@ -14,6 +14,8 @@ import {login as recruiterlogin} from '../../../redux/slice/RecruiterSlice'
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
 import socketService from '../../../socket/socketService';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required("Email is required"),
@@ -29,6 +31,7 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [alignment, setAlignment] = useState<string | null>('user');
+  const [showPass, setShowPass] = useState(false);
 
   const handleChange = ( newAlignment: string | null) => {
     setAlignment(newAlignment);
@@ -125,13 +128,16 @@ return (
                 />
                 <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
               </div>
-              <div className="pt-5">
+              <div className="pt-5 ">
+                <div className='flex items-center'>
                 <Field
-                  type="password"
+                  type={!showPass?"password":"text"}
                   name="password"
                   className="border-gray-300 border rounded-md text-sm py-2 px-5 shadow-md w-full"
                   placeholder="Password"
-                />
+                  />
+                  {showPass?<VisibilityIcon onClick={()=>setShowPass(!showPass)} className='absolute right-[10%] md:right-56 text-slate-500 cursor-pointer' fontSize='small'/>: <VisibilityOffIcon onClick={()=>setShowPass(!showPass)} className='absolute right-[10%] md:right-56 text-slate-500 cursor-pointer' fontSize='small'/>}
+                  </div>
                 <ErrorMessage name="password" component="div" className="text-red-500 text-xs" />
               </div>
               <div className="flex justify-center pt-8 pb-5">
