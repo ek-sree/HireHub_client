@@ -30,11 +30,10 @@ const Otp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Set the countdown to 2 minutes (120 seconds)
   const [countdown, setCountdown] = useState(120);
   const [showResendButton, setShowResendButton] = useState(false);
   const [recruiter, setRecruiter] = useState<string | undefined>(undefined);
-
+console.log(showResendButton)
   const axiosInstance = recruiter === "false" ? userAxios : recruiterAxios;
   const endpoint = recruiter === "false" ? userEndpoints : recruiterEndpoints;
 
