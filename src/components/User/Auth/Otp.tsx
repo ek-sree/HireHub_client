@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from 'sonner'
 import { useDispatch } from "react-redux";
 import { login as userLogin } from "../../../redux/slice/UserSlice";
-import { login as recruiterLogin} from "../../../redux/slice/RecruiterSlice";
+import { login as recruiterLogin } from "../../../redux/slice/RecruiterSlice";
 import Cookies from 'js-cookie';
 import { recruiterAxios } from "../../../constraints/axios/recruiterAxios";
 import { recruiterEndpoints } from "../../../constraints/endpoints/recruiterEndpoints";
@@ -27,46 +27,40 @@ const validate = (values: FormValues) => {
 const Otp = () => {
   const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [countdown, setCountdown] = useState(30);
+  // Set the countdown to 2 minutes (120 seconds)
+  const [countdown, setCountdown] = useState(120);
   const [showResendButton, setShowResendButton] = useState(false);
-console.log(showResendButton);
-
   const [recruiter, setRecruiter] = useState<string | undefined>(undefined);
 
-
-
-const axiosInstance = recruiter == "false" ? userAxios : recruiterAxios;
-const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
+  const axiosInstance = recruiter === "false" ? userAxios : recruiterAxios;
+  const endpoint = recruiter === "false" ? userEndpoints : recruiterEndpoints;
 
   const formik = useFormik<FormValues>({
     initialValues: {
       otp: Array(6).fill(""),
     },
     validate,
-    onSubmit: async (values) => {      
-        try {
-            const otp = values.otp.join("")
-            const response = await axiosInstance.post(endpoint.otp,{otp})
-            if(response.data.success && response.data.isRecruiter==false){
-              dispatch(userLogin({token:response.data.token, UserData:response.data.user_data}));
-              localStorage.setItem('userToken', response.data.token);
-              navigate('/home');
-            }else if(response.data.success && response.data.isRecruiter==true){
-              dispatch(recruiterLogin({token:response.data.token,RecruiterData:response.data.recruiter_data}));
-              localStorage.setItem('recruiterToken',response.data.token);
-              navigate('/recruiter/home')
-            }else{
-              toast.error('Entered otp is incorrect.')
-            }
-        } catch (error) {
-            console.log("error otp", error);
-            
+    onSubmit: async (values) => {
+      try {
+        const otp = values.otp.join("");
+        const response = await axiosInstance.post(endpoint.otp, { otp });
+        if (response.data.success && response.data.isRecruiter === false) {
+          dispatch(userLogin({ token: response.data.token, UserData: response.data.user_data }));
+          localStorage.setItem('userToken', response.data.token);
+          navigate('/home');
+        } else if (response.data.success && response.data.isRecruiter === true) {
+          dispatch(recruiterLogin({ token: response.data.token, RecruiterData: response.data.recruiter_data }));
+          localStorage.setItem('recruiterToken', response.data.token);
+          navigate('/recruiter/home');
+        } else {
+          toast.error('Entered otp is incorrect.');
         }
-     
-
+      } catch (error) {
+        console.log("error otp", error);
+      }
     },
   });
 
@@ -103,19 +97,16 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
     }
   }, [countdown]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const recruiterStatus = Cookies.get('isRecruiter');
-setRecruiter(recruiterStatus)
-  },[])
+    setRecruiter(recruiterStatus);
+  }, []);
 
   useEffect(() => {
     inputRef.current[0]?.focus();
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = e.target;
     if (/[^0-9]/.test(value)) return;
 
@@ -132,27 +123,23 @@ setRecruiter(recruiterStatus)
     }
   };
 
-  const handleBackSpace = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleBackSpace = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace" && index > 0 && !formik.values.otp[index]) {
       inputRef.current[index - 1]?.focus();
     }
   };
 
-  const handleResendOtp = async() => {
+  const handleResendOtp = async () => {
     try {
-      await axiosInstance.post(endpoint.resendOtp)
+      await axiosInstance.post(endpoint.resendOtp);
       formik.resetForm();
-    setCountdown(30);
-    setShowResendButton(false);
-    if (inputRef.current[0]) {
-      inputRef.current[0].focus();
-    }
+      setCountdown(120); // Reset to 2 minutes
+      setShowResendButton(false);
+      if (inputRef.current[0]) {
+        inputRef.current[0].focus();
+      }
     } catch (error) {
       console.log("error in resend otp", error);
-      
     }
   };
 
@@ -186,20 +173,22 @@ setRecruiter(recruiterStatus)
               Please fill all fields
             </p>
           )}
-          {countdown > 0 ?(
+          {countdown > 0 ? (
             <button
-            type="submit"
-            className="mt-4 w-full bg-gray-800 text-white rounded-lg py-3 hover:bg-gray-700"
-          >
-            Submit
-          </button>
-          ):(
+              type="submit"
+              className="mt-4 w-full bg-gray-800 text-white rounded-lg py-3 hover:bg-gray-700"
+            >
+              Submit
+            </button>
+          ) : (
             <p></p>
           )}
-          
         </form>
         {countdown > 0 ? (
-          <p className="text-center mt-4">Resend OTP in {countdown} seconds</p>
+          <p className="text-center mt-4">
+            Resend OTP in {Math.floor(countdown / 60)}:
+            {countdown % 60 < 10 ? `0${countdown % 60}` : countdown % 60} seconds
+          </p>
         ) : (
           <button
             onClick={handleResendOtp}
@@ -209,7 +198,7 @@ setRecruiter(recruiterStatus)
           </button>
         )}
       </div>
-      <Toaster position="top-center" expand={false} richColors/>
+      <Toaster position="top-center" expand={false} richColors />
     </div>
   );
 };
