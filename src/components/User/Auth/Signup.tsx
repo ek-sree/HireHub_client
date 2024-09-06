@@ -58,7 +58,9 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
   const onSubmit = async (values: SignupFormValues, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
       const axiosInstance = alignment === 'recruiter' ? recruiterAxios : userAxios;
-      const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;      
+      const endpoint = alignment === 'recruiter' ? recruiterEndpoints : userEndpoints;   
+      console.log("end Pointsss",endpoint, axiosInstance);
+         
       const response = await axiosInstance.post(endpoint.register, values);
       if (response.data.success) {
         navigate('/otp');

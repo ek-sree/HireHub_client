@@ -46,6 +46,8 @@ console.log(showResendButton)
       try {
         const otp = values.otp.join("");
         const response = await axiosInstance.post(endpoint.otp, { otp });
+        console.log("response ottt",response);
+        
         if (response.data.success && response.data.isRecruiter === false) {
           dispatch(userLogin({ token: response.data.token, UserData: response.data.user_data }));
           localStorage.setItem('userToken', response.data.token);
