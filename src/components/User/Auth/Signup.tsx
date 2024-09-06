@@ -63,6 +63,9 @@ const  clientId = '1004012480940-lan5bqbd81a1i0c4278voqg6q1e8tvh4.apps.googleuse
          
       const response = await axiosInstance.post(endpoint.register, values);
       if (response.data.success) {
+        console.log("signupppp dataaaaaa-----=======",response.data);
+        
+        localStorage.setItem('isRecruiter', response.data.isRecruiter);
         navigate('/otp');
       } else {
         if (response.data.message === "Email already exists") {

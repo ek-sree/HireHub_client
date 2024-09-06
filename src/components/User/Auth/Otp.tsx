@@ -8,7 +8,6 @@ import { Toaster, toast } from 'sonner'
 import { useDispatch } from "react-redux";
 import { login as userLogin } from "../../../redux/slice/UserSlice";
 import { login as recruiterLogin } from "../../../redux/slice/RecruiterSlice";
-import Cookies from 'js-cookie';
 import { recruiterAxios } from "../../../constraints/axios/recruiterAxios";
 import { recruiterEndpoints } from "../../../constraints/endpoints/recruiterEndpoints";
 
@@ -99,7 +98,7 @@ const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
   }, [countdown]);
 
   useEffect(() => {
-    const recruiterStatus = Cookies.get('isRecruiter');
+    const recruiterStatus = localStorage.getItem('isRecruiter') ?? undefined;
     setRecruiter(recruiterStatus);
   }, []);
 
