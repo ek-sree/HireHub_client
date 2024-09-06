@@ -34,8 +34,8 @@ const Otp = () => {
   const [showResendButton, setShowResendButton] = useState(false);
   const [recruiter, setRecruiter] = useState<string | undefined>(undefined);
 console.log(showResendButton)
-  const axiosInstance = recruiter === "false" ? userAxios : recruiterAxios;
-  const endpoint = recruiter === "false" ? userEndpoints : recruiterEndpoints;
+const axiosInstance = recruiter == "false" ? userAxios : recruiterAxios;
+const endpoint = recruiter == "false" ? userEndpoints : recruiterEndpoints;
 
   const formik = useFormik<FormValues>({
     initialValues: {
